@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.spi.samples;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -45,6 +45,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * This sample actually calls a given API to get data to use every time it's asked for a data.
+ * <p>
+ * Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
+ * dependent API.
+ *
+ * @author Marcelo Guimarães
+ */
 @RegisterForReflection
 public class ApiSample implements Sample {
 
@@ -52,7 +60,6 @@ public class ApiSample implements Sample {
   private final String       responsePath;
   private final WebClient    client;
   private final ObjectMapper mapper;
-
 
   @JsonCreator
   public ApiSample(@JacksonInject Vertx vertx,

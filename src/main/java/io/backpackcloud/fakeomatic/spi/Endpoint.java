@@ -33,15 +33,27 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Interface that represents the endpoint to call for each generated payload.
+ *
+ * @author Marcelo Guimarães
+ */
 @RegisterRestClient
 public interface Endpoint {
 
+  /**
+   * Posts the given payload.
+   *
+   * @param contentType the payload's content type
+   * @param payload     the payload to post
+   * @return a completion stage to hold the result of the call.
+   */
   @POST
   @Path("/")
   @Timed(
       unit = MetricUnits.MILLISECONDS,
       description = "Endpoint response time"
   )
-  CompletionStage<String> inject(@HeaderParam("Content-Type") String contentType, String payload);
+  CompletionStage<String> postPayload(@HeaderParam("Content-Type") String contentType, String payload);
 
 }

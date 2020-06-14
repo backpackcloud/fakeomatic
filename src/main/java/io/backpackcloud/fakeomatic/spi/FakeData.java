@@ -24,20 +24,56 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+/**
+ * Defines a component that can produce fake data.
+ * <p>
+ * This is the root object of the templates.
+ *
+ * @author Marcelo Guimarães
+ * @see Sample
+ */
 public interface FakeData {
 
+  /**
+   * Returns the Sample data associated with the given name.
+   *
+   * @param sampleName the key for locating the Sample object.
+   * @return the Sample object associated with the given name.
+   */
   Sample sample(String sampleName);
 
+  /**
+   * Returns a random data from the Sample associated with the given placeholder.
+   *
+   * @param placeholder the placeholder to get the sample.
+   * @return a random data.
+   */
   String randomFor(char placeholder);
 
+  /**
+   * Returns a random data from the Sample associated with the given name.
+   *
+   * @param sampleName the name of the Sample.
+   * @return a random data.
+   */
   String random(String sampleName);
 
+  /**
+   * Returns a number that is at least the {@code min} and less than the {@code max}.
+   *
+   * @param min the minimum value
+   * @param max the maximum value (excluded)
+   * @return a random number.
+   */
   int number(int min, int max);
 
-  default String expressionFrom(String sampleName) {
-    return expression(random(sampleName));
-  }
-
+  /**
+   * Generates a random expression looking for placeholders in the given expression.
+   *
+   * @param expression the expression to evaluate.
+   * @return a random generated expression.
+   * @see #randomFor(char)
+   */
   default String expression(String expression) {
     StringBuilder builder = new StringBuilder(expression.length());
 
@@ -46,6 +82,16 @@ public interface FakeData {
     }
 
     return builder.toString();
+  }
+
+  /**
+   * {@link #expression(String) Evaluates} a random data from the Sample associated with the given name.
+   *
+   * @param sampleName the name of the Sample.
+   * @return a random generated expression.
+   */
+  default String expressionFrom(String sampleName) {
+    return expression(random(sampleName));
   }
 
 }

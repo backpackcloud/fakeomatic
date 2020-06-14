@@ -21,6 +21,8 @@ The rules for generating data can contain `samples` and `placeholders`. Samples 
 randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
 expressions for generating data.
 
+==== Samples
+
 Samples might have 3 different types:
 
 chars::
@@ -34,6 +36,8 @@ defining a set of data that is meant to be read, like cities and names.
 api::
 This sample actually calls a given API to get data to use every time it's asked for a data. Due to the nature of this
 sample, it's not possible to reproduce the same payloads without relying on the dependent API.
+
+==== Placeholders
 
 The placeholders are a single character that can be associated with any of the configured sample. Bellow is an example
 of a configuration file:
@@ -94,7 +98,8 @@ The following properties can be configured as a JVM argument (prefix `-D`), or a
 and underscores):
 
 endpoint.url|ENDPOINT_URL::
-The endpoint that will receive the generated payloads. Fake-O-Matic will use the POST verb for calling it.
+The endpoint that will receive the generated payloads. Fake-O-Matic will use the POST verb for calling it. Defaults to
+`http://localhost:8080`.
 
 generator.total|GENERATOR_TOTAL::
 The number of generated payloads. Defaults to `10`.
@@ -112,7 +117,7 @@ generator.seed|GENERATOR_SEED::
 The seed to use for the random functions. Fake-O-Matic will generate one if empty.
 
 template.path|TEMPLATE_PATH::
-Defines where to locate the template for generating the payloads.
+Where to locate the template for generating the payloads. Defaults to `./payload.json`.
 
 template.type|TEMPLATE_TYPE::
 Which `Content-Type` to pass to the endpoint. Defaults to `application/json; charset=UTF-8`.

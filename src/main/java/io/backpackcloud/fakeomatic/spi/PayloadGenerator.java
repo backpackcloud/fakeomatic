@@ -24,10 +24,25 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+/**
+ * Defines a component capable of generating payloads.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface PayloadGenerator {
 
+  /**
+   * Returns the content type of each generated payload.
+   *
+   * @return the payload's content type.
+   */
   String contentType();
 
+  /**
+   * Generates a new payload.
+   *
+   * @return a new generated payload.
+   */
   String generate();
 
 }

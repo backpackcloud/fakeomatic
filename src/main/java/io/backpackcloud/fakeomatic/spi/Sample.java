@@ -26,25 +26,43 @@ package io.backpackcloud.fakeomatic.spi;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.backpackcloud.fakeomatic.impl.ApiSample;
-import io.backpackcloud.fakeomatic.impl.ListSample;
-import io.backpackcloud.fakeomatic.impl.StringSample;
+import io.backpackcloud.fakeomatic.spi.samples.ApiSample;
+import io.backpackcloud.fakeomatic.spi.samples.ListSample;
+import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Represents a collection of data that can be randomized.
+ *
+ * @author Marcelo Guimarães
+ */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = StringSample.class, name = "chars"),
+    @JsonSubTypes.Type(value = CharSample.class, name = "chars"),
     @JsonSubTypes.Type(value = ApiSample.class, name = "api"),
     @JsonSubTypes.Type(value = ListSample.class, name = "list"),
 })
 @FunctionalInterface
 public interface Sample {
 
+  /**
+   * Returns a random data using the given Random object for picking the data.
+   *
+   * @param random the random object to use for randomness.
+   * @return a random data.
+   */
   String get(Random random);
 
+  /**
+   * Returns a list of random data. The list might contain duplicated entries.
+   *
+   * @param size   the size of the list.
+   * @param random the random object to use for randomness.
+   * @return a new list with randomized data.
+   */
   default List<String> get(int size, Random random) {
     List<String> result = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {

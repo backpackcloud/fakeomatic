@@ -22,29 +22,35 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.spi.samples;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.List;
 import java.util.Random;
 
+/**
+ * This sample can pick any character from a given string. Useful for defining a
+ * set of characters that can be used to produce IDs or any other information
+ * that is not meant to be read.
+ *
+ * @author Marcelo Guimarães
+ */
 @RegisterForReflection
-public class ListSample implements Sample {
+public class CharSample implements Sample {
 
-  private final List values;
+  private final String value;
 
   @JsonCreator
-  public ListSample(@JsonProperty("values") List values) {
-    this.values = values;
+  public CharSample(@JsonProperty("value") String value) {
+    this.value = value;
   }
 
   @Override
   public String get(Random random) {
-    return String.valueOf(values.get((random.nextInt(values.size()))));
+    return String.valueOf(value.charAt(random.nextInt(value.length())));
   }
 
 }

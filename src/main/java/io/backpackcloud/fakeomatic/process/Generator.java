@@ -67,7 +67,7 @@ public class Generator implements QuarkusApplication {
           LOGGER.infof("Generating payload %d of %d", i, config.total());
         }
 
-        endpoint.inject(generator.contentType(), generator.generate())
+        endpoint.postPayload(generator.contentType(), generator.generate())
                 .exceptionally(Throwable::getMessage)
                 .thenRun(inProgress::decrementAndGet)
                 .thenRun(count::incrementAndGet);

@@ -35,6 +35,9 @@ import static io.backpackcloud.fakeomatic.infra.FakeOMaticProducer.DEFAULT_CONFI
 @ApplicationScoped
 public class FakeOMaticConfig implements Config {
 
+  @ConfigProperty(name = "endpoint.url", defaultValue = "http://localhost:8080")
+  String endpointUrl;
+
   @ConfigProperty(name = "generator.total", defaultValue = "10")
   int total;
 
@@ -47,7 +50,7 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "generator.seed", defaultValue = "")
   Random random;
 
-  @ConfigProperty(name = "template.path")
+  @ConfigProperty(name = "template.path", defaultValue = "./payload.json")
   String templatePath;
 
   @ConfigProperty(name = "template.type", defaultValue = "application/json; charset=UTF-8")
@@ -55,6 +58,11 @@ public class FakeOMaticConfig implements Config {
 
   @ConfigProperty(name = "template.charset", defaultValue = "UTF-8")
   String charset;
+
+  @Override
+  public String endpointUrl() {
+    return endpointUrl;
+  }
 
   @Override
   public String configs() {

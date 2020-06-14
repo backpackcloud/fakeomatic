@@ -26,20 +26,48 @@ package io.backpackcloud.fakeomatic.spi;
 
 import java.util.Random;
 
+/**
+ * Interface that holds the configuration options.
+ *
+ * @author Marcelo Guimarães
+ */
 public interface Config {
 
+  String endpointUrl();
+
+  /**
+   * @return The endpoint that will receive the generated payloads.
+   */
   String configs();
 
+  /**
+   * @return The number of generated payloads.
+   */
   int total();
 
+  /**
+   * @return The maximum number of concurrent requests to the endpoint.
+   */
   int concurrency();
 
+  /**
+   * @return The Random object to use.
+   */
   Random random();
 
+  /**
+   * @return Where to locate the template for generating the payloads.
+   */
   String templatePath();
 
+  /**
+   * @return Which Content-Type to pass to the endpoint.
+   */
   String templateType();
 
+  /**
+   * @return Which encode to use for loading the template file.
+   */
   String charset();
 
 
