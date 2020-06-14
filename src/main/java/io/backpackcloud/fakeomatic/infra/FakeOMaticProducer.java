@@ -65,16 +65,16 @@ public class FakeOMaticProducer {
 
     InjectableValues.Std std = new InjectableValues.Std();
 
-    std.addValue(Random.class, config.random());
-    std.addValue(Vertx.class, vertx);
-
     objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    objectMapper.setInjectableValues(std);
 
     String[] configLocations = config.configs().split("[,]");
 
     FakeData fakeData = new NullFakeData();
+
     std.addValue(FakeData.class, fakeData);
+    std.addValue(Random.class, config.random());
+    std.addValue(Vertx.class, vertx);
+    objectMapper.setInjectableValues(std);
 
     for (String config : configLocations) {
       if (DEFAULT_CONFIG.equals(config)) {
