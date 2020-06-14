@@ -59,11 +59,6 @@ public class FakeOMatic implements FakeData {
     this.parent = parent;
   }
 
-  public FakeOMatic addSample(String name, Sample sample) {
-    this.samples.putIfAbsent(name, sample);
-    return this;
-  }
-
   @Override
   public Sample sample(String sampleName) {
     return Optional.ofNullable(samples.get(sampleName))

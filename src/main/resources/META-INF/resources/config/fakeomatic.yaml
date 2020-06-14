@@ -30,6 +30,8 @@ placeholders:
   "x": hex_digit
 
 samples:
+  uuid:
+    type: uuid
   letter:
     type: chars
     value: "abcdefghijklmnopqrstuvwxyz"

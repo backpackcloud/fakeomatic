@@ -1,0 +1,5 @@
+{
+  "id": "{random('uuid')}",
+  "message": "{random('cause')}",
+  "device": "{expression('%%-#####')}"
+}

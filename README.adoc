@@ -27,15 +27,67 @@ Samples might have 3 different types:
 
 chars::
 This sample can pick any character from a given string. Useful for defining a set of characters that can be used to
-produce IDs or any other information that is not meant to be read.
+produce IDs or any other information that is not meant to be read. It takes a String param `values` for configuring
+the chars.
+
+[source,yaml]
+----
+samples:
+  letter:
+    type: chars
+    value: "abcdefghijklmnopqrstuvwxyz"
+  digit:
+    type: chars
+    value: "0123456789"
+----
 
 list::
 This sample can pick any item from a given list of objects. The object will be used in its `string` form. Useful for
-defining a set of data that is meant to be read, like cities and names.
+defining a set of data that is meant to be read, like cities and names. It takes an Array param `values`
+configuring the items.
+
+[source,yaml]
+----
+samples:
+  cause:
+    type: list
+    values:
+      - "clock speed"
+      - "solar flares"
+      - "electromagnetic radiation from satellite debris"
+      - "static from nylon underwear"
+      - "static from plastic slide rules"
+      - "global warming"
+      - "poor power conditioning"
+      - "static buildup"
+      - "doppler effect"
+----
 
 api::
-This sample actually calls a given API to get data to use every time it's asked for a data. Due to the nature of this
-sample, it's not possible to reproduce the same payloads without relying on the dependent API.
+This sample actually calls a given API to get data to use every time it's asked for a data. It takes a URL param
+`url` to define the API endpoint, and a https://tools.ietf.org/html/rfc6901[JSON Pointer] param `result` to specify
+which part of the API response represents the data. Due to the nature of this sample, it's not possible to reproduce the
+same payloads without relying on the dependent API.
+
+[source,yaml]
+----
+samples:
+  chuck_norris:
+    type: api
+    url: https://api.chucknorris.io/jokes/random
+    result: /value
+----
+
+uuid::
+This sample will produce a https://en.wikipedia.org/wiki/Universally_unique_identifier[universally unique identifier].
+It doesn't take any specific param.
+
+[source,yaml]
+----
+samples:
+  uuid:
+    type: uuid
+----
 
 ==== Placeholders
 
@@ -55,26 +107,9 @@ samples:
   digit:
     type: chars
     value: "0123456789"
-  chuck_norris:
-    type: api
-    url: https://api.chucknorris.io/jokes/random
-    result: /value <3>
-  cause:
-    type: list
-    values:
-      - "clock speed"
-      - "solar flares"
-      - "electromagnetic radiation from satellite debris"
-      - "static from nylon underwear"
-      - "static from plastic slide rules"
-      - "global warming"
-      - "poor power conditioning"
-      - "static buildup"
-      - "doppler effect"
 ----
 <1> Associated with the `digit` sample
 <2> Associated with the `letter` sample
-<3> Configures which part of the result will be used as the generated data
 
 === Payload Template
 
@@ -132,8 +167,8 @@ The following examples can be used with the built-in configuration.
 [source,json]
 ----
 {
-  "id": "random('uuid')",
-  "message": "random('cause')",
-  "device": "expression('%%-#####')"
+  "id": "{random('uuid')}",
+  "message": "{random('cause')}",
+  "device": "{expression('%%-#####')}"
 }
 ----

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.backpackcloud.fakeomatic.spi.samples.ApiSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.CharSample;
+import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +43,9 @@ import java.util.Random;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CharSample.class, name = "chars"),
-    @JsonSubTypes.Type(value = ApiSample.class, name = "api"),
+    @JsonSubTypes.Type(value = ApiSample.class,  name = "api"),
     @JsonSubTypes.Type(value = ListSample.class, name = "list"),
+    @JsonSubTypes.Type(value = UuidSample.class, name = "uuid"),
 })
 @FunctionalInterface
 public interface Sample {

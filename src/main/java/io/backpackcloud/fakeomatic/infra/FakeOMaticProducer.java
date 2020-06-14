@@ -28,9 +28,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.impl.FakeOMatic;
 import io.backpackcloud.fakeomatic.impl.NullFakeData;
+import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.vertx.mutiny.core.Vertx;
 
@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Random;
-import java.util.UUID;
 
 @ApplicationScoped
 public class FakeOMaticProducer {
@@ -90,8 +89,7 @@ public class FakeOMaticProducer {
   }
 
   private FakeOMatic createDefault(ObjectMapper objectMapper) throws IOException {
-    return objectMapper.readValue(getClass().getResourceAsStream(DEFAULT_CONFIG_LOCATION), FakeOMatic.class)
-                       .addSample("uuid", rand -> UUID.randomUUID().toString());
+    return objectMapper.readValue(getClass().getResourceAsStream(DEFAULT_CONFIG_LOCATION), FakeOMatic.class);
   }
 
   private FakeOMatic createFromExternal(ObjectMapper objectMapper, String config) throws IOException {
