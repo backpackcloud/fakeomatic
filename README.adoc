@@ -1,0 +1,123 @@
+= Fake-O-Matic
+
+Fake-O-Matic is a utility tool for creating and sending fake payloads to endpoints in order to test throughput.
+On each iteration, Fake-O-Matic will generate a payload based on a provided template and a set of rules for generating
+fake data.
+
+== How to Build
+
+Fake-O-Matic is build with https://quarkus.io[Quarkus] and supports native compilation. THe build is a good and old
+`mvn package` command. If you wish to build a native binary, just activate the `native` profile
+(`mvn -P native package`).
+
+== How to Configure
+
+Fake-O-Matic expects you to define both data and template to generate the payloads. An optional seed can also be given
+for reproducibility.
+
+=== Data Generation
+
+The rules for generating data can contain `samples` and `placeholders`. Samples are a set of data that Fake-O-Matic can
+randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
+expressions for generating data.
+
+Samples might have 3 different types:
+
+chars::
+This sample can pick any character from a given string. Useful for defining a set of characters that can be used to
+produce IDs or any other information that is not meant to be read.
+
+list::
+This sample can pick any item from a given list of objects. The object will be used in its `string` form. Useful for
+defining a set of data that is meant to be read, like cities and names.
+
+api::
+This sample actually calls a given API to get data to use every time it's asked for a data. Due to the nature of this
+sample, it's not possible to reproduce the same payloads without relying on the dependent API.
+
+The placeholders are a single character that can be associated with any of the configured sample. Bellow is an example
+of a configuration file:
+
+[source,yaml]
+----
+placeholders:
+  "#": digit   <1>
+  "%": letter  <2>
+
+samples:
+  letter:
+    type: chars
+    value: "abcdefghijklmnopqrstuvwxyz"
+  digit:
+    type: chars
+    value: "0123456789"
+  chuck_norris:
+    type: api
+    url: https://api.chucknorris.io/jokes/random
+    result: /value <3>
+  cause:
+    type: list
+    values:
+      - "clock speed"
+      - "solar flares"
+      - "electromagnetic radiation from satellite debris"
+      - "static from nylon underwear"
+      - "static from plastic slide rules"
+      - "global warming"
+      - "poor power conditioning"
+      - "static buildup"
+      - "doppler effect"
+----
+<1> Associated with the `digit` sample
+<2> Associated with the `letter` sample
+<3> Configures which part of the result will be used as the generated data
+
+=== Payload Template
+
+Fake-O-Matic uses https://quarkus.io/guides/qute-reference[Qute] templates to produce the payloads. A couple of methods
+can be used to get a fake data, the main one are:
+
+random(sampleName)::
+Gets a random sample from the given sample name.
+
+number(min, max)::
+Gets a random number that is at least `min` and less than `max`.
+
+expression(placeholders)::
+Gets a random data produced by replacing each placeholder by a random sample associated with it.
+
+For more methods, check out the `FakeData` interface.
+
+=== Configuration Properties
+
+The following properties can be configured as a JVM argument (prefix `-D`), or an environment variable (with upper cases
+and underscores):
+
+endpoint.url|ENDPOINT_URL::
+The endpoint that will receive the generated payloads. Fake-O-Matic will use the POST verb for calling it.
+
+generator.total|GENERATOR_TOTAL::
+The number of generated payloads. Defaults to `10`.
+
+endpoint.concurrency|ENDPOINT_CONCURRENCY::
+The maximum number of concurrent requests to the endpoint. Defaults to `5`.
+
+generator.configs|GENERATOR_CONFIGS::
+Which configuration files should be used. Fake-O-Matic allows you to define parent configurations, so you can reuse them
+in the way it suits you better. The configurations should be comma separated. The built-in configuration can be
+included with a simple `fakeomatic` name. Fake-O-Matic will always follow the configuration order, so the first one
+takes precedence.
+
+generator.seed|GENERATOR_SEED::
+The seed to use for the random functions. Fake-O-Matic will generate one if empty.
+
+template.path|TEMPLATE_PATH::
+Defines where to locate the template for generating the payloads.
+
+template.type|TEMPLATE_TYPE::
+Which `Content-Type` to pass to the endpoint. Defaults to `application/json; charset=UTF-8`.
+
+template.charset|TEMPLATE_CHARSET::
+Which encode to use for loading the template file. Defaults to `UTF-8`.
+
+
