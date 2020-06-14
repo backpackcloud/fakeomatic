@@ -111,7 +111,7 @@ generator.configs|GENERATOR_CONFIGS::
 Which configuration files should be used. Fake-O-Matic allows you to define parent configurations, so you can reuse them
 in the way it suits you better. The configurations should be comma separated. The built-in configuration can be
 included with a simple `fakeomatic` name. Fake-O-Matic will always follow the configuration order, so the first one
-takes precedence.
+takes precedence. The built-in configuration can be found at `src/main/resources/META-INF/config/fakeomatic.yaml`.
 
 generator.seed|GENERATOR_SEED::
 The seed to use for the random functions. Fake-O-Matic will generate one if empty.
@@ -125,4 +125,15 @@ Which `Content-Type` to pass to the endpoint. Defaults to `application/json; cha
 template.charset|TEMPLATE_CHARSET::
 Which encode to use for loading the template file. Defaults to `UTF-8`.
 
+== Example
 
+The following examples can be used with the built-in configuration.
+
+[source,json]
+----
+{
+  "id": "random('uuid')",
+  "message": "random('cause')",
+  "device": "expression('%%-#####')"
+}
+----
