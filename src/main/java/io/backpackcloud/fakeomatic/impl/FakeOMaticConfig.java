@@ -24,7 +24,7 @@
 
 package io.backpackcloud.fakeomatic.impl;
 
-import io.backpackcloud.fakeomatic.Config;
+import io.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;

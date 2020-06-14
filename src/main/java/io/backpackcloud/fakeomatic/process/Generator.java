@@ -24,7 +24,7 @@
 
 package io.backpackcloud.fakeomatic.process;
 
-import io.backpackcloud.fakeomatic.Config;
+import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
 import io.quarkus.runtime.QuarkusApplication;

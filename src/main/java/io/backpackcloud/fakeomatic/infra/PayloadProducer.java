@@ -24,7 +24,7 @@
 
 package io.backpackcloud.fakeomatic.infra;
 
-import io.backpackcloud.fakeomatic.Config;
+import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;

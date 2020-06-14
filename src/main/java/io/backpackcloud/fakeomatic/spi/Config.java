@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic;
+package io.backpackcloud.fakeomatic.spi;
 
 import java.util.Random;
 
