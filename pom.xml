@@ -36,7 +36,7 @@
 
   <groupId>io.backpackcloud</groupId>
   <artifactId>fakeomatic</artifactId>
-  <version>0.2.2</version>
+  <version>0.3.0</version>
 
   <description>
     Fake-O-Matic is a library for generating and ingesting fake data.
@@ -83,7 +83,6 @@
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
 
     <spectaculous.version>0.2.0</spectaculous.version>
-    <mockito-core.version>3.2.4</mockito-core.version>
   </properties>
 
   <dependencyManagement>
@@ -162,20 +161,19 @@
     </dependency>
 
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5-mockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>io.backpackcloud</groupId>
       <artifactId>spectaculous</artifactId>
       <version>${spectaculous.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito-core.version}</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
+
   <build>
     <plugins>
       <plugin>

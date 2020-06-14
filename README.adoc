@@ -74,7 +74,7 @@ samples:
 
 api::
 This sample actually calls a given API to get data to use every time it's asked for a data. It takes a URL param
-`url` to define the API endpoint, and a https://tools.ietf.org/html/rfc6901[JSON Pointer] param `result` to specify
+`url` to define the API endpoint and a https://tools.ietf.org/html/rfc6901[JSON Pointer] param `result` to specify
 which part of the API response represents the data. Due to the nature of this sample, it's not possible to reproduce the
 same payloads without relying on the dependent API.
 
@@ -96,6 +96,20 @@ It doesn't take any specific param.
 samples:
   uuid:
     type: uuid
+----
+
+composite::
+This sample will gather other samples and join them into a unique data. It takes an Array param `samples` to specify
+the samples to gather and an optional String param `separator` to specify the separator (defaults to `" "`).
+
+[source,yaml]
+----
+samples:
+  name:
+    type: composite
+    samples:
+      - first_name
+      - last_name
 ----
 
 ==== Placeholders
@@ -138,7 +152,7 @@ For more methods, check out the `FakeData` interface.
 
 === Configuration Properties
 
-The following properties can be configured as a JVM argument (prefix `-D`), or an environment variable (with upper cases
+The following properties can be configured as a JVM argument (prefix `-D`) or an environment variable (with upper cases
 and underscores):
 
 endpoint.url|ENDPOINT_URL::
