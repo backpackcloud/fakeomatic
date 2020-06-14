@@ -36,7 +36,7 @@
 
   <groupId>io.backpackcloud</groupId>
   <artifactId>fakeomatic</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
 
   <description>
     Fake-O-Matic is a library for generating and ingesting fake data.
@@ -55,7 +55,7 @@
   <developers>
     <developer>
       <id>ataxexe</id>
-      <name>Marcelo Guimaraes</name>
+      <name>Marcelo Guimarães</name>
       <email>ataxexe@backpackcloud.com</email>
       <url>https://www.backpackcloud.com</url>
       <organizationUrl>https://github.com/backpackcloud</organizationUrl>
@@ -74,10 +74,10 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
 
-    <quarkus-plugin.version>1.5.0.Final</quarkus-plugin.version>
+    <quarkus-plugin.version>1.5.1.Final</quarkus-plugin.version>
+    <quarkus.platform.version>1.5.1.Final</quarkus.platform.version>
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus.platform.version>1.5.0.Final</quarkus.platform.version>
 
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
