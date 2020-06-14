@@ -10,6 +10,15 @@ Fake-O-Matic is build with https://quarkus.io[Quarkus] and supports native compi
 `mvn package` command. If you wish to build a native binary, just activate the `native` profile
 (`mvn -P native package`).
 
+It's also possible to build Fake-O-Matic using https://github.com/openshift/source-to-image[source-to-image]:
+
+[source,shell script]
+----
+s2i build . quay.io/quarkus/ubi-quarkus-native-s2i:19.3.2-java11 backpackcloud/fakeomatic
+----
+
+Fake-O-Matic is also published at https://quay.io/backpackcloud/fakeomatic[Quay.io]
+
 == How to Configure
 
 Fake-O-Matic expects you to define both data and template to generate the payloads. An optional seed can also be given
