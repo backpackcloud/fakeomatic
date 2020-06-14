@@ -24,7 +24,9 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Random;
 import java.util.UUID;
@@ -34,7 +36,13 @@ import java.util.UUID;
  *
  * @author Marcelo Guimarães
  */
+@RegisterForReflection
 public class UuidSample implements Sample {
+
+  @JsonCreator
+  public UuidSample() {
+
+  }
 
   @Override
   public String get(Random random) {
