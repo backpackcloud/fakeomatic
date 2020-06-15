@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.infra;
 
 import io.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

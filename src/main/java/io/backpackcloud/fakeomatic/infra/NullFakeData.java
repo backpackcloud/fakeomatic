@@ -22,47 +22,32 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.infra;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
+public class NullFakeData implements FakeData {
 
-/**
- * A sample that collects other samples and combine them as a unique data.
- *
- * @author Marcelo Guimarães
- */
-@RegisterForReflection
-public class CompositeSample implements Sample {
-
-  private final FakeData     fakeData;
-  private final List<String> samples;
-  private final String       separator;
-
-  @JsonCreator
-  public CompositeSample(@JacksonInject("root") FakeData fakeData,
-                         @JsonProperty("samples") List<String> samples,
-                         @JsonProperty("separator") String separator) {
-    this.fakeData = fakeData;
-    this.samples = samples;
-    this.separator = Optional.ofNullable(separator).orElse(" ");
+  @Override
+  public Sample sample(String sampleName) {
+    throw new UnbelievableException("Sample '" + sampleName + "' not found");
   }
 
   @Override
-  public String get(Random random) {
-    return samples.stream()
-                  .map(this.fakeData::sample)
-                  .map(sample -> sample.get(random))
-                  .collect(Collectors.joining(this.separator));
+  public String randomFor(char placeholder) {
+    return String.valueOf(placeholder);
+  }
+
+  @Override
+  public String random(String sampleName) {
+    throw new UnbelievableException("Sample '" + sampleName + "' not found");
+  }
+
+  @Override
+  public int number(int min, int max) {
+    throw new UnbelievableException();
   }
 
 }

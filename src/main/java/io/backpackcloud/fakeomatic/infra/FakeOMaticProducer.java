@@ -28,10 +28,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.backpackcloud.fakeomatic.impl.FakeOMatic;
-import io.backpackcloud.fakeomatic.impl.NullFakeData;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Sample;
 import io.vertx.mutiny.core.Vertx;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -69,23 +68,27 @@ public class FakeOMaticProducer {
 
     String[] configLocations = config.configs().split("[,]");
 
-    FakeData fakeData = new NullFakeData();
+    FakeData parent = new NullFakeData();
+    // the composite sample needs access to the whole fake data and not the parent one
+    RootFakeData rootFakeData = new RootFakeData(parent);
 
-    std.addValue(FakeData.class, fakeData);
     std.addValue(Random.class, config.random());
     std.addValue(Vertx.class, vertx);
+    std.addValue("parent", parent);
+    std.addValue("root", rootFakeData);
     objectMapper.setInjectableValues(std);
 
     for (String config : configLocations) {
       if (DEFAULT_CONFIG.equals(config)) {
-        fakeData = createDefault(objectMapper);
+        parent = createDefault(objectMapper);
       } else {
-        fakeData = createFromExternal(objectMapper, config);
+        parent = createFromExternal(objectMapper, config);
       }
-      std.addValue(FakeData.class, fakeData);
+      std.addValue("parent", parent);
+      rootFakeData.delegate = parent;
     }
 
-    return fakeData;
+    return parent;
   }
 
   private FakeOMatic createDefault(ObjectMapper objectMapper) throws IOException {
@@ -94,6 +97,45 @@ public class FakeOMaticProducer {
 
   private FakeOMatic createFromExternal(ObjectMapper objectMapper, String config) throws IOException {
     return objectMapper.readValue(new FileInputStream(new File(config)), FakeOMatic.class);
+  }
+
+  class RootFakeData implements FakeData {
+
+    FakeData delegate;
+
+    RootFakeData(FakeData delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public Sample sample(String sampleName) {
+      return delegate.sample(sampleName);
+    }
+
+    @Override
+    public String randomFor(char placeholder) {
+      return delegate.randomFor(placeholder);
+    }
+
+    @Override
+    public String random(String sampleName) {
+      return delegate.random(sampleName);
+    }
+
+    @Override
+    public int number(int min, int max) {
+      return delegate.number(min, max);
+    }
+
+    @Override
+    public String expression(String expression) {
+      return delegate.expression(expression);
+    }
+
+    @Override
+    public String expressionFrom(String sampleName) {
+      return delegate.expressionFrom(sampleName);
+    }
   }
 
 }

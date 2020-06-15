@@ -1,0 +1,4 @@
+samples:
+  dummy:
+    type: chars
+    value: abc

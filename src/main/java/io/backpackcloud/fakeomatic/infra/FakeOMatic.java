@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.infra;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -41,22 +41,22 @@ import java.util.Random;
 @TemplateData(target = FakeData.class)
 public class FakeOMatic implements FakeData {
 
-  private final Random random;
-
   private final FakeData parent;
+
+  private final Random random;
 
   private final Map<String, Sample> samples;
   private final Map<String, String> placeholders;
 
   @JsonCreator
   public FakeOMatic(@JacksonInject Random random,
-                    @JacksonInject FakeData parent,
+                    @JacksonInject("parent") FakeData parent,
                     @JsonProperty("samples") Map<String, Sample> samples,
                     @JsonProperty("placeholders") Map<String, String> placeholders) {
     this.random = random;
+    this.parent = parent;
     this.samples = Optional.ofNullable(samples).orElseGet(Collections::emptyMap);
     this.placeholders = Optional.ofNullable(placeholders).orElseGet(Collections::emptyMap);
-    this.parent = parent;
   }
 
   @Override

@@ -22,32 +22,33 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.infra;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
-import io.backpackcloud.fakeomatic.spi.Sample;
+import io.vertx.mutiny.core.Vertx;
+import org.junit.jupiter.api.Test;
 
-public class NullFakeData implements FakeData {
+import java.io.IOException;
+import java.util.Random;
 
-  @Override
-  public Sample sample(String sampleName) {
-    throw new UnbelievableException("Sample '" + sampleName + "' not found");
-  }
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-  @Override
-  public String randomFor(char placeholder) {
-    return String.valueOf(placeholder);
-  }
+public class FakeOMaticProducerTest {
 
-  @Override
-  public String random(String sampleName) {
-    throw new UnbelievableException("Sample '" + sampleName + "' not found");
-  }
+  @Test
+  public void testCompositeSampleCreation() throws IOException {
+    Random random = new Random();
+    Config config = mock(Config.class);
+    when(config.configs()).thenReturn("src/test/java/io/backpackcloud/fakeomatic/infra/test.yaml,fakeomatic");
+    when(config.random()).thenReturn(random);
 
-  @Override
-  public int number(int min, int max) {
-    throw new UnbelievableException();
+    FakeOMaticProducer producer = new FakeOMaticProducer(config, new Vertx(mock(io.vertx.core.Vertx.class)));
+
+    FakeData fakeData = producer.produce();
+
+    fakeData.random("char");
   }
 
 }

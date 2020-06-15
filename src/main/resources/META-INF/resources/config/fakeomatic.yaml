@@ -42,8 +42,10 @@ samples:
     type: chars
     value: "0123456789"
   char:
-    type: chars
-    value: "abcdefghijklmnopqrstuvwxyz0123456789"
+    type: composite
+    samples:
+      - letter
+      - digit
   hex_digit:
     type: chars
     value: "0123456789abcdef"
