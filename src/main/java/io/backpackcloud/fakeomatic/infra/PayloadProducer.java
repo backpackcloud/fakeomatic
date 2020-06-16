@@ -29,6 +29,7 @@ import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
 import io.quarkus.qute.Engine;
+import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -79,6 +80,11 @@ public class PayloadProducer {
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }
+  }
+
+  @TemplateExtension
+  public static String env(String name) {
+    return System.getenv(name);
   }
 
 }
