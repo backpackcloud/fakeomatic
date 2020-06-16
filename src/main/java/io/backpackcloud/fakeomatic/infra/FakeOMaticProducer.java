@@ -108,6 +108,11 @@ public class FakeOMaticProducer {
     }
 
     @Override
+    public Random random() {
+      return delegate.random();
+    }
+
+    @Override
     public Sample sample(String sampleName) {
       return delegate.sample(sampleName);
     }

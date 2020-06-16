@@ -64,6 +64,11 @@ public class FakeOMatic implements FakeData {
   }
 
   @Override
+  public Random random() {
+    return random;
+  }
+
+  @Override
   public Sample sample(String sampleName) {
     return Optional.ofNullable(samples.get(sampleName))
                    .orElseGet(() -> parent.sample(sampleName));
@@ -79,16 +84,6 @@ public class FakeOMatic implements FakeData {
     return Optional.ofNullable(this.placeholders.get(String.valueOf(placeholder)))
                    .map(this::random)
                    .orElseGet(() -> this.parent.randomFor(placeholder));
-  }
-
-  @Override
-  public int number(int min, int max) {
-    return min + random.nextInt((max + 1) - min);
-  }
-
-  @Override
-  public long number(long min, long max) {
-    return min + (long) (random.nextDouble() * ((max + 1) - min));
   }
 
 }

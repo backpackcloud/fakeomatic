@@ -150,9 +150,9 @@ Gets a random data produced by replacing each placeholder by a random sample ass
 
 For more methods, check out the `FakeData` interface.
 
-=== Template Extensions
+=== Utilities
 
-You can use a couple of extensions for the template:
+You can use a couple of utilities for the template:
 
 today(format)::
 Gets the today date in the specified format as defined in the

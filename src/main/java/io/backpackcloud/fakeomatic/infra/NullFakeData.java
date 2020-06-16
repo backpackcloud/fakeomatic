@@ -28,6 +28,8 @@ import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 
+import java.util.Random;
+
 public class NullFakeData implements FakeData {
 
   @Override
@@ -46,12 +48,8 @@ public class NullFakeData implements FakeData {
   }
 
   @Override
-  public int number(int min, int max) {
+  public Random random() {
     throw new UnbelievableException();
   }
 
-  @Override
-  public long number(long min, long max) {
-    throw new UnbelievableException();
-  }
 }

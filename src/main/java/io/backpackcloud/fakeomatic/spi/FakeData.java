@@ -27,6 +27,7 @@ package io.backpackcloud.fakeomatic.spi;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Defines a component that can produce fake data.
@@ -37,6 +38,13 @@ import java.util.Date;
  * @see Sample
  */
 public interface FakeData {
+
+  /**
+   * Gets the random object being used by this FakeData.
+   *
+   * @return the random object.
+   */
+  Random random();
 
   /**
    * Returns the Sample data associated with the given name.
@@ -69,7 +77,9 @@ public interface FakeData {
    * @param max the maximum value
    * @return a random number.
    */
-  int number(int min, int max);
+  default int number(int min, int max) {
+    return min + random().nextInt((max + 1) - min);
+  }
 
   /**
    * Returns a long that is at least the {@code min} and less than the {@code max}.
@@ -78,7 +88,9 @@ public interface FakeData {
    * @param max the maximum value (excluded)
    * @return a random number.
    */
-  long number(long min, long max);
+  default long number(long min, long max) {
+    return min + (long) (random().nextDouble() * ((max + 1) - min));
+  }
 
   /**
    * Generates a random expression looking for placeholders in the given expression.
