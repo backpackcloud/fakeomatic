@@ -59,6 +59,10 @@ public class FakeOMatic implements FakeData {
     this.placeholders = Optional.ofNullable(placeholders).orElseGet(Collections::emptyMap);
   }
 
+  public FakeOMatic(Random random) {
+    this(random, new NullFakeData(), null, null);
+  }
+
   @Override
   public Sample sample(String sampleName) {
     return Optional.ofNullable(samples.get(sampleName))
@@ -79,7 +83,12 @@ public class FakeOMatic implements FakeData {
 
   @Override
   public int number(int min, int max) {
-    return min + random.nextInt(max - min);
+    return min + random.nextInt((max + 1) - min);
+  }
+
+  @Override
+  public long number(long min, long max) {
+    return min + (long) (random.nextDouble() * ((max + 1) - min));
   }
 
 }

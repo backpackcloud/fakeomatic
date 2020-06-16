@@ -59,13 +59,22 @@ public interface FakeData {
   String random(String sampleName);
 
   /**
-   * Returns a number that is at least the {@code min} and less than the {@code max}.
+   * Returns a number that is at least the {@code min} and at max the {@code max}.
+   *
+   * @param min the minimum value
+   * @param max the maximum value
+   * @return a random number.
+   */
+  int number(int min, int max);
+
+  /**
+   * Returns a long that is at least the {@code min} and less than the {@code max}.
    *
    * @param min the minimum value
    * @param max the maximum value (excluded)
    * @return a random number.
    */
-  int number(int min, int max);
+  long number(long min, long max);
 
   /**
    * Generates a random expression looking for placeholders in the given expression.

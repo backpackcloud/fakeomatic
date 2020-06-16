@@ -136,6 +136,12 @@ public class FakeOMaticProducer {
     public String expressionFrom(String sampleName) {
       return delegate.expressionFrom(sampleName);
     }
+
+    @Override
+    public long number(long min, long max) {
+      return delegate.number(min, max);
+    }
+
   }
 
 }

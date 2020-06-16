@@ -150,6 +150,18 @@ Gets a random data produced by replacing each placeholder by a random sample ass
 
 For more methods, check out the `FakeData` interface.
 
+=== Template Extensions
+
+You can use a couple of extensions for the template:
+
+today(format)::
+Gets the today date in the specified format as defined in the
+https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html[SimpleDateFormat]
+documentation.
+
+env(name)::
+Gets the named environment variable.
+
 === Configuration Properties
 
 The following properties can be configured as a JVM argument (prefix `-D`) or an environment variable (with upper cases

@@ -24,34 +24,45 @@
 
 package io.backpackcloud.fakeomatic.infra;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.FakeData;
-import io.backpackcloud.fakeomatic.spi.Sample;
+import org.junit.jupiter.api.Test;
 
-public class NullFakeData implements FakeData {
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
-  @Override
-  public Sample sample(String sampleName) {
-    throw new UnbelievableException("Sample '" + sampleName + "' not found");
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class FakeOMaticTest {
+
+  @Test
+  public void testNumberGeneration() {
+    FakeOMatic   fake    = new FakeOMatic(new Random());
+    Set<Integer> numbers = new HashSet<>();
+
+    for (int i = 0; i < 10000; i++) {
+      int number = fake.number(1, 50);
+      assertTrue(number >= 1);
+      assertTrue(number <= 50);
+      numbers.add(number);
+    }
+
+    assertEquals(50, numbers.size());
   }
 
-  @Override
-  public String randomFor(char placeholder) {
-    return String.valueOf(placeholder);
+  @Test
+  public void testLongNumberGeneration() {
+    FakeOMatic   fake    = new FakeOMatic(new Random());
+    Set<Long> numbers = new HashSet<>();
+
+    for (int i = 0; i < 10000; i++) {
+      long number = fake.number(1L, 50L);
+      assertTrue(number >= 1L);
+      assertTrue(number <= 50L);
+      numbers.add(number);
+    }
+
+    assertEquals(50L, numbers.size());
   }
 
-  @Override
-  public String random(String sampleName) {
-    throw new UnbelievableException("Sample '" + sampleName + "' not found");
-  }
-
-  @Override
-  public int number(int min, int max) {
-    throw new UnbelievableException();
-  }
-
-  @Override
-  public long number(long min, long max) {
-    throw new UnbelievableException();
-  }
 }

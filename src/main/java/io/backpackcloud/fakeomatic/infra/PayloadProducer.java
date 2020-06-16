@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @ApplicationScoped
 public class PayloadProducer {
@@ -85,6 +88,12 @@ public class PayloadProducer {
   @TemplateExtension
   public static String env(String name) {
     return System.getenv(name);
+  }
+
+  @TemplateExtension
+  public static String today(String format) {
+    DateFormat dateFormat = new SimpleDateFormat(format);
+    return dateFormat.format(new Date());
   }
 
 }
