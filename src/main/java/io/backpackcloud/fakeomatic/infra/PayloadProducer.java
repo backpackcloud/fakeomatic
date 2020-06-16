@@ -24,12 +24,11 @@
 
 package io.backpackcloud.fakeomatic.infra;
 
-import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
 import io.quarkus.qute.Engine;
-import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -38,9 +37,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @ApplicationScoped
 public class PayloadProducer {
@@ -83,17 +79,6 @@ public class PayloadProducer {
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }
-  }
-
-  @TemplateExtension
-  public static String env(String name) {
-    return System.getenv(name);
-  }
-
-  @TemplateExtension
-  public static String today(String format) {
-    DateFormat dateFormat = new SimpleDateFormat(format);
-    return dateFormat.format(new Date());
   }
 
 }

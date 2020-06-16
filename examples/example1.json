@@ -1,5 +1,6 @@
 {
   "id": "{random('uuid')}",
   "message": "{random('cause')}",
-  "device": "{expression('%%-#####')}"
+  "device": "{expression('%%-#####')}",
+  "when": "{today('yyyy-MM-dd HH.mm.ss Z')}"
 }

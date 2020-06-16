@@ -24,6 +24,10 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Defines a component that can produce fake data.
  * <p>
@@ -101,6 +105,15 @@ public interface FakeData {
    */
   default String expressionFrom(String sampleName) {
     return expression(random(sampleName));
+  }
+
+  default String env(String name) {
+    return System.getenv(name);
+  }
+
+  default String today(String format) {
+    DateFormat dateFormat = new SimpleDateFormat(format);
+    return dateFormat.format(new Date());
   }
 
 }
