@@ -38,9 +38,9 @@ import java.nio.file.Paths;
 
 public class TemplateProducer {
 
-  private final Config config;
+  private final Config.TemplateConfig config;
 
-  public TemplateProducer(Config config) {
+  public TemplateProducer(Config.TemplateConfig config) {
     this.config = config;
   }
 
@@ -50,9 +50,9 @@ public class TemplateProducer {
     try {
       Engine templateEngine = Engine.builder().addDefaults().build();
       // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.template().path()));
+      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
       // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.template().charset()));
+      String content = new String(bytes, Charset.forName(config.charset()));
 
       Template template = templateEngine.parse(content);
       return template;

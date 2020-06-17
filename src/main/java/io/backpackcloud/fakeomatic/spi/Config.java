@@ -48,9 +48,13 @@ public interface Config {
      */
     int concurrency();
 
+    boolean trustAllCertificates();
+
   }
 
   interface GeneratorConfig {
+
+    int buffer();
 
     /**
      * @return The number of generated payloads.

@@ -41,13 +41,13 @@ import java.nio.file.Paths;
 @ApplicationScoped
 public class PayloadProducer {
 
-  private final Config config;
+  private final Config.TemplateConfig config;
 
   private final FakeData fakeData;
 
   private final Engine templateEngine;
 
-  public PayloadProducer(Config config, FakeData fakeData, Engine templateEngine) {
+  public PayloadProducer(Config.TemplateConfig config, FakeData fakeData, Engine templateEngine) {
     this.config = config;
     this.fakeData = fakeData;
     this.templateEngine = templateEngine;
@@ -57,9 +57,9 @@ public class PayloadProducer {
   public PayloadGenerator produce() {
     try {
       // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.template().path()));
+      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
       // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.template().charset()));
+      String content = new String(bytes, Charset.forName(config.charset()));
 
       TemplateInstance template = templateEngine
           .parse(content)
@@ -68,7 +68,7 @@ public class PayloadProducer {
       return new PayloadGenerator() {
         @Override
         public String contentType() {
-          return config.template().type();
+          return config.type();
         }
 
         @Override

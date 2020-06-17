@@ -24,8 +24,6 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import org.eclipse.microprofile.metrics.MetricUnits;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.HeaderParam;
@@ -50,10 +48,6 @@ public interface Endpoint {
    */
   @POST
   @Path("/")
-  @Timed(
-      unit = MetricUnits.MILLISECONDS,
-      description = "Endpoint response time"
-  )
   CompletionStage<String> postPayload(@HeaderParam("Content-Type") String contentType, String payload);
 
 }

@@ -28,7 +28,6 @@ import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
 import io.quarkus.runtime.QuarkusApplication;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -45,7 +44,7 @@ public class Generator implements QuarkusApplication {
 
   private final Endpoint endpoint;
 
-  public Generator(Config config, PayloadGenerator generator, @RestClient Endpoint endpoint) {
+  public Generator(Config config, PayloadGenerator generator, Endpoint endpoint) {
     this.config = config;
     this.generator = generator;
     this.endpoint = endpoint;
@@ -54,13 +53,12 @@ public class Generator implements QuarkusApplication {
   @Override
   public int run(String... args) throws Exception {
     int total       = config.generator().total();
-    int concurrency = config.endpoint().concurrency();
+    int concurrency = config.endpoint().concurrency() + config.generator().buffer();
     int progressLog = Math.max(total / 100, 1);
 
     AtomicInteger count      = new AtomicInteger(0);
     AtomicInteger inProgress = new AtomicInteger(0);
 
-    // TODO add a buffer
     for (int i = 0; i < total; ) {
       if (inProgress.get() < concurrency) {
         i++;

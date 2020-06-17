@@ -19,16 +19,28 @@ public class GeneratorCommand implements Callable<Integer> {
   String endpointUrl;
 
   @CommandLine.Option(
+      names = {"-c", "--concurrency"},
+      description = "The maximum number of ongoing requests to the endpoint"
+  )
+  String concurrency;
+
+  @CommandLine.Option(
+      names = {"-i", "--insecure"},
+      description = "Trusts all certificates for the endpoint connection"
+  )
+  String trustAll;
+
+  @CommandLine.Option(
       names = {"-t", "--total"},
       description = "The total number of payloads to create"
   )
   String total;
 
   @CommandLine.Option(
-      names = {"-c", "--concurrency"},
-      description = "The maximum number of ongoing requests to the endpoint"
+      names = {"-b", "--buffer"},
+      description = "How many payloads should be kept on a buffer while waiting for ongoing requests"
   )
-  String concurrency;
+  String buffer;
 
   @CommandLine.Option(
       names = {"-f", "--configs"},
@@ -64,10 +76,14 @@ public class GeneratorCommand implements Callable<Integer> {
   public Integer call() {
 
     setPropertyIfNotNull("endpoint.url", endpointUrl);
-    setPropertyIfNotNull("generator.total", total);
     setPropertyIfNotNull("endpoint.concurrency", concurrency);
+    setPropertyIfNotNull("endpoint.trustAll", trustAll);
+
+    setPropertyIfNotNull("generator.total", total);
+    setPropertyIfNotNull("generator.buffer", buffer);
     setPropertyIfNotNull("generator.configs", configs);
     setPropertyIfNotNull("generator.seed", seed);
+
     setPropertyIfNotNull("template.path", templatePath);
     setPropertyIfNotNull("template.type", templateType);
     setPropertyIfNotNull("template.charset", templateEncode);

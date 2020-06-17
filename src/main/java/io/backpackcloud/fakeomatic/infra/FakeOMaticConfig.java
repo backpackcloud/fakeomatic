@@ -28,6 +28,7 @@ import io.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import java.util.Random;
 
 import static io.backpackcloud.fakeomatic.infra.FakeOMaticProducer.DEFAULT_CONFIG;
@@ -38,17 +39,23 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "endpoint.url", defaultValue = "http://localhost:8080")
   String endpointUrl;
 
-  @ConfigProperty(name = "generator.total", defaultValue = "10")
-  int total;
-
   @ConfigProperty(name = "endpoint.concurrency", defaultValue = "5")
   int concurrency;
+
+  @ConfigProperty(name = "endpoint.trustAll", defaultValue = "false")
+  boolean trustAllCertificates;
+
+  @ConfigProperty(name = "generator.total", defaultValue = "10")
+  int total;
 
   @ConfigProperty(name = "generator.configs", defaultValue = DEFAULT_CONFIG)
   String configs;
 
   @ConfigProperty(name = "generator.seed", defaultValue = "")
   Random random;
+
+  @ConfigProperty(name = "generator.buffer", defaultValue = "10")
+  int buffer;
 
   @ConfigProperty(name = "template.path", defaultValue = "./payload.json")
   String templatePath;
@@ -59,6 +66,7 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "template.charset", defaultValue = "UTF-8")
   String templateCharset;
 
+  @Produces
   @Override
   public EndpointConfig endpoint() {
     return new EndpointConfig() {
@@ -71,12 +79,24 @@ public class FakeOMaticConfig implements Config {
       public int concurrency() {
         return concurrency;
       }
+
+      @Override
+      public boolean trustAllCertificates() {
+        return trustAllCertificates;
+      }
     };
   }
 
+  @Produces
   @Override
   public GeneratorConfig generator() {
     return new GeneratorConfig() {
+
+      @Override
+      public int buffer() {
+        return buffer;
+      }
+
       @Override
       public int total() {
         return total;
@@ -94,6 +114,7 @@ public class FakeOMaticConfig implements Config {
     };
   }
 
+  @Produces
   @Override
   public TemplateConfig template() {
     return new TemplateConfig() {

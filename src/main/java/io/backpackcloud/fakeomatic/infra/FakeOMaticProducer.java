@@ -48,11 +48,11 @@ public class FakeOMaticProducer {
 
   public static final String DEFAULT_CONFIG = "fakeomatic";
 
-  private final Config config;
+  private final Config.GeneratorConfig config;
 
   private final Vertx vertx;
 
-  public FakeOMaticProducer(Config config, Vertx vertx) {
+  public FakeOMaticProducer(Config.GeneratorConfig config, Vertx vertx) {
     this.config = config;
     this.vertx = vertx;
   }
@@ -70,13 +70,13 @@ public class FakeOMaticProducer {
     // the composite sample needs access to the whole fake data and not the parent one
     RootFakeData rootFakeData = new RootFakeData(parent);
 
-    std.addValue(Random.class, config.generator().random());
+    std.addValue(Random.class, config.random());
     std.addValue(Vertx.class, vertx);
     std.addValue("parent", parent);
     std.addValue("root", rootFakeData);
     objectMapper.setInjectableValues(std);
 
-    for (String config : config.generator().configs()) {
+    for (String config : config.configs()) {
       if (DEFAULT_CONFIG.equals(config)) {
         parent = createDefault(objectMapper);
       } else {
