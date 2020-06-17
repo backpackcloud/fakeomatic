@@ -44,7 +44,7 @@ public class FakeOMaticProducerTest extends BaseTest {
     when(generatorConfig.configs()).thenReturn(new String[]{"src/test/java/io/backpackcloud/fakeomatic/infra/test.yaml", "fakeomatic"});
     when(generatorConfig.random()).thenReturn(random);
 
-    FakeOMaticProducer producer = new FakeOMaticProducer(config, new Vertx(mock(io.vertx.core.Vertx.class)));
+    FakeOMaticProducer producer = new FakeOMaticProducer(generatorConfig, new Vertx(mock(io.vertx.core.Vertx.class)));
 
     FakeData fakeData = producer.produce();
 
