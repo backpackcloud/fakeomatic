@@ -66,19 +66,17 @@ public class FakeOMaticProducer {
 
     objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-    String[] configLocations = config.configs().split("[,]");
-
     FakeData parent = new NullFakeData();
     // the composite sample needs access to the whole fake data and not the parent one
     RootFakeData rootFakeData = new RootFakeData(parent);
 
-    std.addValue(Random.class, config.random());
+    std.addValue(Random.class, config.generator().random());
     std.addValue(Vertx.class, vertx);
     std.addValue("parent", parent);
     std.addValue("root", rootFakeData);
     objectMapper.setInjectableValues(std);
 
-    for (String config : configLocations) {
+    for (String config : config.generator().configs()) {
       if (DEFAULT_CONFIG.equals(config)) {
         parent = createDefault(objectMapper);
       } else {

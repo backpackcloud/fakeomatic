@@ -53,18 +53,21 @@ public class Generator implements QuarkusApplication {
 
   @Override
   public int run(String... args) throws Exception {
-    int progressLog = Math.max(config.total() / 100, 1);
+    int total       = config.generator().total();
+    int concurrency = config.endpoint().concurrency();
+    int progressLog = Math.max(total / 100, 1);
 
     AtomicInteger count      = new AtomicInteger(0);
     AtomicInteger inProgress = new AtomicInteger(0);
+
     // TODO add a buffer
-    for (int i = 0; i < config.total(); ) {
-      if (inProgress.get() < config.concurrency()) {
+    for (int i = 0; i < total; ) {
+      if (inProgress.get() < concurrency) {
         i++;
         inProgress.incrementAndGet();
 
         if (i % progressLog == 0) {
-          LOGGER.infof("Generating payload %d of %d", i, config.total());
+          LOGGER.infof("Generating payload %d of %d", i, total);
         }
 
         endpoint.postPayload(generator.contentType(), generator.generate())
@@ -74,8 +77,8 @@ public class Generator implements QuarkusApplication {
       }
     }
 
-    while (count.get() < config.total()) {
-      LOGGER.infof("Waiting for (%d) ongoing requests to finish...", (config.total() - count.get()));
+    while (count.get() < total) {
+      LOGGER.infof("Waiting for (%d) ongoing requests to finish...", (total - count.get()));
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {

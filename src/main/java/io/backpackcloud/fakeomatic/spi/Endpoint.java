@@ -38,7 +38,7 @@ import java.util.concurrent.CompletionStage;
  *
  * @author Marcelo Guimarães
  */
-@RegisterRestClient
+@RegisterRestClient(configKey = "endpoint")
 public interface Endpoint {
 
   /**

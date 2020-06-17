@@ -57,46 +57,61 @@ public class FakeOMaticConfig implements Config {
   String templateType;
 
   @ConfigProperty(name = "template.charset", defaultValue = "UTF-8")
-  String charset;
+  String templateCharset;
 
   @Override
-  public String endpointUrl() {
-    return endpointUrl;
+  public EndpointConfig endpoint() {
+    return new EndpointConfig() {
+      @Override
+      public String url() {
+        return endpointUrl;
+      }
+
+      @Override
+      public int concurrency() {
+        return concurrency;
+      }
+    };
   }
 
   @Override
-  public String configs() {
-    return configs;
+  public GeneratorConfig generator() {
+    return new GeneratorConfig() {
+      @Override
+      public int total() {
+        return total;
+      }
+
+      @Override
+      public Random random() {
+        return random;
+      }
+
+      @Override
+      public String[] configs() {
+        return configs.split("[,]");
+      }
+    };
   }
 
   @Override
-  public int total() {
-    return total;
-  }
+  public TemplateConfig template() {
+    return new TemplateConfig() {
+      @Override
+      public String path() {
+        return templatePath;
+      }
 
-  @Override
-  public int concurrency() {
-    return concurrency;
-  }
+      @Override
+      public String type() {
+        return templateType;
+      }
 
-  @Override
-  public Random random() {
-    return random;
-  }
-
-  @Override
-  public String templatePath() {
-    return templatePath;
-  }
-
-  @Override
-  public String templateType() {
-    return templateType;
-  }
-
-  @Override
-  public String charset() {
-    return charset;
+      @Override
+      public String charset() {
+        return templateCharset;
+      }
+    };
   }
 
 }

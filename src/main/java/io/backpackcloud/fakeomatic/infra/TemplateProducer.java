@@ -50,9 +50,9 @@ public class TemplateProducer {
     try {
       Engine templateEngine = Engine.builder().addDefaults().build();
       // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.templatePath()));
+      byte[] bytes = Files.readAllBytes(Paths.get(config.template().path()));
       // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.charset()));
+      String content = new String(bytes, Charset.forName(config.template().charset()));
 
       Template template = templateEngine.parse(content);
       return template;

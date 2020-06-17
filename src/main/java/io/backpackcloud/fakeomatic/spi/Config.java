@@ -33,42 +33,59 @@ import java.util.Random;
  */
 public interface Config {
 
-  String endpointUrl();
+  EndpointConfig endpoint();
 
-  /**
-   * @return The endpoint that will receive the generated payloads.
-   */
-  String configs();
+  GeneratorConfig generator();
 
-  /**
-   * @return The number of generated payloads.
-   */
-  int total();
+  TemplateConfig template();
 
-  /**
-   * @return The maximum number of concurrent requests to the endpoint.
-   */
-  int concurrency();
+  interface EndpointConfig {
 
-  /**
-   * @return The Random object to use.
-   */
-  Random random();
+    String url();
 
-  /**
-   * @return Where to locate the template for generating the payloads.
-   */
-  String templatePath();
+    /**
+     * @return The maximum number of concurrent requests to the endpoint.
+     */
+    int concurrency();
 
-  /**
-   * @return Which Content-Type to pass to the endpoint.
-   */
-  String templateType();
+  }
 
-  /**
-   * @return Which encode to use for loading the template file.
-   */
-  String charset();
+  interface GeneratorConfig {
 
+    /**
+     * @return The number of generated payloads.
+     */
+    int total();
+
+    /**
+     * @return The Random object to use.
+     */
+    Random random();
+
+    /**
+     * @return The endpoint that will receive the generated payloads.
+     */
+    String[] configs();
+
+  }
+
+  interface TemplateConfig {
+
+    /**
+     * @return Where to locate the template for generating the payloads.
+     */
+    String path();
+
+    /**
+     * @return Which Content-Type to pass to the endpoint.
+     */
+    String type();
+
+    /**
+     * @return Which encode to use for loading the template file.
+     */
+    String charset();
+
+  }
 
 }

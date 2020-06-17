@@ -24,7 +24,7 @@
 
 package io.backpackcloud.fakeomatic.infra;
 
-import io.backpackcloud.fakeomatic.spi.Config;
+import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.vertx.mutiny.core.Vertx;
 import org.junit.jupiter.api.Test;
@@ -35,14 +35,14 @@ import java.util.Random;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class FakeOMaticProducerTest {
+public class FakeOMaticProducerTest extends BaseTest {
 
   @Test
   public void testCompositeSampleCreation() throws IOException {
     Random random = new Random();
-    Config config = mock(Config.class);
-    when(config.configs()).thenReturn("src/test/java/io/backpackcloud/fakeomatic/infra/test.yaml,fakeomatic");
-    when(config.random()).thenReturn(random);
+
+    when(generatorConfig.configs()).thenReturn(new String[]{"src/test/java/io/backpackcloud/fakeomatic/infra/test.yaml", "fakeomatic"});
+    when(generatorConfig.random()).thenReturn(random);
 
     FakeOMaticProducer producer = new FakeOMaticProducer(config, new Vertx(mock(io.vertx.core.Vertx.class)));
 

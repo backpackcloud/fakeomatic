@@ -24,15 +24,16 @@
 
 package io.backpackcloud.fakeomatic;
 
-import io.backpackcloud.fakeomatic.process.Generator;
-import io.quarkus.runtime.Quarkus;
+import io.backpackcloud.fakeomatic.command.GeneratorCommand;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import picocli.CommandLine;
 
 @QuarkusMain
 public class Main {
 
   public static void main(String[] args) {
-    Quarkus.run(Generator.class, args);
+    int exitCode = new CommandLine(new GeneratorCommand()).execute(args);
+    System.exit(exitCode);
   }
 
 }
