@@ -24,26 +24,25 @@
 
 package io.backpackcloud.fakeomatic.spi.sample;
 
+import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
-import io.backpackcloud.spectaculous.Spec;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CompositeSampleTest {
+public class CompositeSampleTest extends BaseTest {
 
   FakeData fakeData;
   Sample   firstName;
   Sample   lastName;
-  Random   random = new Random();
 
   @BeforeEach
   public void init() {
@@ -59,16 +58,11 @@ public class CompositeSampleTest {
 
   @Test
   public void testSample() {
-    Spec.describe(CompositeSample.class)
+    CompositeSample sample = new CompositeSample(fakeData, Arrays.asList("first_name", "last_name"), " ");
+    assertEquals("Foo Bar", sample.get(random));
 
-        .because("The order of samples needs to be respected")
-
-        .given(new CompositeSample(fakeData, Arrays.asList("first_name", "last_name"), " "))
-        .expect("Foo Bar").from(sample -> sample.get(random))
-
-        .given(new CompositeSample(fakeData, Arrays.asList("last_name", "first_name"), " "))
-        .expect("Bar Foo").from(sample -> sample.get(random))
-    ;
+    sample = new CompositeSample(fakeData, Arrays.asList("last_name", "first_name"), " ");
+    assertEquals("Bar Foo", sample.get(random));
   }
 
 }

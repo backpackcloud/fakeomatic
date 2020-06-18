@@ -81,8 +81,6 @@
 
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
-
-    <spectaculous.version>0.2.0</spectaculous.version>
   </properties>
 
   <dependencyManagement>
@@ -171,12 +169,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>io.backpackcloud</groupId>
-      <artifactId>spectaculous</artifactId>
-      <version>${spectaculous.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

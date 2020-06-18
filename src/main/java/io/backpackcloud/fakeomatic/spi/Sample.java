@@ -31,6 +31,7 @@ import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
+import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import java.util.Random;
     @JsonSubTypes.Type(value = CompositeSample.class, name = "composite"),
     @JsonSubTypes.Type(value = ListSample.class,      name = "list"),
     @JsonSubTypes.Type(value = UuidSample.class,      name = "uuid"),
+    @JsonSubTypes.Type(value = WeightedSample.class,  name = "weight"),
 })
 @FunctionalInterface
 public interface Sample {

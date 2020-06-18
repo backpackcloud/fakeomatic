@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.infra;
 
+import io.backpackcloud.fakeomatic.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -33,19 +34,19 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FakeOMaticTest {
+public class FakeOMaticTest extends BaseTest {
 
   @Test
   public void testNumberGeneration() {
     FakeOMatic   fake    = new FakeOMatic(new Random());
     Set<Integer> numbers = new HashSet<>();
 
-    for (int i = 0; i < 10000; i++) {
+    times(100000, () -> {
       int number = fake.number(1, 50);
       assertTrue(number >= 1);
       assertTrue(number <= 50);
       numbers.add(number);
-    }
+    });
 
     assertEquals(50, numbers.size());
   }
@@ -55,14 +56,14 @@ public class FakeOMaticTest {
     FakeOMatic   fake    = new FakeOMatic(new Random());
     Set<Long> numbers = new HashSet<>();
 
-    for (int i = 0; i < 10000; i++) {
+    times(100000, () -> {
       long number = fake.number(1L, 50L);
       assertTrue(number >= 1L);
       assertTrue(number <= 50L);
       numbers.add(number);
-    }
+    });
 
-    assertEquals(50L, numbers.size());
+    assertEquals(50, numbers.size());
   }
 
 }
