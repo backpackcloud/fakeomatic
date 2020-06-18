@@ -48,7 +48,7 @@ public interface Config {
      */
     int concurrency();
 
-    boolean trustAllCertificates();
+    boolean insecure();
 
   }
 

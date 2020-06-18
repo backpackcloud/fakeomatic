@@ -67,8 +67,8 @@ public class GeneratorCommand implements Callable<Integer> {
   String templateType;
 
   @CommandLine.Option(
-      names = {"-d", "--template-encode"},
-      description = "Which encode to use for parsing the template file"
+      names = {"-d", "--template-charset"},
+      description = "Which charset to use for parsing the template file"
   )
   String templateEncode;
 

@@ -42,8 +42,8 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "endpoint.concurrency", defaultValue = "5")
   int concurrency;
 
-  @ConfigProperty(name = "endpoint.trustAll", defaultValue = "false")
-  boolean trustAllCertificates;
+  @ConfigProperty(name = "endpoint.insecure", defaultValue = "false")
+  boolean insecure;
 
   @ConfigProperty(name = "generator.total", defaultValue = "10")
   int total;
@@ -81,8 +81,8 @@ public class FakeOMaticConfig implements Config {
       }
 
       @Override
-      public boolean trustAllCertificates() {
-        return trustAllCertificates;
+      public boolean insecure() {
+        return insecure;
       }
     };
   }

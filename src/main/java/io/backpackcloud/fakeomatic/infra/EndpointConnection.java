@@ -26,7 +26,7 @@ public class EndpointConnection implements Endpoint {
         .setDefaultHost(this.url.getHost())
         .setDefaultPort(this.url.getPort() == -1 ? this.url.getDefaultPort() : this.url.getPort())
         .setSsl("https".equals(this.url.getProtocol()))
-        .setTrustAll(config.trustAllCertificates())
+        .setTrustAll(config.insecure())
     );
   }
 
