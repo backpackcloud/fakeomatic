@@ -28,7 +28,7 @@ public class GeneratorCommand implements Callable<Integer> {
       names = {"-i", "--insecure"},
       description = "Trusts all certificates for the endpoint connection"
   )
-  String trustAll;
+  String insecure;
 
   @CommandLine.Option(
       names = {"-t", "--total"},
@@ -77,7 +77,7 @@ public class GeneratorCommand implements Callable<Integer> {
 
     setPropertyIfNotNull("endpoint.url", endpointUrl);
     setPropertyIfNotNull("endpoint.concurrency", concurrency);
-    setPropertyIfNotNull("endpoint.trustAll", trustAll);
+    setPropertyIfNotNull("endpoint.insecure", insecure);
 
     setPropertyIfNotNull("generator.total", total);
     setPropertyIfNotNull("generator.buffer", buffer);
