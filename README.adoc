@@ -112,6 +112,29 @@ samples:
       - last_name
 ----
 
+weight::
+This sample allows you to define weights to each list item. It takes an Array param `values` with a `weight` and a
+`value` field.
+[source,yaml]
+----
+samples:
+  color:
+    type: weight
+    values:
+      - weight: 30
+        value: blue
+      - weight: 45
+        value: yellow
+      - weight: 10
+        value: red
+      - weight: 20
+        value: brown
+      - weight: 25
+        value: cyan
+----
+
+Notice that the sum of the weights don't necessary need to be `100`.
+
 ==== Placeholders
 
 The placeholders are a single character that can be associated with any of the configured sample. Bellow is an example
