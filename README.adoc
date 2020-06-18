@@ -133,7 +133,8 @@ samples:
         value: cyan
 ----
 
-Notice that the sum of the weights don't necessary need to be `100`.
+Notice that the sum of the weights don't necessary need to be `100`, but using a total weight of `100` helps to see the
+weights as percentage.
 
 ==== Placeholders
 
