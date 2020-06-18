@@ -32,7 +32,7 @@ public class EndpointConnection implements Endpoint {
 
   @Override
   public CompletionStage<String> postPayload(String contentType, String payload) {
-    return CompletableFuture.supplyAsync(() -> client.post(url.getPath())
+    return CompletableFuture.supplyAsync(() -> client.post(url.toString())
                                                      .putHeader("Content-Type", contentType)
                                                      .sendBuffer(io.vertx.mutiny.core.buffer.Buffer.buffer(payload))
                                                      .onItem()
