@@ -48,14 +48,14 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "generator.total", defaultValue = "10")
   int total;
 
+  @ConfigProperty(name = "generator.buffer", defaultValue = "10")
+  int buffer;
+
   @ConfigProperty(name = "generator.configs", defaultValue = DEFAULT_CONFIG)
   String configs;
 
   @ConfigProperty(name = "generator.seed", defaultValue = "")
   Random random;
-
-  @ConfigProperty(name = "generator.buffer", defaultValue = "10")
-  int buffer;
 
   @ConfigProperty(name = "template.path", defaultValue = "./payload.json")
   String templatePath;

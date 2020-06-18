@@ -68,7 +68,10 @@ public interface FakeData {
    * @param sampleName the name of the Sample.
    * @return a random data.
    */
-  String random(String sampleName);
+  default String random(String sampleName) {
+    return sample(sampleName).get(random());
+  }
+
 
   /**
    * Returns a number that is at least the {@code min} and at max the {@code max}.

@@ -75,11 +75,6 @@ public class FakeOMatic implements FakeData {
   }
 
   @Override
-  public String random(String sampleName) {
-    return sample(sampleName).get(this.random);
-  }
-
-  @Override
   public String randomFor(char placeholder) {
     return Optional.ofNullable(this.placeholders.get(String.valueOf(placeholder)))
                    .map(this::random)

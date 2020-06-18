@@ -43,11 +43,6 @@ public class NullFakeData implements FakeData {
   }
 
   @Override
-  public String random(String sampleName) {
-    throw new UnbelievableException("Sample '" + sampleName + "' not found");
-  }
-
-  @Override
   public Random random() {
     throw new UnbelievableException();
   }

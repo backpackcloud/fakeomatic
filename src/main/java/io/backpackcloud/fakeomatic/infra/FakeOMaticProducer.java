@@ -68,7 +68,7 @@ public class FakeOMaticProducer {
 
     FakeData parent = new NullFakeData();
     // the composite sample needs access to the whole fake data and not the parent one
-    RootFakeData rootFakeData = new RootFakeData(parent);
+    RootFakeData rootFakeData = new RootFakeData();
 
     std.addValue(Random.class, config.random());
     std.addValue(Vertx.class, vertx);
@@ -83,8 +83,9 @@ public class FakeOMaticProducer {
         parent = createFromExternal(objectMapper, config);
       }
       std.addValue("parent", parent);
-      rootFakeData.delegate = parent;
     }
+
+    rootFakeData.delegate = parent;
 
     return parent;
   }
@@ -100,10 +101,6 @@ public class FakeOMaticProducer {
   class RootFakeData implements FakeData {
 
     FakeData delegate;
-
-    RootFakeData(FakeData delegate) {
-      this.delegate = delegate;
-    }
 
     @Override
     public Random random() {
