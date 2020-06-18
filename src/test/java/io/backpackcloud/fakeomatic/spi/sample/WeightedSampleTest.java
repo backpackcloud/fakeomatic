@@ -45,23 +45,33 @@ public class WeightedSampleTest extends BaseTest {
         new WeightedSample.WeightedValueDefinition(24, "meh"),
         new WeightedSample.WeightedValueDefinition(1, "baz")
     );
+
+    testSample(
+        new WeightedSample.WeightedValueDefinition(25, "foo"),
+        new WeightedSample.WeightedValueDefinition(40, "bar"),
+        new WeightedSample.WeightedValueDefinition(35, "meh"),
+        new WeightedSample.WeightedValueDefinition(55, "baz")
+    );
   }
 
   private void testSample(WeightedSample.WeightedValueDefinition... definitions) {
     WeightedSample       sample      = new WeightedSample(Arrays.asList(definitions));
     Map<String, Integer> occurrences = new HashMap<>();
     Random               random      = new Random();
-    int                  errorMargin = Math.max(1, (int) (sample.totalWeight() * 0.01));
     int                  total       = 1000000;
+    int                  errorMargin = 1;
 
     Arrays.stream(definitions).forEach(def -> occurrences.put(def.value(), 0));
 
     times(total, () -> occurrences.compute(sample.get(random), (s, integer) -> integer + 1));
 
-    Arrays.stream(definitions)
-          .forEach(def -> assertTrue((def.weight() - occurrences.get(def.value()) * 100 / total) <= errorMargin));
-
     assertEquals(total, (Integer) occurrences.values().stream().mapToInt(Integer::intValue).sum());
+
+    assertTrue(
+        Arrays.stream(definitions)
+              .map(def -> def.weight() - occurrences.get(def.value()) * sample.totalWeight() / total)
+              .allMatch(distance -> distance <= errorMargin)
+    );
   }
 
 }
