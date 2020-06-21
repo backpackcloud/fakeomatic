@@ -22,39 +22,21 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.backpackcloud.fakeomatic.BaseTest;
+import io.backpackcloud.fakeomatic.spi.FakeData;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Random;
+import java.io.IOException;
 
-/**
- * This sample can pick any item from a given list of objects. The object will be used in its
- * `string` form. Useful for defining a set of data that is meant to be read, like cities and names.
- *
- * @author Marcelo Guimarães
- */
-@RegisterForReflection
-public class ListSample<E> implements Sample<E> {
+public class FakeOMaticProducerTest extends BaseTest {
 
-  private final List<E> values;
+  @Test
+  public void testCompositeSampleCreation() throws IOException {
+    FakeData fakeData = createFakeData("test.yaml", "test2.yaml");
 
-  @JsonCreator
-  public ListSample(@JsonProperty("values") List<E> values) {
-    this.values = values;
-  }
-
-  public List<E> values() {
-    return values;
-  }
-
-  @Override
-  public E get(Random random) {
-    return values.get((random.nextInt(values.size())));
+    fakeData.random("foo");
   }
 
 }

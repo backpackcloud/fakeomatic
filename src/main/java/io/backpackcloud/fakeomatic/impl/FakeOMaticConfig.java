@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -31,7 +31,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import java.util.Random;
 
-import static io.backpackcloud.fakeomatic.infra.FakeOMaticProducer.DEFAULT_CONFIG;
+import static io.backpackcloud.fakeomatic.impl.FakeOMaticProducer.DEFAULT_CONFIG;
 
 @ApplicationScoped
 public class FakeOMaticConfig implements Config {

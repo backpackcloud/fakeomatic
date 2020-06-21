@@ -39,7 +39,7 @@ import java.util.Random;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class CharSample implements Sample {
+public class CharSample implements Sample<String> {
 
   private final String value;
 

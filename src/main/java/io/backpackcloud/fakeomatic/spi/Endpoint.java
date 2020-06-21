@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import io.vertx.mutiny.ext.web.client.HttpResponse;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.HeaderParam;
@@ -48,6 +49,6 @@ public interface Endpoint {
    */
   @POST
   @Path("/")
-  CompletionStage<String> postPayload(@HeaderParam("Content-Type") String contentType, String payload);
+  CompletionStage<HttpResponse> postPayload(@HeaderParam("Content-Type") String contentType, String payload);
 
 }

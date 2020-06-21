@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -32,7 +32,9 @@ import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -59,8 +61,15 @@ public class FakeOMatic implements FakeData {
     this.placeholders = Optional.ofNullable(placeholders).orElseGet(Collections::emptyMap);
   }
 
-  public FakeOMatic(Random random) {
-    this(random, new NullFakeData(), null, null);
+  public FakeOMatic(Random random, Map<String, Sample> samples, Map<String, String> placeholders) {
+    this(random, new NullFakeData(), samples, placeholders);
+  }
+
+  @Override
+  public List<Sample> samples() {
+    ArrayList<Sample> samples = new ArrayList<>(this.samples.values());
+    samples.addAll(parent.samples());
+    return samples;
   }
 
   @Override
@@ -78,6 +87,7 @@ public class FakeOMatic implements FakeData {
   public String randomFor(char placeholder) {
     return Optional.ofNullable(this.placeholders.get(String.valueOf(placeholder)))
                    .map(this::random)
+                   .map(Object::toString)
                    .orElseGet(() -> this.parent.randomFor(placeholder));
   }
 

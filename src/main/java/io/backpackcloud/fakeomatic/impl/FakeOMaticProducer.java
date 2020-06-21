@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.InjectableValues;
@@ -39,6 +39,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 @ApplicationScoped
@@ -123,11 +124,6 @@ public class FakeOMaticProducer {
     }
 
     @Override
-    public int number(int min, int max) {
-      return delegate.number(min, max);
-    }
-
-    @Override
     public String expression(String expression) {
       return delegate.expression(expression);
     }
@@ -138,10 +134,9 @@ public class FakeOMaticProducer {
     }
 
     @Override
-    public long number(long min, long max) {
-      return delegate.number(min, max);
+    public List<Sample> samples() {
+      return delegate.samples();
     }
-
   }
 
 }

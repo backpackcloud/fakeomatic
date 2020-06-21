@@ -37,7 +37,7 @@ import java.util.UUID;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class UuidSample implements Sample {
+public class UuidSample implements Sample<UUID> {
 
   @JsonCreator
   public UuidSample() {
@@ -45,8 +45,8 @@ public class UuidSample implements Sample {
   }
 
   @Override
-  public String get(Random random) {
-    return new UUID(random.nextLong(), random.nextLong()).toString();
+  public UUID get(Random random) {
+    return new UUID(random.nextLong(), random.nextLong());
   }
 
 }

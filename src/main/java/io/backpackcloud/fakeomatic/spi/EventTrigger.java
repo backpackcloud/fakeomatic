@@ -22,39 +22,10 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.spi;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+public interface EventTrigger {
 
-import java.util.List;
-import java.util.Random;
-
-/**
- * This sample can pick any item from a given list of objects. The object will be used in its
- * `string` form. Useful for defining a set of data that is meant to be read, like cities and names.
- *
- * @author Marcelo Guimarães
- */
-@RegisterForReflection
-public class ListSample<E> implements Sample<E> {
-
-  private final List<E> values;
-
-  @JsonCreator
-  public ListSample(@JsonProperty("values") List<E> values) {
-    this.values = values;
-  }
-
-  public List<E> values() {
-    return values;
-  }
-
-  @Override
-  public E get(Random random) {
-    return values.get((random.nextInt(values.size())));
-  }
+  void trigger(String eventName, Object eventObject);
 
 }

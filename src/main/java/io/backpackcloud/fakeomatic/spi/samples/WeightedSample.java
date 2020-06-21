@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2020 Marcelo Guimarães <ataxexe@backpackcloud.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package io.backpackcloud.fakeomatic.spi.samples;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -10,15 +34,17 @@ import java.util.List;
 import java.util.Random;
 
 @RegisterForReflection
-public class WeightedSample implements Sample {
+public class WeightedSample<E> implements Sample<E> {
 
-  private final List<WeightedValue> values;
+  private final List<WeightedValue>              values;
+  private final List<WeightedValueDefinition<E>> definitions;
 
   private final int totalWeight;
 
   @JsonCreator
-  public WeightedSample(@JsonProperty("values") List<WeightedValueDefinition> definitions) {
+  public WeightedSample(@JsonProperty("values") List<WeightedValueDefinition<E>> definitions) {
     this.values = new ArrayList<>(definitions.size());
+    this.definitions = definitions;
     int current = 0;
     for (WeightedValueDefinition definition : definitions) {
       this.values.add(new WeightedValue(current, definition));
@@ -31,25 +57,29 @@ public class WeightedSample implements Sample {
     return totalWeight;
   }
 
+  public List<WeightedValueDefinition<E>> definitions() {
+    return new ArrayList<>(definitions);
+  }
+
   @Override
-  public String get(Random random) {
+  public E get(Random random) {
     int position = random.nextInt(totalWeight);
-    return values.stream()
-                 .filter(weightedValue -> weightedValue.isSelected(position))
-                 .map(WeightedValue::value)
-                 .findFirst()
-                 .get();
+    return (E) values.stream()
+                     .filter(weightedValue -> weightedValue.isSelected(position))
+                     .map(WeightedValue::value)
+                     .findFirst()
+                     .get();
   }
 
   @RegisterForReflection
-  public static class WeightedValueDefinition {
+  public static class WeightedValueDefinition<E> {
 
     private final int weight;
 
-    private final String value;
+    private final E value;
 
     @JsonCreator
-    public WeightedValueDefinition(@JsonProperty("weight") int weight, @JsonProperty("value") String value) {
+    public WeightedValueDefinition(@JsonProperty("weight") int weight, @JsonProperty("value") E value) {
       this.weight = weight;
       this.value = value;
     }
@@ -58,7 +88,7 @@ public class WeightedSample implements Sample {
       return weight;
     }
 
-    public String value() {
+    public Object value() {
       return value;
     }
 
@@ -66,12 +96,12 @@ public class WeightedSample implements Sample {
 
   class WeightedValue {
 
-    private final String value;
-    private final int    minPosition;
-    private final int    maxPosition;
+    private final E   value;
+    private final int minPosition;
+    private final int maxPosition;
 
-    WeightedValue(int currentPosition, WeightedValueDefinition definition) {
-      this.value = definition.value();
+    WeightedValue(int currentPosition, WeightedValueDefinition<E> definition) {
+      this.value = (E) definition.value();
       this.minPosition = currentPosition;
       this.maxPosition = currentPosition + definition.weight();
     }
@@ -80,7 +110,7 @@ public class WeightedSample implements Sample {
       return position >= minPosition && position < maxPosition;
     }
 
-    public String value() {
+    public Object value() {
       return value;
     }
 

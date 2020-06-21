@@ -22,39 +22,42 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.spi;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.List;
-import java.util.Random;
-
-/**
- * This sample can pick any item from a given list of objects. The object will be used in its
- * `string` form. Useful for defining a set of data that is meant to be read, like cities and names.
- *
- * @author Marcelo Guimarães
- */
 @RegisterForReflection
-public class ListSample<E> implements Sample<E> {
+public class ResponseReceivedEvent {
 
-  private final List<E> values;
+  private final int index;
 
-  @JsonCreator
-  public ListSample(@JsonProperty("values") List<E> values) {
-    this.values = values;
+  private final int statusCode;
+
+  private final String statusMessage;
+
+  private final String responseBody;
+
+  public ResponseReceivedEvent(int index, int statusCode, String statusMessage, String responseBody) {
+    this.index = index;
+    this.statusCode = statusCode;
+    this.statusMessage = statusMessage;
+    this.responseBody = responseBody;
   }
 
-  public List<E> values() {
-    return values;
+  public int index() {
+    return index;
   }
 
-  @Override
-  public E get(Random random) {
-    return values.get((random.nextInt(values.size())));
+  public int statusCode() {
+    return statusCode;
+  }
+
+  public String statusMessage() {
+    return statusMessage;
+  }
+
+  public String responseBody() {
+    return responseBody;
   }
 
 }

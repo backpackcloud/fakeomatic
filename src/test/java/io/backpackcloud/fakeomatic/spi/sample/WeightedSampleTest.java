@@ -1,11 +1,37 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2020 Marcelo Guimarães <ataxexe@backpackcloud.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
+import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -14,63 +40,61 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WeightedSampleTest extends BaseTest {
 
-  @Test
-  public void test() {
-    testSample(
-        new WeightedSample.WeightedValueDefinition(50, "foo"),
-        new WeightedSample.WeightedValueDefinition(50, "bar")
-    );
+  FakeData fakeData;
 
-    testSample(
-        new WeightedSample.WeightedValueDefinition(20, "foo"),
-        new WeightedSample.WeightedValueDefinition(80, "bar")
-    );
-
-    testSample(
-        new WeightedSample.WeightedValueDefinition(15, "foo"),
-        new WeightedSample.WeightedValueDefinition(60, "bar"),
-        new WeightedSample.WeightedValueDefinition(25, "meh")
-    );
-
-    testSample(
-        new WeightedSample.WeightedValueDefinition(15, "foo"),
-        new WeightedSample.WeightedValueDefinition(60, "bar"),
-        new WeightedSample.WeightedValueDefinition(25, "meh"),
-        new WeightedSample.WeightedValueDefinition(0, "baz")
-    );
-
-    testSample(
-        new WeightedSample.WeightedValueDefinition(15, "foo"),
-        new WeightedSample.WeightedValueDefinition(60, "bar"),
-        new WeightedSample.WeightedValueDefinition(24, "meh"),
-        new WeightedSample.WeightedValueDefinition(1, "baz")
-    );
-
-    testSample(
-        new WeightedSample.WeightedValueDefinition(25, "foo"),
-        new WeightedSample.WeightedValueDefinition(40, "bar"),
-        new WeightedSample.WeightedValueDefinition(35, "meh"),
-        new WeightedSample.WeightedValueDefinition(55, "baz")
-    );
+  @BeforeEach
+  public void init() {
+    fakeData = createFakeData("weight.yaml");
   }
 
-  private void testSample(WeightedSample.WeightedValueDefinition... definitions) {
-    WeightedSample       sample      = new WeightedSample(Arrays.asList(definitions));
-    Map<String, Integer> occurrences = new HashMap<>();
-    Random               random      = new Random();
-    int                  total       = 1000000;
-    int                  errorMargin = 1;
+  @Test
+  public void testSample1() {
+    testSample("test1");
+  }
 
-    Arrays.stream(definitions).forEach(def -> occurrences.put(def.value(), 0));
+  @Test
+  public void testSample2() {
+    testSample("test2");
+  }
 
-    times(total, () -> occurrences.compute(sample.get(random), (s, integer) -> integer + 1));
+  @Test
+  public void testSample3() {
+    testSample("test3");
+  }
+
+  @Test
+  public void testSample4() {
+    testSample("test4");
+  }
+
+  @Test
+  public void testSample5() {
+    testSample("test5");
+  }
+
+  @Test
+  public void testSample6() {
+    testSample("test6");
+  }
+
+  private void testSample(String sampleName) {
+    WeightedSample                               sample      = (WeightedSample) fakeData.sample(sampleName);
+    List<WeightedSample.WeightedValueDefinition> definitions = sample.definitions();
+    Map<Object, Integer>                         occurrences = new HashMap<>();
+    Random                                       random      = new Random();
+    int                                          total       = 1000000;
+    int                                          errorMargin = 1;
+
+    definitions.stream().forEach(def -> occurrences.put(def.value(), 0));
+
+    times(total, () -> occurrences.compute(sample.get(random), (o, integer) -> integer + 1));
 
     assertEquals(total, (Integer) occurrences.values().stream().mapToInt(Integer::intValue).sum());
 
     assertTrue(
-        Arrays.stream(definitions)
-              .map(def -> def.weight() - occurrences.get(def.value()) * sample.totalWeight() / total)
-              .allMatch(distance -> distance <= errorMargin)
+        definitions.stream()
+                   .map(def -> def.weight() - occurrences.get(def.value()) * sample.totalWeight() / total)
+                   .allMatch(distance -> distance <= errorMargin)
     );
   }
 

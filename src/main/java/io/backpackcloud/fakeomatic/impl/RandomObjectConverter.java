@@ -22,33 +22,17 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
-import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
-import io.vertx.mutiny.core.Vertx;
-import org.junit.jupiter.api.Test;
+import org.eclipse.microprofile.config.spi.Converter;
 
-import java.io.IOException;
 import java.util.Random;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+public class RandomObjectConverter implements Converter<Random> {
 
-public class FakeOMaticProducerTest extends BaseTest {
-
-  @Test
-  public void testCompositeSampleCreation() throws IOException {
-    Random random = new Random();
-
-    when(generatorConfig.configs()).thenReturn(new String[]{"src/test/java/io/backpackcloud/fakeomatic/infra/test.yaml", "fakeomatic"});
-    when(generatorConfig.random()).thenReturn(random);
-
-    FakeOMaticProducer producer = new FakeOMaticProducer(generatorConfig, new Vertx(mock(io.vertx.core.Vertx.class)));
-
-    FakeData fakeData = producer.produce();
-
-    fakeData.random("char");
+  @Override
+  public Random convert(String value) {
+    return value.isEmpty() ? new Random() : new Random(Long.parseLong(value));
   }
 
 }

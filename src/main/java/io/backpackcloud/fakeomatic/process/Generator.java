@@ -26,15 +26,22 @@ package io.backpackcloud.fakeomatic.process;
 
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
+import io.backpackcloud.fakeomatic.spi.EventTrigger;
+import io.backpackcloud.fakeomatic.spi.Events;
+import io.backpackcloud.fakeomatic.spi.PayloadGeneratedEvent;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
+import io.backpackcloud.fakeomatic.spi.ResponseReceivedEvent;
 import io.quarkus.runtime.QuarkusApplication;
+import io.vertx.mutiny.ext.web.client.HttpResponse;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @ApplicationScoped
-public class Generator implements QuarkusApplication {
+public class Generator implements QuarkusApplication, Events {
 
   private static final Logger LOGGER = Logger.getLogger(Generator.class);
 
@@ -44,17 +51,21 @@ public class Generator implements QuarkusApplication {
 
   private final Endpoint endpoint;
 
-  public Generator(Config config, PayloadGenerator generator, Endpoint endpoint) {
+  private final EventTrigger eventTrigger;
+
+  public Generator(Config config, PayloadGenerator generator, Endpoint endpoint, EventTrigger eventTrigger) {
     this.config = config;
     this.generator = generator;
     this.endpoint = endpoint;
+    this.eventTrigger = eventTrigger;
   }
 
   @Override
-  public int run(String... args) throws Exception {
-    int total       = config.generator().total();
-    int concurrency = config.endpoint().concurrency() + config.generator().buffer();
-    int progressLog = Math.max(total / 100, 1);
+  public int run(String... args) {
+    int    total       = config.generator().total();
+    int    concurrency = config.endpoint().concurrency() + config.generator().buffer();
+    int    progressLog = Math.max(total / 100, 1);
+    String payload;
 
     AtomicInteger count      = new AtomicInteger(0);
     AtomicInteger inProgress = new AtomicInteger(0);
@@ -68,8 +79,11 @@ public class Generator implements QuarkusApplication {
           LOGGER.infof("Generating payload %d of %d", i, total);
         }
 
-        endpoint.postPayload(generator.contentType(), generator.generate())
-                .exceptionally(Throwable::getMessage)
+        payload = generator.generate();
+        eventTrigger.trigger(PAYLOAD_GENERATED, new PayloadGeneratedEvent(i, payload));
+        endpoint.postPayload(generator.contentType(), payload)
+                .exceptionally(logError(i))
+                .thenAccept(logResponse(i))
                 .thenRun(inProgress::decrementAndGet)
                 .thenRun(count::incrementAndGet);
       }
@@ -83,7 +97,35 @@ public class Generator implements QuarkusApplication {
         LOGGER.error(e);
       }
     }
+    eventTrigger.trigger(FINISHED, total);
     return 0;
+  }
+
+  private Function<Throwable, HttpResponse> logError(int index) {
+    return throwable -> {
+      LOGGER.errorv(throwable, "Error while sending payload ({0})", index);
+      return null;
+    };
+  }
+
+  private Consumer<HttpResponse> logResponse(int index) {
+    return response -> {
+      if (response != null) {
+        ResponseReceivedEvent event = new ResponseReceivedEvent(
+            index,
+            response.statusCode(),
+            response.statusMessage(),
+            response.bodyAsString()
+        );
+        if (response.statusCode() % 400 < 100) {
+          eventTrigger.trigger(CLIENT_ERROR, event);
+        } else if (response.statusCode() % 500 < 100) {
+          eventTrigger.trigger(SERVER_ERROR, event);
+        } else if (response.statusCode() % 200 < 100) {
+          eventTrigger.trigger(RESPONSE_OK, event);
+        }
+      }
+    };
   }
 
 }

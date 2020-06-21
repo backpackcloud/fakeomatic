@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Config;
@@ -65,17 +65,7 @@ public class PayloadProducer {
           .parse(content)
           .data(fakeData);
 
-      return new PayloadGenerator() {
-        @Override
-        public String contentType() {
-          return config.type();
-        }
-
-        @Override
-        public String generate() {
-          return template.render();
-        }
-      };
+      return new TemplatePayloadGenerator(this.config.type(), template);
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }

@@ -115,6 +115,7 @@ samples:
 weight::
 This sample allows you to define weights to each list item. It takes an Array param `values` with a `weight` and a
 `value` field.
+
 [source,yaml]
 ----
 samples:
@@ -139,12 +140,30 @@ weights as percentage.
 file::
 This sample loads a file and maps each line as a item on a `list` sample. It takes a String param `file` with the file
 location and an optional String param `charset` with the charset to read the file (defaults to `UTF-8`).
+
 [source,yaml]
 ----
 samples:
   history:
     type: file
     file: file:///temp/history.txt
+----
+
+range::
+This sample generates numbers from a given interval. It takes an Integer param `min` that holds the minimum value and
+another Integer param `max` that holds the maximum value.
+
+[source,yaml]
+----
+samples:
+  grade:
+    type: range
+    min: 0
+    max: 10
+  temperature:
+    type: range
+    min: -10
+    max: 20
 ----
 
 ==== Placeholders

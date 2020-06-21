@@ -27,6 +27,7 @@ package io.backpackcloud.fakeomatic.spi;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -45,6 +46,13 @@ public interface FakeData {
    * @return the random object.
    */
   Random random();
+
+  /**
+   * Gets all the samples that this fake data holds.
+   *
+   * @return a list of the samples.
+   */
+  List<Sample> samples();
 
   /**
    * Returns the Sample data associated with the given name.
@@ -68,31 +76,8 @@ public interface FakeData {
    * @param sampleName the name of the Sample.
    * @return a random data.
    */
-  default String random(String sampleName) {
-    return sample(sampleName).get(random());
-  }
-
-
-  /**
-   * Returns a number that is at least the {@code min} and at max the {@code max}.
-   *
-   * @param min the minimum value
-   * @param max the maximum value
-   * @return a random number.
-   */
-  default int number(int min, int max) {
-    return min + random().nextInt((max + 1) - min);
-  }
-
-  /**
-   * Returns a long that is at least the {@code min} and less than the {@code max}.
-   *
-   * @param min the minimum value
-   * @param max the maximum value (excluded)
-   * @return a random number.
-   */
-  default long number(long min, long max) {
-    return min + (long) (random().nextDouble() * ((max + 1) - min));
+  default <E> E random(String sampleName) {
+    return (E) sample(sampleName).get(random());
   }
 
   /**

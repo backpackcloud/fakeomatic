@@ -22,29 +22,20 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.FakeData;
-import io.backpackcloud.fakeomatic.spi.Sample;
+import org.junit.jupiter.api.Test;
 
-import java.util.Random;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class NullFakeData implements FakeData {
+public class ExpressionTest extends BaseTest {
 
-  @Override
-  public Sample sample(String sampleName) {
-    throw new UnbelievableException("Sample '" + sampleName + "' not found");
-  }
-
-  @Override
-  public String randomFor(char placeholder) {
-    return String.valueOf(placeholder);
-  }
-
-  @Override
-  public Random random() {
-    throw new UnbelievableException();
+  @Test
+  public void testExpression() {
+    FakeData fakeData = createFakeData("expressions.yaml");
+    assertEquals("000aaa", fakeData.expression("###%%%"));
   }
 
 }

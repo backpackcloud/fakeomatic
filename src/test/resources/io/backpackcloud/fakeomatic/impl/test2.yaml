@@ -1,0 +1,4 @@
+samples:
+  foo:
+    type: chars
+    value: abc

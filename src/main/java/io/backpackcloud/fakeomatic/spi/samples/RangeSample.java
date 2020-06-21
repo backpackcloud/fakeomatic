@@ -24,56 +24,37 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
-/**
- * A sample that collects other samples and combine them as a unique data.
- *
- * @author Marcelo Guimarães
- */
 @RegisterForReflection
-public class CompositeSample implements Sample<String> {
+public class RangeSample implements Sample<Integer> {
 
-  private final FakeData     fakeData;
-  private final List<String> samples;
-  private final String       separator;
+  private final int min;
+  private final int max;
 
   @JsonCreator
-  public CompositeSample(@JacksonInject("root") FakeData fakeData,
-                         @JsonProperty("samples") List<String> samples,
-                         @JsonProperty("separator") String separator) {
-    this.fakeData = fakeData;
-    this.samples = samples;
-    this.separator = Optional.ofNullable(separator).orElse(" ");
+  public RangeSample(@JsonProperty("min") int min,
+                     @JsonProperty("max") int max) {
+    this.min = min;
+    this.max = max;
   }
 
-  public List<Sample> samples() {
-    return samples.stream()
-        .map(fakeData::sample)
-        .collect(Collectors.toList());
+  public int min() {
+    return min;
   }
 
-  public String separator() {
-    return separator;
+  public int max() {
+    return max;
   }
 
   @Override
-  public String get(Random random) {
-    return samples.stream()
-                  .map(this.fakeData::sample)
-                  .map(sample -> sample.get(random))
-                  .map(Object::toString)
-                  .collect(Collectors.joining(this.separator));
+  public Integer get(Random random) {
+    return min + random.nextInt((max + 1) - min);
   }
 
 }

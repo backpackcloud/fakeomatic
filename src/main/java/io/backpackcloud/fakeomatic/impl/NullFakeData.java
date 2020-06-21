@@ -22,39 +22,36 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-/**
- * This sample can pick any item from a given list of objects. The object will be used in its
- * `string` form. Useful for defining a set of data that is meant to be read, like cities and names.
- *
- * @author Marcelo Guimarães
- */
-@RegisterForReflection
-public class ListSample<E> implements Sample<E> {
+public class NullFakeData implements FakeData {
 
-  private final List<E> values;
-
-  @JsonCreator
-  public ListSample(@JsonProperty("values") List<E> values) {
-    this.values = values;
-  }
-
-  public List<E> values() {
-    return values;
+  @Override
+  public List<Sample> samples() {
+    return Collections.emptyList();
   }
 
   @Override
-  public E get(Random random) {
-    return values.get((random.nextInt(values.size())));
+  public Sample sample(String sampleName) {
+    throw new UnbelievableException("Sample '" + sampleName + "' not found");
+  }
+
+  @Override
+  public String randomFor(char placeholder) {
+    return String.valueOf(placeholder);
+  }
+
+  @Override
+  public Random random() {
+    throw new UnbelievableException();
   }
 
 }

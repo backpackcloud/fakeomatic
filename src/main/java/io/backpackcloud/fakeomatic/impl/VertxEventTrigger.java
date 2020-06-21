@@ -22,43 +22,28 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
-import io.backpackcloud.fakeomatic.spi.Config;
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.Template;
+import io.backpackcloud.fakeomatic.spi.EventTrigger;
+import io.quarkus.vertx.LocalEventBusCodec;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.mutiny.core.eventbus.EventBus;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import javax.enterprise.context.ApplicationScoped;
 
-public class TemplateProducer {
+@ApplicationScoped
+public class VertxEventTrigger implements EventTrigger {
 
-  private final Config.TemplateConfig config;
+  private final EventBus eventBus;
 
-  public TemplateProducer(Config.TemplateConfig config) {
-    this.config = config;
+  public VertxEventTrigger(EventBus eventBus) {
+    this.eventBus = eventBus;
+    this.eventBus.registerCodec(new LocalEventBusCodec("object"));
   }
 
-  @Produces
-  @Singleton
-  public Template produce() {
-    try {
-      Engine templateEngine = Engine.builder().addDefaults().build();
-      // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
-      // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.charset()));
-
-      Template template = templateEngine.parse(content);
-      return template;
-    } catch (IOException e) {
-      throw new UnbelievableException(e);
-    }
+  @Override
+  public void trigger(String eventName, Object eventObject) {
+    this.eventBus.publish(eventName, eventObject, new DeliveryOptions().setCodecName("object"));
   }
 
 }

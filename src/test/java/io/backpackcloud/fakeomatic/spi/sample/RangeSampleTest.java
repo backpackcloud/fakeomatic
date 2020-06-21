@@ -22,48 +22,61 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
+import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.Random;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FakeOMaticTest extends BaseTest {
+public class RangeSampleTest extends BaseTest {
 
-  @Test
-  public void testNumberGeneration() {
-    FakeOMatic   fake    = new FakeOMatic(new Random());
-    Set<Integer> numbers = new HashSet<>();
+  FakeData fakeData;
 
-    times(100000, () -> {
-      int number = fake.number(1, 50);
-      assertTrue(number >= 1);
-      assertTrue(number <= 50);
-      numbers.add(number);
-    });
-
-    assertEquals(50, numbers.size());
+  @BeforeEach
+  public void init() {
+    fakeData = createFakeData("ranges.yaml");
   }
 
   @Test
-  public void testLongNumberGeneration() {
-    FakeOMatic   fake    = new FakeOMatic(new Random());
-    Set<Long> numbers = new HashSet<>();
+  public void testParse() {
+    List<Sample> samples = fakeData.samples();
+    assertEquals(2, samples.size());
+  }
 
-    times(100000, () -> {
-      long number = fake.number(1L, 50L);
-      assertTrue(number >= 1L);
-      assertTrue(number <= 50L);
-      numbers.add(number);
+  @Test
+  public void test1() {
+    testSample("test1", -100, 100);
+  }
+
+  @Test
+  public void test2() {
+    testSample("test2", 20, 40);
+  }
+
+  private void testSample(String sampleName, int min, int max) {
+    RangeSample sample = (RangeSample) fakeData.sample(sampleName);
+    Set<Integer> generated = new HashSet<>();
+
+    assertEquals(min, sample.min());
+    assertEquals(max, sample.max());
+
+    times(100000, sample, i -> {
+      generated.add(i);
+      assertTrue(i >= min);
+      assertTrue(i <= max);
     });
 
-    assertEquals(50, numbers.size());
+    assertEquals(max - min + 1, generated.size());
   }
 
 }

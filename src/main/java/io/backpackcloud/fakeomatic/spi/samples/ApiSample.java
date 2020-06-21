@@ -54,7 +54,7 @@ import java.util.Random;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class ApiSample implements Sample {
+public class ApiSample implements Sample<String> {
 
   private final URL          url;
   private final String       responsePath;

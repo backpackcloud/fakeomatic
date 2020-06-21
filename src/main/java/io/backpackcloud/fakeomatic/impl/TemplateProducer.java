@@ -22,17 +22,43 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.infra;
+package io.backpackcloud.fakeomatic.impl;
 
-import org.eclipse.microprofile.config.spi.Converter;
+import io.backpackcloud.fakeomatic.spi.Config;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.quarkus.qute.Engine;
+import io.quarkus.qute.Template;
 
-import java.util.Random;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-public class RandomObjectConverter implements Converter<Random> {
+public class TemplateProducer {
 
-  @Override
-  public Random convert(String value) {
-    return value.isEmpty() ? new Random() : new Random(Long.parseLong(value));
+  private final Config.TemplateConfig config;
+
+  public TemplateProducer(Config.TemplateConfig config) {
+    this.config = config;
+  }
+
+  @Produces
+  @Singleton
+  public Template produce() {
+    try {
+      Engine templateEngine = Engine.builder().addDefaults().build();
+      // read all bytes
+      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
+      // convert bytes to string
+      String content = new String(bytes, Charset.forName(config.charset()));
+
+      Template template = templateEngine.parse(content);
+      return template;
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
+    }
   }
 
 }

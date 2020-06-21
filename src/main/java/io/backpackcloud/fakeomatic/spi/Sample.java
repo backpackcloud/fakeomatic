@@ -31,6 +31,7 @@ import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
 import io.backpackcloud.fakeomatic.spi.samples.FileSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.CharSample;
+import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
 
@@ -50,11 +51,12 @@ import java.util.Random;
     @JsonSubTypes.Type(value = CompositeSample.class, name = "composite"),
     @JsonSubTypes.Type(value = FileSample.class,      name = "file"),
     @JsonSubTypes.Type(value = ListSample.class,      name = "list"),
+    @JsonSubTypes.Type(value = RangeSample.class,     name = "range"),
     @JsonSubTypes.Type(value = UuidSample.class,      name = "uuid"),
     @JsonSubTypes.Type(value = WeightedSample.class,  name = "weight"),
 })
 @FunctionalInterface
-public interface Sample {
+public interface Sample<E> {
 
   /**
    * Returns a random data using the given Random object for picking the data.
@@ -62,7 +64,7 @@ public interface Sample {
    * @param random the random object to use for randomness.
    * @return a random data.
    */
-  String get(Random random);
+  E get(Random random);
 
   /**
    * Returns a list of random data. The list might contain duplicated entries.
@@ -71,8 +73,8 @@ public interface Sample {
    * @param random the random object to use for randomness.
    * @return a new list with randomized data.
    */
-  default List<String> get(int size, Random random) {
-    List<String> result = new ArrayList<>(size);
+  default List<E> get(int size, Random random) {
+    List<E> result = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
       result.add(get(random));
     }

@@ -28,41 +28,71 @@ import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
+import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CompositeSampleTest extends BaseTest {
 
   FakeData fakeData;
-  Sample   firstName;
-  Sample   lastName;
 
   @BeforeEach
   public void init() {
-    fakeData = mock(FakeData.class);
-    firstName = mock(Sample.class);
-    lastName = mock(Sample.class);
-
-    when(fakeData.sample("first_name")).thenReturn(firstName);
-    when(fakeData.sample("last_name")).thenReturn(lastName);
-    when(firstName.get(any())).thenReturn("Foo");
-    when(lastName.get(any())).thenReturn("Bar");
+    fakeData = createFakeData("composite.yaml");
   }
 
   @Test
-  public void testSample() {
-    CompositeSample sample = new CompositeSample(fakeData, Arrays.asList("first_name", "last_name"), " ");
-    assertEquals("Foo Bar", sample.get(random));
+  public void testParse() {
+    List<Sample> samples = fakeData.samples();
+    assertEquals(6, samples.size());
+    testParse("first_name", "Atadolfo", "Biru", "Calicusco", "Danete", "Elisvaldino");
+    testParse("middle_name", "Lombardino", "Jurubebo", "Molibidemo");
+    testParse("last_name", "Silva", "Sousa", "Souza");
+  }
 
-    sample = new CompositeSample(fakeData, Arrays.asList("last_name", "first_name"), " ");
-    assertEquals("Bar Foo", sample.get(random));
+  private void testParse(String name, String... values) {
+    ListSample sample       = (ListSample) fakeData.sample(name);
+    List       sampleValues = sample.values();
+    assertNotNull(sample);
+    assertEquals(values.length, sampleValues.size());
+    for (String value : values) {
+      assertTrue(sampleValues.contains(value));
+    }
+  }
+
+  @Test
+  public void test1() {
+    test("test1");
+  }
+
+  @Test
+  public void test2() {
+    test("test2");
+  }
+
+  @Test
+  public void test3() {
+    test("test3");
+  }
+
+  private void test(String sampleName) {
+    CompositeSample sample  = (CompositeSample) fakeData.sample(sampleName);
+    List<Sample>    samples = sample.samples();
+    times(1000, () -> {
+      String   generated = sample.get(random);
+      String[] strings   = generated.split("\\s");
+      assertEquals(samples.size(), strings.length);
+      for (int i = 0; i < strings.length; i++) {
+        ListSample listSample = (ListSample) samples.get(i);
+        assertTrue(listSample.values().contains(strings[i]));
+      }
+    });
   }
 
 }
