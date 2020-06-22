@@ -24,8 +24,11 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import io.backpackcloud.fakeomatic.spi.samples.ListSample;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -114,6 +117,16 @@ public interface FakeData {
   default String today(String format) {
     DateFormat dateFormat = new SimpleDateFormat(format);
     return dateFormat.format(new Date());
+  }
+
+  /**
+   * Picks one of the given values using the {@link #random()} object.
+   *
+   * @param values the values to pick
+   * @return a randomly chosen value.
+   */
+  default <E> E oneOf(E... values) {
+    return new ListSample<E>(Arrays.asList(values)).get(random());
   }
 
 }

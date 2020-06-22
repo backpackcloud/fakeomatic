@@ -25,6 +25,7 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.spi.Events;
+import io.backpackcloud.fakeomatic.spi.PayloadGeneratedEvent;
 import io.backpackcloud.fakeomatic.spi.ResponseReceivedEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import org.jboss.logging.Logger;
@@ -40,6 +41,13 @@ public class Listener implements Events {
   private final AtomicInteger serverErrors = new AtomicInteger(0);
   private final AtomicInteger clientErrors = new AtomicInteger(0);
   private final AtomicInteger ok           = new AtomicInteger(0);
+
+  @ConsumeEvent(PAYLOAD_GENERATED)
+  public void onPayloadGenerated(PayloadGeneratedEvent event) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debugv("Payload {0} generated: {1}", event.index(), event.payload());
+    }
+  }
 
   @ConsumeEvent(CLIENT_ERROR)
   public void onClientError(ResponseReceivedEvent event) {
