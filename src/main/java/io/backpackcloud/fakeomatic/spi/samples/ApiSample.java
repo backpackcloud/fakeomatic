@@ -64,7 +64,7 @@ public class ApiSample implements Sample<String> {
   @JsonCreator
   public ApiSample(@JacksonInject Vertx vertx,
                    @JsonProperty("url") String url,
-                   @JsonProperty("result") String responsePath,
+                   @JsonProperty("path") String responsePath,
                    @JsonProperty("options") Map<String, Object> options) throws MalformedURLException {
     this.mapper = new ObjectMapper();
     this.url = new URL(url);
@@ -85,6 +85,10 @@ public class ApiSample implements Sample<String> {
                                  .apply(HttpResponse::bodyAsString)
                                  .await().indefinitely();
 
+    return responsePath == null ? response : getResponsePath(response);
+  }
+
+  private String getResponsePath(String response) {
     try {
       JsonNode parsedPayload = mapper.readTree(response);
       return parsedPayload.at(responsePath).asText();
