@@ -133,6 +133,15 @@ public interface FakeData {
   }
 
   /**
+   * Returns the location of the default config for parsing.
+   *
+   * @return the InputSteam that points to the default config location.
+   */
+  static InputStream defaultConfigLocation() {
+    return FakeOMaticProducer.defaultConfig();
+  }
+
+  /**
    * Loads a new FakeData from the configuration stored in the given InputStreams.
    *
    * @param random    the random object to use for randomness
