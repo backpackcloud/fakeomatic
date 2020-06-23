@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -38,9 +39,13 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class FakeOMaticProducer {
@@ -60,7 +65,29 @@ public class FakeOMaticProducer {
 
   @Produces
   @Singleton
-  public FakeData produce() throws IOException {
+  public FakeData produce() {
+    InputStream[] configs = Arrays.stream(config.configs())
+                                  .map(config -> {
+                                    try {
+                                      if (DEFAULT_CONFIG.equals(config)) {
+                                        return defaultConfig();
+                                      } else {
+                                        return new FileInputStream(new File(config));
+                                      }
+                                    } catch (FileNotFoundException e) {
+                                      throw new UnbelievableException(e);
+                                    }
+                                  })
+                                  .collect(Collectors.toList())
+                                  .toArray(new InputStream[config.configs().length]);
+    return newInstance(config.random(), vertx, configs);
+  }
+
+  public static InputStream defaultConfig() {
+    return FakeOMatic.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
+  }
+
+  public static FakeData newInstance(Random random, Vertx vertx, InputStream... configs) {
     ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
     InjectableValues.Std std = new InjectableValues.Std();
@@ -71,19 +98,19 @@ public class FakeOMaticProducer {
     // the composite sample needs access to the whole fake data and not the parent one
     RootFakeData rootFakeData = new RootFakeData();
 
-    std.addValue(Random.class, config.random());
+    std.addValue(Random.class, random);
     std.addValue(Vertx.class, vertx);
     std.addValue("parent", parent);
     std.addValue("root", rootFakeData);
     objectMapper.setInjectableValues(std);
 
-    for (String config : config.configs()) {
-      if (DEFAULT_CONFIG.equals(config)) {
-        parent = createDefault(objectMapper);
-      } else {
-        parent = createFromExternal(objectMapper, config);
+    try {
+      for (InputStream config : configs) {
+        parent = objectMapper.readValue(config, FakeOMatic.class);
+        std.addValue("parent", parent);
       }
-      std.addValue("parent", parent);
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
     }
 
     rootFakeData.delegate = parent;
@@ -91,15 +118,7 @@ public class FakeOMaticProducer {
     return parent;
   }
 
-  private FakeOMatic createDefault(ObjectMapper objectMapper) throws IOException {
-    return objectMapper.readValue(getClass().getResourceAsStream(DEFAULT_CONFIG_LOCATION), FakeOMatic.class);
-  }
-
-  private FakeOMatic createFromExternal(ObjectMapper objectMapper, String config) throws IOException {
-    return objectMapper.readValue(new FileInputStream(new File(config)), FakeOMatic.class);
-  }
-
-  class RootFakeData implements FakeData {
+  static class RootFakeData implements FakeData {
 
     FakeData delegate;
 

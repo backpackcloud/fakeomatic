@@ -100,13 +100,14 @@ samples:
 
 composite::
 This sample will gather other samples and join them into a unique data. It takes an Array param `samples` to specify
-the samples to gather and an optional String param `separator` to specify the separator (defaults to `" "`).
+the samples to gather and an optional String param `separator` to specify the separator (defaults to `""`).
 
 [source,yaml]
 ----
 samples:
   name:
     type: composite
+    separator: " "
     samples:
       - first_name
       - last_name
@@ -196,11 +197,11 @@ can be used to get a fake data, the main one are:
 random(sampleName)::
 Gets a random sample from the given sample name.
 
-number(min, max)::
-Gets a random number that is at least `min` and less than `max`.
-
 expression(placeholders)::
 Gets a random data produced by replacing each placeholder by a random sample associated with it.
+
+oneOf(values...)::
+Randomly picks one of the given values using the internal `Random` reference.
 
 For more methods, check out the `FakeData` interface.
 

@@ -70,6 +70,9 @@ public class Listener implements Events {
   @ConsumeEvent(RESPONSE_OK)
   public void onOk(ResponseReceivedEvent event) {
     this.ok.incrementAndGet();
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debugv("Received response for payload {0}: {1}", event.index(), event.responseBody());
+    }
   }
 
   @ConsumeEvent(value = FINISHED)

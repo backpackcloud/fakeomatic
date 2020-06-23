@@ -24,8 +24,11 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import io.backpackcloud.fakeomatic.impl.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
+import io.vertx.mutiny.core.Vertx;
 
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -127,6 +130,27 @@ public interface FakeData {
    */
   default <E> E oneOf(E... values) {
     return new ListSample<E>(Arrays.asList(values)).get(random());
+  }
+
+  /**
+   * Loads a new FakeData from the configuration stored in the given InputStreams.
+   *
+   * @param random    the random object to use for randomness
+   * @param locations the locations of the configurations
+   * @return a new FakeData
+   */
+  static FakeData load(Random random, InputStream... locations) {
+    return FakeOMaticProducer.newInstance(random, Vertx.vertx(), locations);
+  }
+
+  /**
+   * Loads a new FakeData from the configuration stored in the given InputStreams.
+   *
+   * @param locations the locations of the configurations
+   * @return a new FakeData
+   */
+  static FakeData load(InputStream... locations) {
+    return FakeOMaticProducer.newInstance(new Random(), Vertx.vertx(), locations);
   }
 
 }

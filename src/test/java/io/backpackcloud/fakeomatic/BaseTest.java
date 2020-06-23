@@ -31,7 +31,6 @@ import io.backpackcloud.fakeomatic.spi.Sample;
 import io.vertx.mutiny.core.Vertx;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -92,11 +91,7 @@ public abstract class BaseTest {
 
     FakeOMaticProducer producer = new FakeOMaticProducer(generatorConfig, new Vertx(mock(io.vertx.core.Vertx.class)));
 
-    try {
-      return producer.produce();
-    } catch (IOException e) {
-      throw new UnbelievableException();
-    }
+    return producer.produce();
   }
 
   protected FakeData createDefaultFakeData() {
@@ -104,11 +99,7 @@ public abstract class BaseTest {
 
     FakeOMaticProducer producer = new FakeOMaticProducer(generatorConfig, new Vertx(mock(io.vertx.core.Vertx.class)));
 
-    try {
-      return producer.produce();
-    } catch (IOException e) {
-      throw new UnbelievableException();
-    }
+    return producer.produce();
   }
 
 }

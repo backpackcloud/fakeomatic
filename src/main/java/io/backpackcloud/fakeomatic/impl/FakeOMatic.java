@@ -61,10 +61,6 @@ public class FakeOMatic implements FakeData {
     this.placeholders = Optional.ofNullable(placeholders).orElseGet(Collections::emptyMap);
   }
 
-  public FakeOMatic(Random random, Map<String, Sample> samples, Map<String, String> placeholders) {
-    this(random, new NullFakeData(), samples, placeholders);
-  }
-
   @Override
   public List<Sample> samples() {
     ArrayList<Sample> samples = new ArrayList<>(this.samples.values());
