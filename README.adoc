@@ -82,7 +82,7 @@ samples:
 
 api::
 This sample actually calls a given API to get data to use every time it's asked for a data. It takes a URL param
-`url` to define the API endpoint and an optional https://tools.ietf.org/html/rfc6901[JSON Pointer] param `path`
+`url` to define the API endpoint and an optional https://tools.ietf.org/html/rfc6901[JSON Pointer] param `return`
 to specify which part of the API response represents the data (uses the whole response if not supplied).
 
 Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the dependent API.

@@ -80,11 +80,11 @@ public class FakeOMatic implements FakeData {
   }
 
   @Override
-  public String randomFor(char placeholder) {
+  public String fake(char placeholder) {
     return Optional.ofNullable(this.placeholders.get(String.valueOf(placeholder)))
-                   .map(this::random)
+                   .map(this::fake)
                    .map(Object::toString)
-                   .orElseGet(() -> this.parent.randomFor(placeholder));
+                   .orElseGet(() -> this.parent.fake(placeholder));
   }
 
 }

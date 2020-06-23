@@ -28,6 +28,7 @@ import io.backpackcloud.fakeomatic.impl.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -37,7 +38,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static io.backpackcloud.fakeomatic.impl.FakeOMaticProducer.DEFAULT_CONFIG;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -78,7 +78,7 @@ public abstract class BaseTest {
   }
 
   protected <E> void times(int times, Sample<E> sample, Consumer<E> consumer) {
-    times(times, () -> consumer.accept(sample.get(random)));
+    times(times, () -> consumer.accept(sample.get()));
   }
 
   protected FakeData createFakeData(String... names) {
@@ -89,17 +89,12 @@ public abstract class BaseTest {
 
     when(generatorConfig.configs()).thenReturn(configs.toArray(new String[configs.size()]));
 
-    FakeOMaticProducer producer = new FakeOMaticProducer(generatorConfig, new Vertx(mock(io.vertx.core.Vertx.class)));
-
+    FakeOMaticProducer producer = new FakeOMaticProducer(
+        config,
+        new Vertx(mock(io.vertx.core.Vertx.class)),
+        Engine.builder().addDefaults().build()
+    );
     return producer.produce();
   }
-
-  protected FakeData createDefaultFakeData() {
-    when(generatorConfig.configs()).thenReturn(new String[]{DEFAULT_CONFIG});
-
-    FakeOMaticProducer producer = new FakeOMaticProducer(generatorConfig, new Vertx(mock(io.vertx.core.Vertx.class)));
-
-    return producer.produce();
-  }
-
+  
 }

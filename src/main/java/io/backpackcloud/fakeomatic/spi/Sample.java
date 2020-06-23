@@ -27,26 +27,24 @@ package io.backpackcloud.fakeomatic.spi;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.backpackcloud.fakeomatic.spi.samples.ApiSample;
+import io.backpackcloud.fakeomatic.spi.samples.CacheSample;
+import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
 import io.backpackcloud.fakeomatic.spi.samples.FileSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
-import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 /**
- * Represents a collection of data that can be randomized.
+ * Represents a sample of data.
  *
  * @author Marcelo Guimarães
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ApiSample.class,       name = "api"),
+    @JsonSubTypes.Type(value = CacheSample.class,     name = "cache"),
     @JsonSubTypes.Type(value = CharSample.class,      name = "chars"),
     @JsonSubTypes.Type(value = CompositeSample.class, name = "composite"),
     @JsonSubTypes.Type(value = FileSample.class,      name = "file"),
@@ -59,26 +57,10 @@ import java.util.Random;
 public interface Sample<E> {
 
   /**
-   * Returns a random data using the given Random object for picking the data.
+   * Gets one sample of the data this sample holds.
    *
-   * @param random the random object to use for randomness.
-   * @return a random data.
+   * @return a sample data. Might be random.
    */
-  E get(Random random);
-
-  /**
-   * Returns a list of random data. The list might contain duplicated entries.
-   *
-   * @param size   the size of the list.
-   * @param random the random object to use for randomness.
-   * @return a new list with randomized data.
-   */
-  default List<E> get(int size, Random random) {
-    List<E> result = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      result.add(get(random));
-    }
-    return result;
-  }
+  E get();
 
 }

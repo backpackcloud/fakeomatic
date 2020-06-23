@@ -52,18 +52,19 @@ samples:
   chuck_norris:
     type: api
     url: https://api.chucknorris.io/jokes/random
-    result: /value
+    return: /value
   tronald_dump:
     type: api
     url: https://api.tronalddump.io/random/quote
-    result: /value
+    return: /value
   business_bullshit:
     type: api
     url: https://corporatebs-generator.sameerkumar.website
-    result: /phrase
+    return: /phrase
   commit:
     type: api
-    url: http://whatthecommit.com/index.txt
+    url: http://whatthecommit.com/index.json
+    return: /commit_message
   cause:
     type: list
     values:

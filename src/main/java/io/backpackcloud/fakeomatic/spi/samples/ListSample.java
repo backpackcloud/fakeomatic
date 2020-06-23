@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -41,10 +42,13 @@ import java.util.Random;
 @RegisterForReflection
 public class ListSample<E> implements Sample<E> {
 
+  private final Random  random;
   private final List<E> values;
 
   @JsonCreator
-  public ListSample(@JsonProperty("values") List<E> values) {
+  public ListSample(@JacksonInject Random random,
+                    @JsonProperty("values") List<E> values) {
+    this.random = random;
     this.values = values;
   }
 
@@ -53,7 +57,7 @@ public class ListSample<E> implements Sample<E> {
   }
 
   @Override
-  public E get(Random random) {
+  public E get() {
     return values.get((random.nextInt(values.size())));
   }
 

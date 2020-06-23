@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -43,18 +44,18 @@ public class FileSample implements Sample<String> {
   private final Sample<String> listSample;
 
   @JsonCreator
-  public FileSample(@JsonProperty("file") String file,
+  public FileSample(@JacksonInject Random random,
+                    @JsonProperty("file") String file,
                     @JsonProperty("charset") String charset) throws IOException {
     Charset fileCharset = Charset.forName(charset == null ? "UTF-8" : charset);
-
     List<String> strings = Files.readAllLines(Paths.get(URI.create(file)), fileCharset);
 
-    this.listSample = new ListSample(strings);
+    this.listSample = new ListSample(random, strings);
   }
 
   @Override
-  public String get(Random random) {
-    return listSample.get(random);
+  public String get() {
+    return listSample.get();
   }
 
 }

@@ -36,7 +36,7 @@
 
   <groupId>io.backpackcloud</groupId>
   <artifactId>fakeomatic</artifactId>
-  <version>0.6.1</version>
+  <version>0.7.0</version>
 
   <description>
     Fake-O-Matic is a library for generating and ingesting fake data.

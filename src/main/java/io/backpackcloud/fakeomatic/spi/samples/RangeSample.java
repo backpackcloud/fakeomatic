@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -34,12 +35,15 @@ import java.util.Random;
 @RegisterForReflection
 public class RangeSample implements Sample<Integer> {
 
-  private final int min;
-  private final int max;
+  private final Random random;
+  private final int    min;
+  private final int    max;
 
   @JsonCreator
-  public RangeSample(@JsonProperty("min") int min,
+  public RangeSample(@JacksonInject Random random,
+                     @JsonProperty("min") int min,
                      @JsonProperty("max") int max) {
+    this.random = random;
     this.min = min;
     this.max = max;
   }
@@ -53,7 +57,7 @@ public class RangeSample implements Sample<Integer> {
   }
 
   @Override
-  public Integer get(Random random) {
+  public Integer get() {
     return min + random.nextInt((max + 1) - min);
   }
 

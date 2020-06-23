@@ -85,7 +85,7 @@ public class CompositeSampleTest extends BaseTest {
     CompositeSample sample  = (CompositeSample) fakeData.sample(sampleName);
     List<Sample>    samples = sample.samples();
     times(1000, () -> {
-      String   generated = sample.get(random);
+      String   generated = sample.get();
       String[] strings   = generated.split("\\s");
       assertEquals(samples.size(), strings.length);
       for (int i = 0; i < strings.length; i++) {

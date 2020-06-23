@@ -1,6 +1,6 @@
 {
-  "id": "{random('uuid')}",
-  "message": "{random('cause')}",
+  "id": "{fake('uuid')}",
+  "cause": "{fake('cause')}",
   "device": "{expression('%%-#####')}",
   "when": "{today('yyyy-MM-dd HH.mm.ss Z')}"
 }

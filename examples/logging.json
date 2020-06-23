@@ -1,4 +1,4 @@
 {
   "level": "{oneOf('INFO', 'WARN', 'ERROR')}",
-  "message": "{random('cause')}"
+  "message": "{fake('cause')}"
 }

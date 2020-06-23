@@ -22,42 +22,32 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.spi.samples;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Config;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.Template;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Sample;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+public class CacheSample implements Sample {
 
-public class TemplateProducer {
+  private final String   sample;
+  private final FakeData fakeData;
 
-  private final Config.TemplateConfig config;
+  private Object cachedValue;
 
-  public TemplateProducer(Config.TemplateConfig config) {
-    this.config = config;
+  public CacheSample(@JacksonInject("root") FakeData fakeData,
+                     @JsonProperty("sample") String sample) {
+    this.fakeData = fakeData;
+    this.sample = sample;
   }
 
-  @Produces
-  @Singleton
-  public Template produceTemplate() {
-    try {
-      Engine templateEngine = Engine.builder().addDefaults().build();
-      // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
-      // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.charset()));
-
-      return templateEngine.parse(content);
-    } catch (IOException e) {
-      throw new UnbelievableException(e);
+  @Override
+  public Object get() {
+    if (this.cachedValue == null) {
+      this.cachedValue = this.fakeData.sample(sample).get();
     }
+    return this.cachedValue;
   }
 
 }

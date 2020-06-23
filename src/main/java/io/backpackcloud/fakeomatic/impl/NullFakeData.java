@@ -45,7 +45,7 @@ public class NullFakeData implements FakeData {
   }
 
   @Override
-  public String randomFor(char placeholder) {
+  public String fake(char placeholder) {
     return String.valueOf(placeholder);
   }
 

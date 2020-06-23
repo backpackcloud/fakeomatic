@@ -87,7 +87,7 @@ public class WeightedSampleTest extends BaseTest {
 
     definitions.stream().forEach(def -> occurrences.put(def.value(), 0));
 
-    times(total, () -> occurrences.compute(sample.get(random), (o, integer) -> integer + 1));
+    times(total, () -> occurrences.compute(sample.get(), (o, integer) -> integer + 1));
 
     assertEquals(total, (Integer) occurrences.values().stream().mapToInt(Integer::intValue).sum());
 

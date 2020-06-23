@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -39,12 +40,16 @@ public class WeightedSample<E> implements Sample<E> {
   private final List<WeightedValue>              values;
   private final List<WeightedValueDefinition<E>> definitions;
 
+  private final Random random;
+
   private final int totalWeight;
 
   @JsonCreator
-  public WeightedSample(@JsonProperty("values") List<WeightedValueDefinition<E>> definitions) {
+  public WeightedSample(@JacksonInject Random random,
+                        @JsonProperty("values") List<WeightedValueDefinition<E>> definitions) {
     this.values = new ArrayList<>(definitions.size());
     this.definitions = definitions;
+    this.random = random;
     int current = 0;
     for (WeightedValueDefinition definition : definitions) {
       this.values.add(new WeightedValue(current, definition));
@@ -62,7 +67,7 @@ public class WeightedSample<E> implements Sample<E> {
   }
 
   @Override
-  public E get(Random random) {
+  public E get() {
     int position = random.nextInt(totalWeight);
     return (E) values.stream()
                      .filter(weightedValue -> weightedValue.isSelected(position))

@@ -57,9 +57,7 @@ public class PayloadProducer {
   public PayloadGenerator produce() {
     try {
       // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
-      // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.charset()));
+      String content = Files.readString(Paths.get(config.path()), Charset.forName(config.charset()));
 
       TemplateInstance template = templateEngine
           .parse(content)

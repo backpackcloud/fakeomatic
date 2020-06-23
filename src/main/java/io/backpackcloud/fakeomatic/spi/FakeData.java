@@ -74,7 +74,7 @@ public interface FakeData {
    * @param placeholder the placeholder to get the sample.
    * @return a random data.
    */
-  String randomFor(char placeholder);
+  String fake(char placeholder);
 
   /**
    * Returns a random data from the Sample associated with the given name.
@@ -82,8 +82,8 @@ public interface FakeData {
    * @param sampleName the name of the Sample.
    * @return a random data.
    */
-  default <E> E random(String sampleName) {
-    return (E) sample(sampleName).get(random());
+  default <E> E fake(String sampleName) {
+    return (E) sample(sampleName).get();
   }
 
   /**
@@ -91,13 +91,13 @@ public interface FakeData {
    *
    * @param expression the expression to evaluate.
    * @return a random generated expression.
-   * @see #randomFor(char)
+   * @see #fake(char)
    */
   default String expression(String expression) {
     StringBuilder builder = new StringBuilder(expression.length());
 
     for (int i = 0; i < expression.length(); i++) {
-      builder.append(randomFor(expression.charAt(i)));
+      builder.append(fake(expression.charAt(i)));
     }
 
     return builder.toString();
@@ -110,7 +110,7 @@ public interface FakeData {
    * @return a random generated expression.
    */
   default String expressionFrom(String sampleName) {
-    return expression(random(sampleName));
+    return expression(fake(sampleName));
   }
 
   default String env(String name) {
@@ -129,7 +129,7 @@ public interface FakeData {
    * @return a randomly chosen value.
    */
   default <E> E oneOf(E... values) {
-    return new ListSample<E>(Arrays.asList(values)).get(random());
+    return new ListSample<E>(random(), Arrays.asList(values)).get();
   }
 
   /**
@@ -149,7 +149,10 @@ public interface FakeData {
    * @return a new FakeData
    */
   static FakeData load(Random random, InputStream... locations) {
-    return FakeOMaticProducer.newInstance(random, Vertx.vertx(), locations);
+    return FakeOMaticProducer.newInstance(Arrays.asList(locations), std -> {
+      std.addValue(Random.class, random);
+      std.addValue(Vertx.class, Vertx.vertx());
+    });
   }
 
   /**
@@ -159,7 +162,7 @@ public interface FakeData {
    * @return a new FakeData
    */
   static FakeData load(InputStream... locations) {
-    return FakeOMaticProducer.newInstance(new Random(), Vertx.vertx(), locations);
+    return load(new Random(), locations);
   }
 
 }

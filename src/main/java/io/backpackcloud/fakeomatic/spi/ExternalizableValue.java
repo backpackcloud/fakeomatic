@@ -22,42 +22,41 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.spi;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Config;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.Template;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
-public class TemplateProducer {
+@RegisterForReflection
+public class ExternalizableValue {
 
-  private final Config.TemplateConfig config;
+  private final String value;
 
-  public TemplateProducer(Config.TemplateConfig config) {
-    this.config = config;
+  @JsonCreator
+  public ExternalizableValue(String value) {
+    this.value = value;
   }
 
-  @Produces
-  @Singleton
-  public Template produceTemplate() {
-    try {
-      Engine templateEngine = Engine.builder().addDefaults().build();
-      // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
-      // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.charset()));
+  public String value() {
+    return value;
+  }
 
-      return templateEngine.parse(content);
-    } catch (IOException e) {
-      throw new UnbelievableException(e);
-    }
+  @JsonCreator
+  public static ExternalizableValue create(@JsonProperty("value") String value,
+                                           @JsonProperty("env") String env,
+                                           @JsonProperty("property") String property,
+                                           @JsonProperty("file") String file) throws IOException {
+    if (value != null) return new ExternalizableValue(value);
+    else if (env != null) return new ExternalizableValue(System.getenv(env));
+    else if (property != null) return new ExternalizableValue(System.getProperty(property));
+    else if (file != null) return new ExternalizableValue(Files.readString(Path.of(file)));
+    else throw new UnbelievableException("Unable to populate value");
   }
 
 }

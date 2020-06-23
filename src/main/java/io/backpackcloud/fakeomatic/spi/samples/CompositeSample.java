@@ -33,7 +33,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -59,8 +58,8 @@ public class CompositeSample implements Sample<String> {
 
   public List<Sample> samples() {
     return samples.stream()
-        .map(fakeData::sample)
-        .collect(Collectors.toList());
+                  .map(fakeData::sample)
+                  .collect(Collectors.toList());
   }
 
   public String separator() {
@@ -68,10 +67,10 @@ public class CompositeSample implements Sample<String> {
   }
 
   @Override
-  public String get(Random random) {
+  public String get() {
     return samples.stream()
                   .map(this.fakeData::sample)
-                  .map(sample -> sample.get(random))
+                  .map(Sample::get)
                   .map(Object::toString)
                   .collect(Collectors.joining(this.separator));
   }

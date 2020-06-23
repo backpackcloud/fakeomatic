@@ -30,20 +30,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.ExternalizableValue;
+import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.quarkus.qute.Engine;
+import io.quarkus.qute.TemplateInstance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.core.buffer.Buffer;
+import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
+import org.jboss.logging.Logger;
 
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Random;
+import java.util.Optional;
 
 /**
  * This sample actually calls a given API to get data to use every time it's asked for a data.
@@ -54,45 +66,83 @@ import java.util.Random;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class ApiSample implements Sample<String> {
+public class ApiSample implements Sample {
 
-  private final URL          url;
-  private final String       responsePath;
-  private final WebClient    client;
-  private final ObjectMapper mapper;
+  private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
+
+  private final URL              url;
+  private final String           method;
+  private final String           returnPath;
+  private final WebClient        client;
+  private final ObjectMapper     mapper;
+  private final TemplateInstance templateInstance;
+  private final String           payloadType;
 
   @JsonCreator
-  public ApiSample(@JacksonInject Vertx vertx,
-                   @JsonProperty("url") String url,
-                   @JsonProperty("path") String responsePath,
-                   @JsonProperty("options") Map<String, Object> options) throws MalformedURLException {
-    this.mapper = new ObjectMapper();
-    this.url = new URL(url);
-    this.responsePath = responsePath;
-    this.client = WebClient.create(vertx, new WebClientOptions(
-        new JsonObject(options == null ? Collections.emptyMap() : options))
-        .setDefaultHost(this.url.getHost())
-        .setDefaultPort(this.url.getPort() == -1 ? this.url.getDefaultPort() : this.url.getPort())
-        .setSsl("https".equals(this.url.getProtocol()))
-    );
+  public ApiSample(@JacksonInject("root") FakeData fakeData,
+                   @JacksonInject Vertx vertx,
+                   @JsonProperty("url") ExternalizableValue url,
+                   @JsonProperty("method") String method,
+                   // TODO refactor to a parameter object
+                   @JsonProperty("payload") String payloadTemplate,
+                   @JsonProperty("payload_charset") String payloadCharset,
+                   @JsonProperty("payload_type") String payloadType,
+                   @JsonProperty("return") String returnPath,
+                   @JsonProperty("insecure") boolean insecure,
+                   @JsonProperty("options") Map<String, Object> options) {
+    try {
+      if (payloadTemplate != null) {
+        this.templateInstance = Engine.builder()
+                                      .addDefaults()
+                                      .build()
+                                      .parse(
+                                          Files.readString(
+                                              Path.of(payloadTemplate),
+                                              Charset.forName(Optional.ofNullable(payloadCharset).orElse("UTF-8"))
+                                          ))
+                                      .data(fakeData);
+      } else {
+        this.templateInstance = null;
+      }
+      this.payloadType = Optional.ofNullable(payloadType).orElse(MediaType.APPLICATION_JSON);
+      this.method = Optional.ofNullable(method).orElse("get");
+      this.mapper = new ObjectMapper();
+      this.url = new URL(url.value());
+      this.returnPath = Optional.ofNullable(returnPath).orElse("/");
+      this.client = WebClient.create(vertx, new WebClientOptions(
+          new JsonObject(options == null ? Collections.emptyMap() : options))
+          .setDefaultHost(this.url.getHost())
+          .setDefaultPort(this.url.getPort() == -1 ? this.url.getDefaultPort() : this.url.getPort())
+          .setSsl("https".equals(this.url.getProtocol()))
+          .setTrustAll(insecure)
+      );
+    } catch (Exception e) {
+      LOGGER.error("Error while creating ApiSample", e);
+      throw new UnbelievableException(e);
+    }
   }
 
   @Override
-  public String get(Random random) {
-    String response = this.client.get(url.getPath())
-                                 .send()
-                                 .onItem()
-                                 .apply(HttpResponse::bodyAsString)
-                                 .await().indefinitely();
-
-    return responsePath == null ? response : getResponsePath(response);
-  }
-
-  private String getResponsePath(String response) {
+  public Object get() {
+    HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), url.toString());
+    Uni<HttpResponse<Buffer>> response;
+    if (this.templateInstance != null) {
+      response = request
+          .putHeader("Content-Type", payloadType)
+          .sendBuffer(Buffer.buffer(templateInstance.render()));
+    } else {
+      response = request.send();
+    }
+    String responseBody = response.onItem()
+                                  .apply(HttpResponse::bodyAsString)
+                                  // TODO add a fallback sample
+                                  // TODO externalize timeout
+                                  .await().atMost(Duration.ofSeconds(30));
     try {
-      JsonNode parsedPayload = mapper.readTree(response);
-      return parsedPayload.at(responsePath).asText();
+      JsonNode parsedPayload = this.mapper.readTree(responseBody);
+      return parsedPayload.at(this.returnPath);
     } catch (IOException e) {
+      LOGGER.error("Error while calling API", e);
       throw new UnbelievableException(e);
     }
   }
