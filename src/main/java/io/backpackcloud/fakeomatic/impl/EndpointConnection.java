@@ -34,6 +34,7 @@ import io.vertx.mutiny.ext.web.client.WebClient;
 import javax.enterprise.context.ApplicationScoped;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -62,7 +63,8 @@ public class EndpointConnection implements Endpoint {
                                                      .sendBuffer(io.vertx.mutiny.core.buffer.Buffer.buffer(payload))
                                                      .onItem()
                                                      .apply(Function.identity())
-                                                     .await().indefinitely());
+                                                     // TODO externalize this
+                                                     .await().atMost(Duration.ofSeconds(30)));
   }
 
 }
