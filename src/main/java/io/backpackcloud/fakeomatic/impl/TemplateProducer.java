@@ -32,7 +32,6 @@ import io.quarkus.qute.Template;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -49,10 +48,7 @@ public class TemplateProducer {
   public Template produceTemplate() {
     try {
       Engine templateEngine = Engine.builder().addDefaults().build();
-      // read all bytes
-      byte[] bytes = Files.readAllBytes(Paths.get(config.path()));
-      // convert bytes to string
-      String content = new String(bytes, Charset.forName(config.charset()));
+      String content        = Files.readString(Paths.get(config.path()));
 
       return templateEngine.parse(content);
     } catch (IOException e) {
