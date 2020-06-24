@@ -80,7 +80,7 @@ public class ExternalizableValue {
   }
 
   private static String getOrDefault(String value, String defaultValue) {
-    return value == null ? defaultValue : value;
+    return value == null || value.isEmpty() ? defaultValue : value;
   }
 
 }
