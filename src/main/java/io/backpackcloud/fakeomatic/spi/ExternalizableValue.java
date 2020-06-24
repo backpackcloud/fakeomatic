@@ -30,8 +30,11 @@ import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Objects;
 
 @RegisterForReflection
 public class ExternalizableValue {
@@ -43,20 +46,41 @@ public class ExternalizableValue {
     this.value = value;
   }
 
-  public String value() {
+  public String get() {
     return value;
   }
 
   @JsonCreator
-  public static ExternalizableValue create(@JsonProperty("value") String value,
-                                           @JsonProperty("env") String env,
+  public static ExternalizableValue create(@JsonProperty("env") String env,
                                            @JsonProperty("property") String property,
-                                           @JsonProperty("file") String file) throws IOException {
-    if (value != null) return new ExternalizableValue(value);
-    else if (env != null) return new ExternalizableValue(System.getenv(env));
-    else if (property != null) return new ExternalizableValue(System.getProperty(property));
-    else if (file != null) return new ExternalizableValue(Files.readString(Path.of(file)));
-    else throw new UnbelievableException("Unable to populate value");
+                                           @JsonProperty("file") String file,
+                                           @JsonProperty("resource") String resource,
+                                           @JsonProperty("default") String defaultValue) {
+    if (env != null) return new ExternalizableValue(getOrDefault(System.getenv(env), defaultValue));
+    else if (property != null) return new ExternalizableValue(getOrDefault(System.getProperty(property), defaultValue));
+    else if (file != null) {
+      try {
+        return new ExternalizableValue(getOrDefault(Files.readString(Path.of(file)), defaultValue));
+      } catch (IOException e) {
+        throw new UnbelievableException(e);
+      }
+    } else if (resource != null) {
+      InputStream inputStream = ExternalizableValue.class.getResourceAsStream(resource);
+      try (inputStream) {
+        return new ExternalizableValue(getOrDefault(new String(inputStream.readAllBytes()), defaultValue));
+      } catch (IOException e) {
+        throw new UnbelievableException(e);
+      }
+    } else throw new UnbelievableException("Unable to populate value");
+  }
+
+  @JsonCreator
+  public static ExternalizableValue create(List<ExternalizableValue> values) {
+    return values.stream().filter(Objects::nonNull).findFirst().orElseThrow(UnbelievableException::new);
+  }
+
+  private static String getOrDefault(String value, String defaultValue) {
+    return value == null ? defaultValue : value;
   }
 
 }
