@@ -22,34 +22,39 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.ws.rs.core.MediaType;
-import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStream;
 
 @RegisterForReflection
-public class Payload {
+public class ResourceValue implements ConfigurationValue {
 
-  private final String template;
-  private final String type;
+  private final InputStream inputStream;
 
-  public Payload(@JsonProperty("template") ConfigurationValue template,
-                 @JsonProperty("type") String type) {
-    this.template = template.get();
-    this.type = Optional.ofNullable(type)
-                        .orElse(MediaType.APPLICATION_JSON);
+  @JsonCreator
+  public ResourceValue(@JsonProperty("resource") String resourcePath) {
+    this.inputStream = ResourceValue.class.getResourceAsStream(resourcePath);
   }
 
-  public String template() {
-    return template;
+  @Override
+  public boolean isSet() {
+    return inputStream != null;
   }
 
-  public String type() {
-    return type;
+  @Override
+  public String get() {
+    try (inputStream) {
+      return new String(inputStream.readAllBytes());
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
+    }
   }
 
 }

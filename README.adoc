@@ -38,9 +38,74 @@ The rules for generating data can contain `samples` and `placeholders`. Samples 
 randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
 expressions for generating data.
 
-==== Externalizable Values
+==== Configuration Values
 
-Some configuration values are a
+Some configuration values can be externalized by different ways additionally to the normal String value:
+
+env::
+Fetches the value from an _Environment Variable_.
+
+[source,yaml]
+----
+param:
+  env: PARAM # reads the value from the PARAM environment variable (export PARAM=foo)
+----
+
+property::
+Fetches the value from a _System Property_.
+
+[source,yaml]
+----
+param:
+  property: my.parameter # reads the value from the my.parameter system property (-Dmy.parameter=foo)
+----
+
+file::
+Reads the value from a `file`.
+
+[source,yaml]
+----
+param:
+  file: /tmp/myfile # reads the value from the /tmp/myfile content
+----
+
+resource::
+Reads the value using a `class.getResourceAsStream`.
+
+[source,yaml]
+----
+param:
+  resource: /com/example/configuration.yaml # reads the value from the configuration.yaml
+                                            # file inside the com.example package
+----
+
+default::
+Supplies a default value.
+
+[source,yaml]
+----
+param:
+  env: PARAM
+  default: bar # uses "bar" as the value if the PARAM environment variable is not present
+----
+
+It is also possible to combine different approaches for getting the value by passing all the desired options.
+
+[source,yaml]
+----
+param:
+  env: PARAM
+  property: my.parameter
+  default: bar
+----
+
+The priority for getting the value is:
+
+. `env`
+. `property`
+. `file`
+. `resource`
+. `defaultValue`
 
 ==== Samples
 
@@ -93,7 +158,7 @@ can take are:
             represents the data (uses the whole response if not supplied).
 - `method`: which HTTP method to use (defaults to `GET`)
 - `payload`: optional payload object to use for calling the API. Useful for `POST` requests.
-    * `template`: the *externalizable* template to use
+    * `template`: the template to use (this is a *configuration value*)
     * `type`: the content type of the template (defaults to `application/json`)
 - `insecure`: if the certificates should be trusted without checking.
 - `options`: any additional option to pass to the webclient (see `io.vertx.ext.web.client.WebClientOptions` docs).

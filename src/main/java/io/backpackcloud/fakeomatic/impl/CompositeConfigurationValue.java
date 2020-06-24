@@ -22,34 +22,34 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.ws.rs.core.MediaType;
-import java.util.Optional;
+import java.util.List;
 
-@RegisterForReflection
-public class Payload {
+public class CompositeConfigurationValue implements ConfigurationValue {
 
-  private final String template;
-  private final String type;
+  private final List<ConfigurationValue> values;
 
-  public Payload(@JsonProperty("template") ConfigurationValue template,
-                 @JsonProperty("type") String type) {
-    this.template = template.get();
-    this.type = Optional.ofNullable(type)
-                        .orElse(MediaType.APPLICATION_JSON);
+  public CompositeConfigurationValue(List<ConfigurationValue> values) {
+    this.values = values;
   }
 
-  public String template() {
-    return template;
+  @Override
+  public boolean isSet() {
+    return values.stream()
+                 .anyMatch(ConfigurationValue::isSet);
   }
 
-  public String type() {
-    return type;
+  @Override
+  public String get() {
+    return values.stream()
+                 .filter(ConfigurationValue::isSet)
+                 .findFirst()
+                 .map(ConfigurationValue::get)
+                 .orElseThrow(UnbelievableException::new);
   }
 
 }

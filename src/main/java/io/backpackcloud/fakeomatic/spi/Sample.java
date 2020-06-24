@@ -35,6 +35,7 @@ import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.function.Supplier;
 
@@ -56,6 +57,7 @@ import java.util.function.Supplier;
     @JsonSubTypes.Type(value = WeightedSample.class,  name = "weight"),
 })
 @FunctionalInterface
+@RegisterForReflection
 public interface Sample<E> extends Supplier<E> {
 
   /**

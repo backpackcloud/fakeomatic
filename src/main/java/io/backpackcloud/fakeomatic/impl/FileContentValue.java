@@ -22,34 +22,41 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.ws.rs.core.MediaType;
-import java.util.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @RegisterForReflection
-public class Payload {
+public class FileContentValue implements ConfigurationValue {
 
-  private final String template;
-  private final String type;
+  private final String path;
 
-  public Payload(@JsonProperty("template") ConfigurationValue template,
-                 @JsonProperty("type") String type) {
-    this.template = template.get();
-    this.type = Optional.ofNullable(type)
-                        .orElse(MediaType.APPLICATION_JSON);
+  @JsonCreator
+  public FileContentValue(@JsonProperty("path") String path) {
+    this.path = path;
   }
 
-  public String template() {
-    return template;
+  @Override
+  public boolean isSet() {
+    return new File(path).isFile();
   }
 
-  public String type() {
-    return type;
+  @Override
+  public String get() {
+    try {
+      return Files.readString(Path.of(path));
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
+    }
   }
 
 }

@@ -24,6 +24,8 @@
 
 package io.backpackcloud.fakeomatic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.backpackcloud.fakeomatic.impl.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
@@ -48,10 +50,12 @@ public abstract class BaseTest {
   protected Config.GeneratorConfig generatorConfig;
   protected Config.EndpointConfig  endpointConfig;
   protected Random                 random;
+  protected ObjectMapper           objectMapper;
 
   @BeforeEach
   public void _init() {
     random = new Random();
+    objectMapper = new ObjectMapper(new YAMLFactory());
 
     config = mock(Config.class);
     templateConfig = mock(Config.TemplateConfig.class);
@@ -96,5 +100,5 @@ public abstract class BaseTest {
     );
     return producer.produce();
   }
-  
+
 }

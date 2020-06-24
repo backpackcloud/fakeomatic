@@ -22,34 +22,30 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.ws.rs.core.MediaType;
-import java.util.Optional;
-
 @RegisterForReflection
-public class Payload {
+public class RawValue implements ConfigurationValue {
 
-  private final String template;
-  private final String type;
+  private final String value;
 
-  public Payload(@JsonProperty("template") ConfigurationValue template,
-                 @JsonProperty("type") String type) {
-    this.template = template.get();
-    this.type = Optional.ofNullable(type)
-                        .orElse(MediaType.APPLICATION_JSON);
+  @JsonCreator
+  public RawValue(String value) {
+    this.value = value;
   }
 
-  public String template() {
-    return template;
+  @Override
+  public String get() {
+    return this.value;
   }
 
-  public String type() {
-    return type;
+  @Override
+  public boolean isSet() {
+    return true;
   }
 
 }
