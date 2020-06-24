@@ -285,8 +285,17 @@ The following examples can be used with the built-in configuration.
 [source,json]
 ----
 {
-  "id": "{random('uuid')}",
-  "message": "{random('cause')}",
-  "device": "{expression('%%-#####')}"
+  "id": "{fake('uuid')}",
+  "cause": "{fake('cause')}",
+  "device": "{expression('%%-#####')}",
+  "when": "{today('yyyy-MM-dd HH.mm.ss Z')}"
+}
+----
+
+[source,json]
+----
+{
+  "level": "{oneOf('INFO', 'WARN', 'ERROR')}",
+  "message": "{fake('cause')}"
 }
 ----
