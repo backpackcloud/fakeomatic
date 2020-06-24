@@ -32,7 +32,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -45,10 +44,8 @@ public class FileSample implements Sample<String> {
 
   @JsonCreator
   public FileSample(@JacksonInject Random random,
-                    @JsonProperty("file") String file,
-                    @JsonProperty("charset") String charset) throws IOException {
-    Charset fileCharset = Charset.forName(charset == null ? "UTF-8" : charset);
-    List<String> strings = Files.readAllLines(Paths.get(URI.create(file)), fileCharset);
+                    @JsonProperty("file") String file) throws IOException {
+    List<String> strings = Files.readAllLines(Paths.get(URI.create(file)));
 
     this.listSample = new ListSample(random, strings);
   }
