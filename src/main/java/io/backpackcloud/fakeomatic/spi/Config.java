@@ -85,11 +85,6 @@ public interface Config {
      */
     String type();
 
-    /**
-     * @return Which encode to use for loading the template file.
-     */
-    String charset();
-
   }
 
 }
