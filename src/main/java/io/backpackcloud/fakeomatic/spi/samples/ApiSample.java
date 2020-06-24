@@ -46,12 +46,8 @@ import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 import org.jboss.logging.Logger;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -76,38 +72,31 @@ public class ApiSample implements Sample {
   private final WebClient        client;
   private final ObjectMapper     mapper;
   private final TemplateInstance templateInstance;
-  private final String           payloadType;
+  private final Payload          payload;
 
   @JsonCreator
   public ApiSample(@JacksonInject("root") FakeData fakeData,
                    @JacksonInject Vertx vertx,
                    @JsonProperty("url") ExternalizableValue url,
                    @JsonProperty("method") String method,
-                   // TODO refactor to a parameter object
-                   @JsonProperty("payload") String payloadTemplate,
-                   @JsonProperty("payload_charset") String payloadCharset,
-                   @JsonProperty("payload_type") String payloadType,
+                   @JsonProperty("payload") Payload payload,
                    @JsonProperty("return") String returnPath,
                    @JsonProperty("insecure") boolean insecure,
                    @JsonProperty("options") Map<String, Object> options) {
     try {
-      if (payloadTemplate != null) {
+      this.payload = payload;
+      if (payload != null) {
         this.templateInstance = Engine.builder()
                                       .addDefaults()
                                       .build()
-                                      .parse(
-                                          Files.readString(
-                                              Path.of(payloadTemplate),
-                                              Charset.forName(Optional.ofNullable(payloadCharset).orElse("UTF-8"))
-                                          ))
+                                      .parse(payload.template())
                                       .data(fakeData);
       } else {
         this.templateInstance = null;
       }
-      this.payloadType = Optional.ofNullable(payloadType).orElse(MediaType.APPLICATION_JSON);
       this.method = Optional.ofNullable(method).orElse("get");
       this.mapper = new ObjectMapper();
-      this.url = new URL(url.value());
+      this.url = new URL(url.get());
       this.returnPath = Optional.ofNullable(returnPath).orElse("/");
       this.client = WebClient.create(vertx, new WebClientOptions(
           new JsonObject(options == null ? Collections.emptyMap() : options))
@@ -128,7 +117,7 @@ public class ApiSample implements Sample {
     Uni<HttpResponse<Buffer>> response;
     if (this.templateInstance != null) {
       response = request
-          .putHeader("Content-Type", payloadType)
+          .putHeader("Content-Type", payload.type())
           .sendBuffer(Buffer.buffer(templateInstance.render()));
     } else {
       response = request.send();
