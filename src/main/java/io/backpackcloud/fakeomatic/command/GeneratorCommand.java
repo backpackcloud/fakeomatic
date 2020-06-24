@@ -91,10 +91,10 @@ public class GeneratorCommand implements Callable<Integer> {
   String templateType;
 
   @CommandLine.Option(
-      names = {"-d", "--template-charset"},
-      description = "Which charset to use for parsing the template file"
+      names = "--events-log-level",
+      description = "Log level for the events"
   )
-  String templateEncode;
+  String eventsLogLevel;
 
   @Override
   public Integer call() {
@@ -110,7 +110,8 @@ public class GeneratorCommand implements Callable<Integer> {
 
     setPropertyIfNotNull("template.path", templatePath);
     setPropertyIfNotNull("template.type", templateType);
-    setPropertyIfNotNull("template.charset", templateEncode);
+
+    setPropertyIfNotNull("events.log.level", eventsLogLevel);
 
     try {
       Quarkus.run(Generator.class);
