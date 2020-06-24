@@ -38,6 +38,10 @@ The rules for generating data can contain `samples` and `placeholders`. Samples 
 randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
 expressions for generating data.
 
+==== Externalizable Values
+
+Some configuration values are a
+
 ==== Samples
 
 Samples might have 3 different types:
@@ -81,9 +85,18 @@ samples:
 ----
 
 api::
-This sample actually calls a given API to get data to use every time it's asked for a data. It takes a URL param
-`url` to define the API endpoint and an optional https://tools.ietf.org/html/rfc6901[JSON Pointer] param `return`
-to specify which part of the API response represents the data (uses the whole response if not supplied).
+This sample actually calls a given API to get data to use every time it's asked for a data. The possible parameters it
+can take are:
+
+- `url`: defines the API endpoint
+- `return`: an optional https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the API response
+            represents the data (uses the whole response if not supplied).
+- `method`: which HTTP method to use (defaults to `GET`)
+- `payload`: optional payload object to use for calling the API. Useful for `POST` requests.
+    * `template`: the *externalizable* template to use
+    * `type`: the content type of the template (defaults to `application/json`)
+- `insecure`: if the certificates should be trusted without checking.
+- `options`: any additional option to pass to the webclient (see `io.vertx.ext.web.client.WebClientOptions` docs).
 
 Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the dependent API.
 
@@ -93,7 +106,7 @@ samples:
   chuck_norris:
     type: api
     url: https://api.chucknorris.io/jokes/random
-    result: /value
+    return: /value
 ----
 
 uuid::
@@ -260,10 +273,10 @@ template.path|TEMPLATE_PATH|--template::
 Where to locate the template for generating the payloads. Defaults to `./payload.json`.
 
 template.type|TEMPLATE_TYPE|--template-type::
-Which `Content-Type` to pass to the endpoint. Defaults to `application/json; charset=UTF-8`.
+Which `Content-Type` to pass to the endpoint. Defaults to `application/json`.
 
-template.charset|TEMPLATE_CHARSET|--template-charset::
-Which encode to use for loading the template file. Defaults to `UTF-8`.
+events.log.level|EVENTS_LOG_LEVEL|--events-log-level::
+Sets the log level for the events. To see all the payloads and responses, set the log level to DEBUG.
 
 == Example
 

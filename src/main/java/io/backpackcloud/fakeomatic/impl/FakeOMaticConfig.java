@@ -29,6 +29,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.Random;
 
 import static io.backpackcloud.fakeomatic.impl.FakeOMaticProducer.DEFAULT_CONFIG;
@@ -60,11 +61,8 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "template.path", defaultValue = "./payload.json")
   String templatePath;
 
-  @ConfigProperty(name = "template.type", defaultValue = "application/json; charset=UTF-8")
+  @ConfigProperty(name = "template.type", defaultValue = MediaType.APPLICATION_JSON)
   String templateType;
-
-  @ConfigProperty(name = "template.charset", defaultValue = "UTF-8")
-  String templateCharset;
 
   @Produces
   @Override
@@ -126,11 +124,6 @@ public class FakeOMaticConfig implements Config {
       @Override
       public String type() {
         return templateType;
-      }
-
-      @Override
-      public String charset() {
-        return templateCharset;
       }
     };
   }
