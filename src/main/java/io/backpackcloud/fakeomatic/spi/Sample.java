@@ -36,6 +36,8 @@ import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
 
+import java.util.function.Supplier;
+
 /**
  * Represents a sample of data.
  *
@@ -54,7 +56,7 @@ import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
     @JsonSubTypes.Type(value = WeightedSample.class,  name = "weight"),
 })
 @FunctionalInterface
-public interface Sample<E> {
+public interface Sample<E> extends Supplier<E> {
 
   /**
    * Gets one sample of the data this sample holds.
