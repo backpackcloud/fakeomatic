@@ -34,7 +34,6 @@ import io.quarkus.qute.TemplateInstance;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -56,8 +55,7 @@ public class PayloadProducer {
   @Produces
   public PayloadGenerator produce() {
     try {
-      // read all bytes
-      String content = Files.readString(Paths.get(config.path()), Charset.forName(config.charset()));
+      String content = Files.readString(Paths.get(config.path()));
 
       TemplateInstance template = templateEngine
           .parse(content)
