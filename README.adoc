@@ -154,9 +154,9 @@ api::
 This sample actually calls a given API to get data to use every time it's asked for a data. The possible parameters it
 can take are:
 
-- `url`: defines the API endpoint (this is a <<configuration,configuration>> value)
+- `url`: defines the API endpoint (this is a <<configuration,configuration>> value).
 - `return`: an optional https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the API response
-            represents the data (uses the whole response if not supplied).
+            represents the data (uses the whole response if not supplied). The return is a `JsonNode`.
 - `method`: which HTTP method to use (defaults to `GET`)
 - `payload`: optional payload object to use for calling the API. Useful for `POST` requests.
     * `template`: the template to use (this is a <<configuration,configuration>> value)
