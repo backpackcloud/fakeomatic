@@ -164,11 +164,6 @@ public class FakeOMaticProducer {
     }
 
     @Override
-    public String expressionFrom(String sampleName) {
-      return delegate.expressionFrom(sampleName);
-    }
-
-    @Override
     public List<Sample> samples() {
       return delegate.samples();
     }
