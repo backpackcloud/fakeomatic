@@ -42,7 +42,6 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -124,7 +123,7 @@ public class FakeOMaticProducer {
         parent = objectMapper.readValue(config, FakeOMatic.class);
         std.addValue("parent", parent);
       }
-    } catch (IOException e) {
+    } catch (Throwable e) {
       LOGGER.error("Error while parsing configuration", e);
       throw new UnbelievableException(e);
     }

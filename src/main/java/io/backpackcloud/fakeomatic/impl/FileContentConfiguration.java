@@ -40,6 +40,7 @@ public class FileContentConfiguration implements Configuration {
 
   private final String path;
 
+  // TODO add support for defining the file location using environment variables or system properties
   @JsonCreator
   public FileContentConfiguration(@JsonProperty("path") String path) {
     this.path = path;

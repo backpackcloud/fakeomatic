@@ -25,38 +25,41 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Config;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.Template;
+import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.quarkus.qute.EvalContext;
+import io.quarkus.qute.Results;
+import io.quarkus.qute.ValueResolver;
+import org.jboss.logging.Logger;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-public class TemplateProducer {
+public class FakeDataResolver implements ValueResolver {
 
-  private final Config.TemplateConfig config;
+  private static final Logger LOGGER = Logger.getLogger(FakeDataResolver.class);
 
-  public TemplateProducer(Config.TemplateConfig config) {
-    this.config = config;
-  }
-
-  @Produces
-  @Singleton
-  public Template produceTemplate() {
+  @Override
+  public CompletionStage<Object> resolve(EvalContext context) {
     try {
-      Engine templateEngine = Engine.builder()
-                                    .addDefaults()
-                                    .addValueResolver(new FakeDataResolver())
-                                    .build();
-      String content        = Files.readString(Paths.get(config.path()));
-
-      return templateEngine.parse(content);
-    } catch (IOException e) {
+      FakeData fakeData = (FakeData) context.getBase();
+      String   param    = context.getParams().get(0).getLiteralValue().get().toString();
+      switch (context.getName()) {
+        case "fake":
+          return CompletableFuture.completedFuture(fakeData.fake(param).toString());
+        case "expression":
+          return CompletableFuture.completedFuture(fakeData.expression(param));
+        default:
+          return Results.NOT_FOUND;
+      }
+    } catch (Exception e) {
+      LOGGER.error("Error while resolving sample", e);
       throw new UnbelievableException(e);
     }
+  }
+
+  @Override
+  public boolean appliesTo(EvalContext context) {
+    return ValueResolver.matchClass(context, FakeData.class);
   }
 
 }

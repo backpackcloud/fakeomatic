@@ -53,7 +53,7 @@ public class CompositeSample implements Sample<String> {
                          @JsonProperty("separator") String separator) {
     this.fakeData = fakeData;
     this.samples = samples;
-    this.separator = Optional.ofNullable(separator).orElse(" ");
+    this.separator = Optional.ofNullable(separator).orElse("");
   }
 
   public List<Sample> samples() {

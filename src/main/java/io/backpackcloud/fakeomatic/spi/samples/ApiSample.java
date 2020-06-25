@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.impl.FakeDataResolver;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -71,7 +72,7 @@ public class ApiSample implements Sample {
   private final String              returnPath;
   private final WebClient           client;
   private final ObjectMapper        mapper;
-  private final TemplateInstance    templateInstance;
+  private final TemplateInstance    template;
   private final Payload             payload;
   private final Map<String, String> pathVars;
   private final FakeData            fakeData;
@@ -90,13 +91,14 @@ public class ApiSample implements Sample {
     try {
       this.payload = payload;
       if (payload != null) {
-        this.templateInstance = Engine.builder()
-                                      .addDefaults()
-                                      .build()
-                                      .parse(payload.template())
-                                      .data(fakeData);
+        this.template = Engine.builder()
+                              .addDefaults()
+                              .addValueResolver(new FakeDataResolver())
+                              .build()
+                              .parse(payload.template())
+                              .data(fakeData);
       } else {
-        this.templateInstance = null;
+        this.template = null;
       }
       this.method = Optional.ofNullable(method).orElse("get");
       this.mapper = new ObjectMapper();
@@ -130,10 +132,10 @@ public class ApiSample implements Sample {
 
     HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), requestURI);
     Uni<HttpResponse<Buffer>> response;
-    if (this.templateInstance != null) {
+    if (this.template != null) {
       response = request
           .putHeader("Content-Type", payload.type())
-          .sendBuffer(Buffer.buffer(templateInstance.render()));
+          .sendBuffer(Buffer.buffer(template.render()));
     } else {
       response = request.send();
     }
@@ -144,7 +146,7 @@ public class ApiSample implements Sample {
                                   .await().atMost(Duration.ofSeconds(30));
     try {
       JsonNode parsedPayload = this.mapper.readTree(responseBody);
-      return parsedPayload.at(this.returnPath);
+      return parsedPayload.at(this.returnPath).asText();
     } catch (IOException e) {
       LOGGER.error("Error while calling API", e);
       throw new UnbelievableException(e);
