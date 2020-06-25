@@ -74,6 +74,7 @@ public class ApiSample implements Sample {
   private final TemplateInstance    templateInstance;
   private final Payload             payload;
   private final Map<String, String> pathVars;
+  private final FakeData            fakeData;
 
   @JsonCreator
   public ApiSample(@JacksonInject("root") FakeData fakeData,
@@ -85,6 +86,7 @@ public class ApiSample implements Sample {
                    @JsonProperty("insecure") boolean insecure,
                    @JsonProperty("options") Map<String, Object> options,
                    @JsonProperty("path_vars") Map<String, String> pathVars) {
+    this.fakeData = fakeData;
     try {
       this.payload = payload;
       if (payload != null) {
@@ -118,7 +120,12 @@ public class ApiSample implements Sample {
   public Object get() {
     String requestURI = url.toString();
     for (Map.Entry<String, String> entry : this.pathVars.entrySet()) {
-      requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
+      Object value = fakeData.sample(entry.getValue()).get();
+      // TODO refactor this
+      if (value instanceof JsonNode) {
+        value = ((JsonNode) value).asText();
+      }
+      requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", String.valueOf(value));
     }
 
     HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), requestURI);
