@@ -24,7 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import io.backpackcloud.fakeomatic.impl.FakeOMaticProducer;
+import io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.vertx.mutiny.core.Vertx;
 

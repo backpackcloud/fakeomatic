@@ -39,7 +39,7 @@ public class Payload {
 
   public Payload(@JsonProperty("template") Configuration template,
                  @JsonProperty("type") String type) {
-    this.template = template.get();
+    this.template = template.read();
     this.type = Optional.ofNullable(type)
                         .orElse(MediaType.APPLICATION_JSON);
   }

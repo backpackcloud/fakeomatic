@@ -32,7 +32,7 @@ import javax.enterprise.inject.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Random;
 
-import static io.backpackcloud.fakeomatic.impl.FakeOMaticProducer.DEFAULT_CONFIG;
+import static io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer.DEFAULT_CONFIG;
 
 @ApplicationScoped
 public class FakeOMaticConfig implements Config {

@@ -22,31 +22,30 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.configuration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class SystemPropertyConfiguration implements Configuration {
+public class RawValueConfiguration implements Configuration {
 
-  private final String key;
+  private final String value;
 
   @JsonCreator
-  public SystemPropertyConfiguration(@JsonProperty("key") String key) {
-    this.key = key;
-  }
-
-  @Override
-  public boolean isSet() {
-    return System.getProperties().containsKey(key);
+  public RawValueConfiguration(String value) {
+    this.value = value;
   }
 
   @Override
   public String get() {
-    return System.getProperty(key);
+    return this.value;
+  }
+
+  @Override
+  public boolean isSet() {
+    return true;
   }
 
 }

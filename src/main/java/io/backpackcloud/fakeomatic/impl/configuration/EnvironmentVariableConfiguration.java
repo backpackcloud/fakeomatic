@@ -22,41 +22,30 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.configuration;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Config;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.Template;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.backpackcloud.fakeomatic.spi.Configuration;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+@RegisterForReflection
+public class EnvironmentVariableConfiguration implements Configuration {
 
-public class TemplateProducer {
+  private final String key;
 
-  private final Config.TemplateConfig config;
-
-  public TemplateProducer(Config.TemplateConfig config) {
-    this.config = config;
+  @JsonCreator
+  public EnvironmentVariableConfiguration(String key) {
+    this.key = key;
   }
 
-  @Produces
-  @Singleton
-  public Template produceTemplate() {
-    try {
-      Engine templateEngine = Engine.builder()
-                                    .addDefaults()
-                                    .addValueResolver(new FakeDataResolver())
-                                    .build();
-      String content        = Files.readString(Paths.get(config.path()));
+  @Override
+  public boolean isSet() {
+    return System.getenv().containsKey(key);
+  }
 
-      return templateEngine.parse(content);
-    } catch (IOException e) {
-      throw new UnbelievableException(e);
-    }
+  @Override
+  public String get() {
+    return System.getenv(key);
   }
 
 }

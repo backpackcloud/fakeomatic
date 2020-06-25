@@ -22,34 +22,44 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.resolver;
 
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Configuration;
+import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.quarkus.qute.EvalContext;
+import io.quarkus.qute.Results;
+import io.quarkus.qute.ValueResolver;
+import org.jboss.logging.Logger;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-public class CompositeConfiguration implements Configuration {
+public class FakeDataResolver implements ValueResolver {
 
-  private final List<Configuration> values;
+  private static final Logger LOGGER = Logger.getLogger(FakeDataResolver.class);
 
-  public CompositeConfiguration(List<Configuration> values) {
-    this.values = values;
+  @Override
+  public CompletionStage<Object> resolve(EvalContext context) {
+    try {
+      FakeData fakeData = (FakeData) context.getBase();
+      String   param    = context.getParams().get(0).getLiteralValue().get().toString();
+      switch (context.getName()) {
+        case "fake":
+          return CompletableFuture.completedFuture(fakeData.fake(param).toString());
+        case "expression":
+          return CompletableFuture.completedFuture(fakeData.expression(param));
+        default:
+          return Results.NOT_FOUND;
+      }
+    } catch (Exception e) {
+      LOGGER.error("Error while resolving sample", e);
+      throw new UnbelievableException(e);
+    }
   }
 
   @Override
-  public boolean isSet() {
-    return values.stream()
-                 .anyMatch(Configuration::isSet);
-  }
-
-  @Override
-  public String get() {
-    return values.stream()
-                 .filter(Configuration::isSet)
-                 .findFirst()
-                 .map(Configuration::get)
-                 .orElseThrow(UnbelievableException::new);
+  public boolean appliesTo(EvalContext context) {
+    return ValueResolver.matchClass(context, FakeData.class);
   }
 
 }

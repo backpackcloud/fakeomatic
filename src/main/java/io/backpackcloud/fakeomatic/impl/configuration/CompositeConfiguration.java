@@ -22,31 +22,34 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.configuration;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
-@RegisterForReflection
-public class EnvironmentVariableConfiguration implements Configuration {
+import java.util.List;
 
-  private final String key;
+public class CompositeConfiguration implements Configuration {
 
-  @JsonCreator
-  public EnvironmentVariableConfiguration(@JsonProperty("key") String key) {
-    this.key = key;
+  private final List<Configuration> values;
+
+  public CompositeConfiguration(List<Configuration> values) {
+    this.values = values;
   }
 
   @Override
   public boolean isSet() {
-    return System.getenv().containsKey(key);
+    return values.stream()
+                 .anyMatch(Configuration::isSet);
   }
 
   @Override
   public String get() {
-    return System.getenv(key);
+    return values.stream()
+                 .filter(Configuration::isSet)
+                 .findFirst()
+                 .map(Configuration::get)
+                 .orElseThrow(UnbelievableException::new);
   }
 
 }

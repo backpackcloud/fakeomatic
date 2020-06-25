@@ -22,36 +22,47 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.producer;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.backpackcloud.fakeomatic.impl.TemplatePayloadGenerator;
+import io.backpackcloud.fakeomatic.spi.Config;
+import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
+import io.quarkus.qute.Engine;
+import io.quarkus.qute.TemplateInstance;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-@RegisterForReflection
-public class ResourceConfiguration implements Configuration {
+@ApplicationScoped
+public class PayloadProducer {
 
-  private final InputStream inputStream;
+  private final Config.TemplateConfig config;
 
-  @JsonCreator
-  public ResourceConfiguration(@JsonProperty("resource") String resourcePath) {
-    this.inputStream = ResourceConfiguration.class.getResourceAsStream(resourcePath);
+  private final FakeData fakeData;
+
+  private final Engine templateEngine;
+
+  public PayloadProducer(Config.TemplateConfig config, FakeData fakeData, Engine templateEngine) {
+    this.config = config;
+    this.fakeData = fakeData;
+    this.templateEngine = templateEngine;
   }
 
-  @Override
-  public boolean isSet() {
-    return inputStream != null;
-  }
+  @Produces
+  public PayloadGenerator produce() {
+    try {
+      String content = Files.readString(Paths.get(config.path()));
 
-  @Override
-  public String get() {
-    try (inputStream) {
-      return new String(inputStream.readAllBytes());
+      TemplateInstance template = templateEngine
+          .parse(content)
+          .data(fakeData);
+
+      return new TemplatePayloadGenerator(this.config.type(), template);
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }

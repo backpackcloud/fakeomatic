@@ -26,7 +26,7 @@ package io.backpackcloud.fakeomatic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.backpackcloud.fakeomatic.impl.FakeOMaticProducer;
+import io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;

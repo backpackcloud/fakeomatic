@@ -22,44 +22,45 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.configuration;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.FakeData;
-import io.quarkus.qute.EvalContext;
-import io.quarkus.qute.Results;
-import io.quarkus.qute.ValueResolver;
-import org.jboss.logging.Logger;
+import io.backpackcloud.fakeomatic.spi.Configuration;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class FakeDataResolver implements ValueResolver {
+@RegisterForReflection
+public class FileContentConfiguration implements Configuration {
 
-  private static final Logger LOGGER = Logger.getLogger(FakeDataResolver.class);
+  private final String path;
+
+  @JsonCreator
+  public FileContentConfiguration(String path) {
+    this.path = path;
+  }
 
   @Override
-  public CompletionStage<Object> resolve(EvalContext context) {
+  public boolean isSet() {
+    return new File(path).isFile();
+  }
+
+  @Override
+  public String get() {
     try {
-      FakeData fakeData = (FakeData) context.getBase();
-      String   param    = context.getParams().get(0).getLiteralValue().get().toString();
-      switch (context.getName()) {
-        case "fake":
-          return CompletableFuture.completedFuture(fakeData.fake(param).toString());
-        case "expression":
-          return CompletableFuture.completedFuture(fakeData.expression(param));
-        default:
-          return Results.NOT_FOUND;
-      }
-    } catch (Exception e) {
-      LOGGER.error("Error while resolving sample", e);
+      return Files.readString(Path.of(path));
+    } catch (IOException e) {
       throw new UnbelievableException(e);
     }
   }
 
   @Override
-  public boolean appliesTo(EvalContext context) {
-    return ValueResolver.matchClass(context, FakeData.class);
+  public String read() {
+    return get();
   }
 
 }

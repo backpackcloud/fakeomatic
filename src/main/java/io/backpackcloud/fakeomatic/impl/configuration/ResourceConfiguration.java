@@ -22,49 +22,43 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.configuration;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Config;
-import io.backpackcloud.fakeomatic.spi.FakeData;
-import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.TemplateInstance;
+import io.backpackcloud.fakeomatic.spi.Configuration;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 
-@ApplicationScoped
-public class PayloadProducer {
+@RegisterForReflection
+public class ResourceConfiguration implements Configuration {
 
-  private final Config.TemplateConfig config;
+  private final InputStream inputStream;
 
-  private final FakeData fakeData;
-
-  private final Engine templateEngine;
-
-  public PayloadProducer(Config.TemplateConfig config, FakeData fakeData, Engine templateEngine) {
-    this.config = config;
-    this.fakeData = fakeData;
-    this.templateEngine = templateEngine;
+  @JsonCreator
+  public ResourceConfiguration(String resourcePath) {
+    this.inputStream = ResourceConfiguration.class.getResourceAsStream(resourcePath);
   }
 
-  @Produces
-  public PayloadGenerator produce() {
-    try {
-      String content = Files.readString(Paths.get(config.path()));
+  @Override
+  public boolean isSet() {
+    return inputStream != null;
+  }
 
-      TemplateInstance template = templateEngine
-          .parse(content)
-          .data(fakeData);
-
-      return new TemplatePayloadGenerator(this.config.type(), template);
+  @Override
+  public String get() {
+    try (inputStream) {
+      return new String(inputStream.readAllBytes());
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }
+  }
+
+  @Override
+  public String read() {
+    return get();
   }
 
 }

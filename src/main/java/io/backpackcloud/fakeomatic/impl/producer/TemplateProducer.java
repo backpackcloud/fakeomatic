@@ -22,39 +22,39 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.impl.producer;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.backpackcloud.fakeomatic.impl.resolver.FakeDataResolver;
+import io.backpackcloud.fakeomatic.spi.Config;
+import io.quarkus.qute.Engine;
+import io.quarkus.qute.Template;
 
-import java.io.File;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 
-@RegisterForReflection
-public class FileContentConfiguration implements Configuration {
+public class TemplateProducer {
 
-  private final String path;
+  private final Config.TemplateConfig config;
 
-  // TODO add support for defining the file location using environment variables or system properties
-  @JsonCreator
-  public FileContentConfiguration(@JsonProperty("path") String path) {
-    this.path = path;
+  public TemplateProducer(Config.TemplateConfig config) {
+    this.config = config;
   }
 
-  @Override
-  public boolean isSet() {
-    return new File(path).isFile();
-  }
-
-  @Override
-  public String get() {
+  @Produces
+  @Singleton
+  public Template produceTemplate() {
     try {
-      return Files.readString(Path.of(path));
+      Engine templateEngine = Engine.builder()
+                                    .addDefaults()
+                                    .addValueResolver(new FakeDataResolver())
+                                    .build();
+      String content        = Files.readString(Paths.get(config.path()));
+
+      return templateEngine.parse(content);
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }

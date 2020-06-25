@@ -26,14 +26,18 @@ package io.backpackcloud.fakeomatic.spi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.impl.CompositeConfiguration;
-import io.backpackcloud.fakeomatic.impl.EnvironmentVariableConfiguration;
-import io.backpackcloud.fakeomatic.impl.FileContentConfiguration;
-import io.backpackcloud.fakeomatic.impl.RawValueConfiguration;
-import io.backpackcloud.fakeomatic.impl.ResourceConfiguration;
-import io.backpackcloud.fakeomatic.impl.SystemPropertyConfiguration;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.impl.configuration.CompositeConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.EnvironmentVariableConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.FileContentConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.RawValueConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.ResourceConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.SystemPropertyConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -44,6 +48,14 @@ public interface Configuration extends Supplier<String> {
   boolean isSet();
 
   String get();
+
+  default String read() {
+    try {
+      return Files.readString(Path.of(get()));
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
+    }
+  }
 
   @JsonCreator
   static Configuration create(String value) {
