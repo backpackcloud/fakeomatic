@@ -163,6 +163,8 @@ can take are:
     * `type`: the content type of the template (defaults to `application/json`)
 - `insecure`: if the certificates should be trusted without checking.
 - `options`: any additional option to pass to the webclient (see `io.vertx.ext.web.client.WebClientOptions` docs).
+- `path_vars`: A string,string map containing all the samples that forms the path on the uri (example: `/api/{uuid}`
+               will be replaced by the value gotten from the sample `uuid`).
 
 Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the dependent API.
 

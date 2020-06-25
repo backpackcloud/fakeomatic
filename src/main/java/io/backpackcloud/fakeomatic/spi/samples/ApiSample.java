@@ -66,13 +66,14 @@ public class ApiSample implements Sample {
 
   private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
 
-  private final URL              url;
-  private final String           method;
-  private final String           returnPath;
-  private final WebClient        client;
-  private final ObjectMapper     mapper;
-  private final TemplateInstance templateInstance;
-  private final Payload          payload;
+  private final URL                 url;
+  private final String              method;
+  private final String              returnPath;
+  private final WebClient           client;
+  private final ObjectMapper        mapper;
+  private final TemplateInstance    templateInstance;
+  private final Payload             payload;
+  private final Map<String, String> pathVars;
 
   @JsonCreator
   public ApiSample(@JacksonInject("root") FakeData fakeData,
@@ -82,7 +83,8 @@ public class ApiSample implements Sample {
                    @JsonProperty("payload") Payload payload,
                    @JsonProperty("return") String returnPath,
                    @JsonProperty("insecure") boolean insecure,
-                   @JsonProperty("options") Map<String, Object> options) {
+                   @JsonProperty("options") Map<String, Object> options,
+                   @JsonProperty("path_vars") Map<String, String> pathVars) {
     try {
       this.payload = payload;
       if (payload != null) {
@@ -98,6 +100,7 @@ public class ApiSample implements Sample {
       this.mapper = new ObjectMapper();
       this.url = new URL(url.get());
       this.returnPath = Optional.ofNullable(returnPath).orElse("/");
+      this.pathVars = Optional.ofNullable(pathVars).orElseGet(Collections::emptyMap);
       this.client = WebClient.create(vertx, new WebClientOptions(
           new JsonObject(options == null ? Collections.emptyMap() : options))
           .setDefaultHost(this.url.getHost())
@@ -113,7 +116,12 @@ public class ApiSample implements Sample {
 
   @Override
   public Object get() {
-    HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), url.toString());
+    String requestURI = url.toString();
+    for (Map.Entry<String, String> entry : this.pathVars.entrySet()) {
+      requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
+    }
+
+    HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), requestURI);
     Uni<HttpResponse<Buffer>> response;
     if (this.templateInstance != null) {
       response = request
