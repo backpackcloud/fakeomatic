@@ -25,7 +25,7 @@ io.backpackcloud
 artifactId::
 fakeomatic
 version::
-0.6.0
+0.7.0
 
 == How to Configure
 
@@ -277,7 +277,7 @@ A composite sample that takes a sample value and evaluates it as an expression.
 [source,yaml]
 ----
 samples:
-  places:
+  address_expression:
     type: list
     values:
       - "Some Street ##"
@@ -285,7 +285,7 @@ samples:
       - "Galaxy ###"
   address:
     type: expression
-    sample: places
+    sample: address_expression
 ----
 
 ==== Placeholders
