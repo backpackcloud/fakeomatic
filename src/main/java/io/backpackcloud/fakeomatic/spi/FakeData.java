@@ -29,10 +29,7 @@ import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.vertx.mutiny.core.Vertx;
 
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -103,23 +100,8 @@ public interface FakeData {
     return builder.toString();
   }
 
-  /**
-   * {@link #expression(String) Evaluates} a random data from the Sample associated with the given name.
-   *
-   * @param sampleName the name of the Sample.
-   * @return a random generated expression.
-   */
-  default String expressionFrom(String sampleName) {
-    return expression(fake(sampleName));
-  }
-
   default String env(String name) {
     return System.getenv(name);
-  }
-
-  default String today(String format) {
-    DateFormat dateFormat = new SimpleDateFormat(format);
-    return dateFormat.format(new Date());
   }
 
   /**

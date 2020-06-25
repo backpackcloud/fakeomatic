@@ -255,6 +255,37 @@ samples:
     max: 20
 ----
 
+today::
+
+Gets the today date in the specified parameter `format` as defined in the
+https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html[SimpleDateFormat]
+documentation.
+
+[source,yaml]
+----
+samples:
+  now:
+    type: today
+    format: dd-MM-yyyy
+----
+
+expression::
+A composite sample that takes a sample value and evaluates it as an expression.
+
+[source,yaml]
+----
+samples:
+  places:
+    type: list
+    values:
+      - "Some Street ##"
+      - "Another Street ###"
+      - "Galaxy ###"
+  address:
+    type: expression
+    sample: places
+----
+
 ==== Placeholders
 
 The placeholders are a single character that can be associated with any of the configured sample. Bellow is an example
@@ -294,13 +325,6 @@ Randomly picks one of the given values using the internal `Random` reference.
 For more methods, check out the `FakeData` interface.
 
 === Utilities
-
-You can use a couple of utilities for the template:
-
-today(format)::
-Gets the today date in the specified format as defined in the
-https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html[SimpleDateFormat]
-documentation.
 
 env(name)::
 Gets the named environment variable.
