@@ -25,27 +25,28 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class RawValue implements ConfigurationValue {
+public class SystemPropertyConfiguration implements Configuration {
 
-  private final String value;
+  private final String key;
 
   @JsonCreator
-  public RawValue(String value) {
-    this.value = value;
-  }
-
-  @Override
-  public String get() {
-    return this.value;
+  public SystemPropertyConfiguration(@JsonProperty("key") String key) {
+    this.key = key;
   }
 
   @Override
   public boolean isSet() {
-    return true;
+    return System.getProperties().containsKey(key);
+  }
+
+  @Override
+  public String get() {
+    return System.getProperty(key);
   }
 
 }

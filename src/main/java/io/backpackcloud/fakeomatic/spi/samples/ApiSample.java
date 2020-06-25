@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.qute.Engine;
@@ -77,7 +77,7 @@ public class ApiSample implements Sample {
   @JsonCreator
   public ApiSample(@JacksonInject("root") FakeData fakeData,
                    @JacksonInject Vertx vertx,
-                   @JsonProperty("url") ConfigurationValue url,
+                   @JsonProperty("url") Configuration url,
                    @JsonProperty("method") String method,
                    @JsonProperty("payload") Payload payload,
                    @JsonProperty("return") String returnPath,

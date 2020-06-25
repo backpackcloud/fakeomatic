@@ -26,12 +26,12 @@ package io.backpackcloud.fakeomatic.spi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.impl.CompositeConfigurationValue;
-import io.backpackcloud.fakeomatic.impl.EnvironmentVariableValue;
-import io.backpackcloud.fakeomatic.impl.FileContentValue;
-import io.backpackcloud.fakeomatic.impl.RawValue;
-import io.backpackcloud.fakeomatic.impl.ResourceValue;
-import io.backpackcloud.fakeomatic.impl.SystemPropertyValue;
+import io.backpackcloud.fakeomatic.impl.CompositeConfiguration;
+import io.backpackcloud.fakeomatic.impl.EnvironmentVariableConfiguration;
+import io.backpackcloud.fakeomatic.impl.FileContentConfiguration;
+import io.backpackcloud.fakeomatic.impl.RawValueConfiguration;
+import io.backpackcloud.fakeomatic.impl.ResourceConfiguration;
+import io.backpackcloud.fakeomatic.impl.SystemPropertyConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.ArrayList;
@@ -39,42 +39,42 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @RegisterForReflection
-public interface ConfigurationValue extends Supplier<String> {
+public interface Configuration extends Supplier<String> {
 
   boolean isSet();
 
   String get();
 
   @JsonCreator
-  static ConfigurationValue create(String value) {
-    return new RawValue(value);
+  static Configuration create(String value) {
+    return new RawValueConfiguration(value);
   }
 
   @JsonCreator
-  static ConfigurationValue create(@JsonProperty("env") String env,
-                                   @JsonProperty("property") String property,
-                                   @JsonProperty("file") String file,
-                                   @JsonProperty("resource") String resource,
-                                   @JsonProperty("default") String defaultValue) {
-    List<ConfigurationValue> values = new ArrayList<>();
+  static Configuration create(@JsonProperty("env") String env,
+                              @JsonProperty("property") String property,
+                              @JsonProperty("file") String file,
+                              @JsonProperty("resource") String resource,
+                              @JsonProperty("default") String defaultValue) {
+    List<Configuration> values = new ArrayList<>();
 
     if (env != null) {
-      values.add(new EnvironmentVariableValue(env));
+      values.add(new EnvironmentVariableConfiguration(env));
     }
     if (property != null) {
-      values.add(new SystemPropertyValue(property));
+      values.add(new SystemPropertyConfiguration(property));
     }
     if (file != null) {
-      values.add(new FileContentValue(file));
+      values.add(new FileContentConfiguration(file));
     }
     if (resource != null) {
-      values.add(new ResourceValue(resource));
+      values.add(new ResourceConfiguration(resource));
     }
     if (defaultValue != null) {
-      values.add(new RawValue(defaultValue));
+      values.add(new RawValueConfiguration(defaultValue));
     }
 
-    return new CompositeConfigurationValue(values);
+    return new CompositeConfiguration(values);
   }
 
 }

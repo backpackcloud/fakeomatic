@@ -24,37 +24,32 @@
 
 package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
 
-@RegisterForReflection
-public class ResourceValue implements ConfigurationValue {
+public class CompositeConfiguration implements Configuration {
 
-  private final InputStream inputStream;
+  private final List<Configuration> values;
 
-  @JsonCreator
-  public ResourceValue(@JsonProperty("resource") String resourcePath) {
-    this.inputStream = ResourceValue.class.getResourceAsStream(resourcePath);
+  public CompositeConfiguration(List<Configuration> values) {
+    this.values = values;
   }
 
   @Override
   public boolean isSet() {
-    return inputStream != null;
+    return values.stream()
+                 .anyMatch(Configuration::isSet);
   }
 
   @Override
   public String get() {
-    try (inputStream) {
-      return new String(inputStream.readAllBytes());
-    } catch (IOException e) {
-      throw new UnbelievableException(e);
-    }
+    return values.stream()
+                 .filter(Configuration::isSet)
+                 .findFirst()
+                 .map(Configuration::get)
+                 .orElseThrow(UnbelievableException::new);
   }
 
 }

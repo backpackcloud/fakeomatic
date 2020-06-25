@@ -27,7 +27,7 @@ package io.backpackcloud.fakeomatic.impl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ConfigurationValueTest extends BaseTest {
+public class ConfigurationTest extends BaseTest {
 
   TestObject testObject;
 
@@ -54,27 +54,27 @@ public class ConfigurationValueTest extends BaseTest {
     System.clearProperty("fakeomatic.test");
   }
 
-  private ConfigurationValue value(String key) {
+  private Configuration value(String key) {
     return testObject.map.get(key);
   }
 
   @Test
   public void testRawValue() {
-    ConfigurationValue value = value("raw_value");
+    Configuration value = value("raw_value");
     assertTrue(value.isSet());
     assertEquals("foo", value.get());
   }
 
   @Test
   public void testEnvironmentVariableValue() {
-    ConfigurationValue value = value("env_value");
+    Configuration value = value("env_value");
     assertTrue(value.isSet());
     assertFalse(value.get().isEmpty());
   }
 
   @Test
   public void testSystemPropertyValue() {
-    ConfigurationValue value = value("property_value");
+    Configuration value = value("property_value");
     assertFalse(value.isSet());
     System.setProperty("fakeomatic.test", "bar");
     assertTrue(value.isSet());
@@ -83,21 +83,21 @@ public class ConfigurationValueTest extends BaseTest {
 
   @Test
   public void testFileValue() {
-    ConfigurationValue value = value("file_value");
+    Configuration value = value("file_value");
     assertTrue(value.isSet());
     assertTrue(value.get().contains("MIT"));
   }
 
   @Test
   public void testResourceValue() {
-    ConfigurationValue value = value("resource_value");
+    Configuration value = value("resource_value");
     assertTrue(value.isSet());
     assertTrue(value.get().contains("placeholders:"));
   }
 
   @Test
   public void testCompositeValue() {
-    ConfigurationValue value = value("composition");
+    Configuration value = value("composition");
     assertTrue(value.isSet());
     assertTrue(value.get().contains("MIT"));
     System.setProperty("fakeomatic.test", "bar");
@@ -107,10 +107,10 @@ public class ConfigurationValueTest extends BaseTest {
 
   public static class TestObject {
 
-    public final Map<String, ConfigurationValue> map;
+    public final Map<String, Configuration> map;
 
     @JsonCreator
-    public TestObject(@JsonProperty("map") Map<String, ConfigurationValue> map) {
+    public TestObject(@JsonProperty("map") Map<String, Configuration> map) {
       this.map = map;
     }
 

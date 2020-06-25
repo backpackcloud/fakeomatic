@@ -27,7 +27,7 @@ package io.backpackcloud.fakeomatic.impl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.File;
@@ -36,12 +36,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @RegisterForReflection
-public class FileContentValue implements ConfigurationValue {
+public class FileContentConfiguration implements Configuration {
 
   private final String path;
 
   @JsonCreator
-  public FileContentValue(@JsonProperty("path") String path) {
+  public FileContentConfiguration(@JsonProperty("path") String path) {
     this.path = path;
   }
 

@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.spi.samples;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.ConfigurationValue;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import javax.ws.rs.core.MediaType;
@@ -37,7 +37,7 @@ public class Payload {
   private final String template;
   private final String type;
 
-  public Payload(@JsonProperty("template") ConfigurationValue template,
+  public Payload(@JsonProperty("template") Configuration template,
                  @JsonProperty("type") String type) {
     this.template = template.get();
     this.type = Optional.ofNullable(type)
