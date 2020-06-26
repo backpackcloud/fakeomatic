@@ -45,20 +45,24 @@ public class FakeDataResolver implements ValueResolver {
   public CompletionStage<Object> resolve(EvalContext context) {
     try {
       FakeData fakeData = (FakeData) context.getBase();
-      List params    = context.getParams()
-                              .stream()
-                              .map(Expression::getLiteralValue)
-                              .map(future -> {
-                                try {
-                                  return future.get();
-                                } catch (Exception e) {
-                                  LOGGER.error("Error while evaluating params", e);
-                                  throw new UnbelievableException(e);
-                                }
-                              }).collect(Collectors.toList());
+      List params = context.getParams()
+                           .stream()
+                           .map(Expression::getLiteralValue)
+                           .map(future -> {
+                             try {
+                               return future.get();
+                             } catch (Exception e) {
+                               LOGGER.error("Error while evaluating params", e);
+                               throw new UnbelievableException(e);
+                             }
+                           }).collect(Collectors.toList());
       switch (context.getName()) {
         case "fake":
-          return CompletableFuture.completedFuture(fakeData.fake(params.get(0).toString()).toString());
+        case "random":
+        case "one":
+        case "some":
+        case "particular":
+          return CompletableFuture.completedFuture(fakeData.some(params.get(0).toString()).toString());
         case "expression":
           return CompletableFuture.completedFuture(fakeData.expression(params.get(0).toString()));
         case "oneOf":

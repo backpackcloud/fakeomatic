@@ -315,8 +315,8 @@ samples:
 Fake-O-Matic uses https://quarkus.io/guides/qute-reference[Qute] templates to produce the payloads. A couple of methods
 can be used to get a fake data, the main one are:
 
-random(sampleName)::
-Gets a random sample from the given sample name.
+some(sampleName)::
+Gets a random sample from the given sample name. Can also be used as `particular`, `fake`, `one` or `random`.
 
 expression(placeholders)::
 Gets a random data produced by replacing each placeholder by a random sample associated with it.

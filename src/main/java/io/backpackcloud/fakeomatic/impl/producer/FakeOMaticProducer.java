@@ -150,13 +150,13 @@ public class FakeOMaticProducer {
     }
 
     @Override
-    public String fake(char placeholder) {
-      return delegate.fake(placeholder);
+    public String some(char placeholder) {
+      return delegate.some(placeholder);
     }
 
     @Override
-    public String fake(String sampleName) {
-      return delegate.fake(sampleName);
+    public String some(String sampleName) {
+      return delegate.some(sampleName);
     }
 
     @Override

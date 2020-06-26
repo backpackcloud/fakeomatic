@@ -46,7 +46,7 @@ public class ExpressionSample implements Sample<String> {
 
   @Override
   public String get() {
-    return fakeData.expression(fakeData.fake(sampleName));
+    return fakeData.expression(fakeData.some(sampleName));
   }
 
 }

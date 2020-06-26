@@ -71,7 +71,7 @@ public interface FakeData {
    * @param placeholder the placeholder to get the sample.
    * @return a random data.
    */
-  String fake(char placeholder);
+  String some(char placeholder);
 
   /**
    * Returns a random data from the Sample associated with the given name.
@@ -79,7 +79,7 @@ public interface FakeData {
    * @param sampleName the name of the Sample.
    * @return a random data.
    */
-  default <E> E fake(String sampleName) {
+  default <E> E some(String sampleName) {
     return (E) sample(sampleName).get();
   }
 
@@ -88,13 +88,13 @@ public interface FakeData {
    *
    * @param expression the expression to evaluate.
    * @return a random generated expression.
-   * @see #fake(char)
+   * @see #some(char)
    */
   default String expression(String expression) {
     StringBuilder builder = new StringBuilder(expression.length());
 
     for (int i = 0; i < expression.length(); i++) {
-      builder.append(fake(expression.charAt(i)));
+      builder.append(some(expression.charAt(i)));
     }
 
     return builder.toString();
