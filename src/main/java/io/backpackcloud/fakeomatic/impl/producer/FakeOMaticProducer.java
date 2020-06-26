@@ -34,7 +34,9 @@ import io.backpackcloud.fakeomatic.impl.NullFakeData;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.fakeomatic.spi.TemplateParser;
 import io.quarkus.qute.Engine;
+import io.quarkus.qute.TemplateInstance;
 import io.vertx.mutiny.core.Vertx;
 import org.jboss.logging.Logger;
 
@@ -89,10 +91,9 @@ public class FakeOMaticProducer {
           }
         })
         .collect(Collectors.toList());
-    return newInstance(configs, std -> {
+    return newInstance(configs, templateEngine, std -> {
       std.addValue(Random.class, this.config.generator().random());
       std.addValue(Vertx.class, this.vertx);
-      std.addValue(Engine.class, this.templateEngine);
       std.addValue(Config.class, this.config);
       std.addValue(Config.TemplateConfig.class, this.config.template());
       std.addValue(Config.GeneratorConfig.class, this.config.generator());
@@ -100,11 +101,19 @@ public class FakeOMaticProducer {
     });
   }
 
+  @Produces
+  @Singleton
+  public TemplateParser produceParser(FakeData fakeData) {
+    return new QuteTemplateParser(templateEngine, fakeData);
+  }
+
   public static InputStream defaultConfig() {
     return FakeOMatic.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
-  public static FakeData newInstance(List<InputStream> configs, Consumer<InjectableValues.Std> injectableValuesConsumer) {
+  public static FakeData newInstance(List<InputStream> configs,
+                                     Engine engine,
+                                     Consumer<InjectableValues.Std> injectableValuesConsumer) {
     ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
     InjectableValues.Std std = new InjectableValues.Std();
@@ -118,6 +127,8 @@ public class FakeOMaticProducer {
     injectableValuesConsumer.accept(std);
     std.addValue("parent", parent);
     std.addValue("root", rootFakeData);
+    std.addValue(Engine.class, engine);
+    std.addValue(TemplateParser.class, new QuteTemplateParser(engine, rootFakeData));
     objectMapper.setInjectableValues(std);
 
     try {
@@ -167,6 +178,22 @@ public class FakeOMaticProducer {
     @Override
     public List<Sample> samples() {
       return delegate.samples();
+    }
+  }
+
+  static class QuteTemplateParser implements TemplateParser {
+
+    private final Engine   engine;
+    private final FakeData fakeData;
+
+    QuteTemplateParser(Engine engine, FakeData fakeData) {
+      this.engine = engine;
+      this.fakeData = fakeData;
+    }
+
+    @Override
+    public TemplateInstance parse(String template) {
+      return engine.parse(template).data(fakeData);
     }
   }
 

@@ -22,25 +22,16 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl;
+package io.backpackcloud.fakeomatic.spi;
 
-import io.backpackcloud.fakeomatic.spi.EventTrigger;
-import io.vertx.mutiny.core.eventbus.EventBus;
+import io.quarkus.qute.TemplateInstance;
 
-import javax.enterprise.context.ApplicationScoped;
+public interface TemplateParser {
 
-@ApplicationScoped
-public class VertxEventTrigger implements EventTrigger {
+  TemplateInstance parse(String template);
 
-  private final EventBus eventBus;
-
-  public VertxEventTrigger(EventBus eventBus) {
-    this.eventBus = eventBus;
-  }
-
-  @Override
-  public void trigger(String eventName, Object eventObject) {
-    this.eventBus.publish(eventName, eventObject);
+  default TemplateInstance parse(Configuration configuration) {
+    return parse(configuration.read());
   }
 
 }

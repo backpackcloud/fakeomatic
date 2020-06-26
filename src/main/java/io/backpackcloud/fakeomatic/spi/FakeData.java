@@ -26,6 +26,7 @@ package io.backpackcloud.fakeomatic.spi;
 
 import io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
+import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
 
 import java.io.InputStream;
@@ -151,7 +152,7 @@ public interface FakeData {
    * @return a new FakeData
    */
   static FakeData load(Random random, InputStream... locations) {
-    return FakeOMaticProducer.newInstance(Arrays.asList(locations), std -> {
+    return FakeOMaticProducer.newInstance(Arrays.asList(locations), Engine.builder().addDefaults().build(), std -> {
       std.addValue(Random.class, random);
       std.addValue(Vertx.class, Vertx.vertx());
     });

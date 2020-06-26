@@ -27,10 +27,8 @@ package io.backpackcloud.fakeomatic.impl.producer;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.impl.TemplatePayloadGenerator;
 import io.backpackcloud.fakeomatic.spi.Config;
-import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.TemplateInstance;
+import io.backpackcloud.fakeomatic.spi.TemplateParser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -43,15 +41,11 @@ import java.nio.file.Paths;
 public class PayloadProducer {
 
   private final Config.TemplateConfig config;
+  private final TemplateParser templateParser;
 
-  private final FakeData fakeData;
-
-  private final Engine templateEngine;
-
-  public PayloadProducer(Config.TemplateConfig config, FakeData fakeData, Engine templateEngine) {
+  public PayloadProducer(Config.TemplateConfig config, TemplateParser templateParser) {
     this.config = config;
-    this.fakeData = fakeData;
-    this.templateEngine = templateEngine;
+    this.templateParser = templateParser;
   }
 
   @Produces
@@ -60,11 +54,7 @@ public class PayloadProducer {
     try {
       String content = Files.readString(Paths.get(config.path()));
 
-      TemplateInstance template = templateEngine
-          .parse(content)
-          .data(fakeData);
-
-      return new TemplatePayloadGenerator(this.config.type(), template);
+      return new TemplatePayloadGenerator(this.config.type(), content, templateParser);
     } catch (IOException e) {
       throw new UnbelievableException(e);
     }

@@ -25,17 +25,19 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
+import io.backpackcloud.fakeomatic.spi.TemplateParser;
 import io.quarkus.qute.TemplateInstance;
 
 public class TemplatePayloadGenerator implements PayloadGenerator {
 
   private final String           contentType;
-  private final TemplateInstance template;
+  private final TemplateInstance templateInstance;
 
-  public TemplatePayloadGenerator(String contentType, TemplateInstance template) {
+  public TemplatePayloadGenerator(String contentType, String content, TemplateParser templateParser) {
     this.contentType = contentType;
-    this.template = template;
+    this.templateInstance = templateParser.parse(content);
   }
+
 
   @Override
   public String contentType() {
@@ -44,7 +46,7 @@ public class TemplatePayloadGenerator implements PayloadGenerator {
 
   @Override
   public String generate() {
-    return template.render();
+    return templateInstance.render();
   }
 
 }
