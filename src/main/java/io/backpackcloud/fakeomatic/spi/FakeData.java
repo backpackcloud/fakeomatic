@@ -100,10 +100,6 @@ public interface FakeData {
     return builder.toString();
   }
 
-  default String env(String name) {
-    return System.getenv(name);
-  }
-
   /**
    * Picks one of the given values using the {@link #random()} object.
    *

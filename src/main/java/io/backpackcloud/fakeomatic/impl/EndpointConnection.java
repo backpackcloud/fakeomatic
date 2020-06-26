@@ -28,6 +28,7 @@ import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
@@ -60,7 +61,7 @@ public class EndpointConnection implements Endpoint {
   public CompletionStage<HttpResponse> postPayload(String contentType, String payload) {
     return CompletableFuture.supplyAsync(() -> client.post(url.toString())
                                                      .putHeader("Content-Type", contentType)
-                                                     .sendBuffer(io.vertx.mutiny.core.buffer.Buffer.buffer(payload))
+                                                     .sendBuffer(Buffer.buffer(payload))
                                                      .onItem()
                                                      .apply(Function.identity())
                                                      // TODO externalize this

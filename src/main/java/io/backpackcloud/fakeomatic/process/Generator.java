@@ -111,17 +111,18 @@ public class Generator implements QuarkusApplication, Events {
   private Consumer<HttpResponse> logResponse(int index) {
     return response -> {
       if (response != null) {
+        int statusCode = response.statusCode();
         ResponseReceivedEvent event = new ResponseReceivedEvent(
             index,
-            response.statusCode(),
+            statusCode,
             response.statusMessage(),
             response.bodyAsString()
         );
-        if (response.statusCode() % 400 < 100) {
+        if (statusCode % 400 < 100) {
           eventTrigger.trigger(CLIENT_ERROR, event);
-        } else if (response.statusCode() % 500 < 100) {
+        } else if (statusCode % 500 < 100) {
           eventTrigger.trigger(SERVER_ERROR, event);
-        } else if (response.statusCode() % 200 < 100) {
+        } else if (statusCode % 200 < 100) {
           eventTrigger.trigger(RESPONSE_OK, event);
         }
       }

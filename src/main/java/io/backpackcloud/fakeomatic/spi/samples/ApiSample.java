@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.backpackcloud.fakeomatic.RequestException;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.impl.resolver.FakeDataResolver;
 import io.backpackcloud.fakeomatic.spi.Configuration;
@@ -140,7 +141,15 @@ public class ApiSample implements Sample {
       response = request.send();
     }
     String responseBody = response.onItem()
-                                  .apply(HttpResponse::bodyAsString)
+                                  .apply(resp -> {
+                                    int statusCode = resp.statusCode();
+                                    if (statusCode % 200 < 100) {
+                                      return resp.bodyAsString();
+                                    } else {
+                                      LOGGER.errorv("Got status [{0}] while sending request: {1}", statusCode, resp.statusMessage());
+                                      throw new RequestException(statusCode, resp.statusMessage());
+                                    }
+                                  })
                                   // TODO add a fallback sample
                                   // TODO externalize timeout
                                   .await().atMost(Duration.ofSeconds(30));

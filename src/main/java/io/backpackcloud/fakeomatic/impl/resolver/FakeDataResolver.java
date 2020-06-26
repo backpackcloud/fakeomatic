@@ -27,12 +27,15 @@ package io.backpackcloud.fakeomatic.impl.resolver;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.quarkus.qute.EvalContext;
+import io.quarkus.qute.Expression;
 import io.quarkus.qute.Results;
 import io.quarkus.qute.ValueResolver;
 import org.jboss.logging.Logger;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class FakeDataResolver implements ValueResolver {
 
@@ -42,12 +45,24 @@ public class FakeDataResolver implements ValueResolver {
   public CompletionStage<Object> resolve(EvalContext context) {
     try {
       FakeData fakeData = (FakeData) context.getBase();
-      String   param    = context.getParams().get(0).getLiteralValue().get().toString();
+      List params    = context.getParams()
+                              .stream()
+                              .map(Expression::getLiteralValue)
+                              .map(future -> {
+                                try {
+                                  return future.get();
+                                } catch (Exception e) {
+                                  LOGGER.error("Error while evaluating params", e);
+                                  throw new UnbelievableException(e);
+                                }
+                              }).collect(Collectors.toList());
       switch (context.getName()) {
         case "fake":
-          return CompletableFuture.completedFuture(fakeData.fake(param).toString());
+          return CompletableFuture.completedFuture(fakeData.fake(params.get(0).toString()).toString());
         case "expression":
-          return CompletableFuture.completedFuture(fakeData.expression(param));
+          return CompletableFuture.completedFuture(fakeData.expression(params.get(0).toString()));
+        case "oneOf":
+          return CompletableFuture.completedFuture(fakeData.oneOf(params.toArray()));
         default:
           return Results.NOT_FOUND;
       }
