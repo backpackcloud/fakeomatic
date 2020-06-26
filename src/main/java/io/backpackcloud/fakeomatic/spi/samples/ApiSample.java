@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.RequestException;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.impl.resolver.FakeDataResolver;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
@@ -81,6 +80,7 @@ public class ApiSample implements Sample {
   @JsonCreator
   public ApiSample(@JacksonInject("root") FakeData fakeData,
                    @JacksonInject Vertx vertx,
+                   @JacksonInject Engine templateEngine,
                    @JsonProperty("url") Configuration url,
                    @JsonProperty("method") String method,
                    @JsonProperty("payload") Payload payload,
@@ -92,12 +92,8 @@ public class ApiSample implements Sample {
     try {
       this.payload = payload;
       if (payload != null) {
-        this.template = Engine.builder()
-                              .addDefaults()
-                              .addValueResolver(new FakeDataResolver())
-                              .build()
-                              .parse(payload.template())
-                              .data(fakeData);
+        this.template = templateEngine.parse(payload.template())
+                                      .data(fakeData);
       } else {
         this.template = null;
       }

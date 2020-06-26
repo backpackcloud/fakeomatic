@@ -1,5 +1,9 @@
 {
   "id": "{fake('uuid')}",
-  "cause": "{fake('cause')}",
+  "cause1": "{random('cause')}",
+  "cause2": "{one('cause')}",
+  "cause3": "{some('cause')}",
+  "cause4": "{particular('cause')}",
+  "cause4": "{specific('cause')}",
   "device": "{expression('%%-#####')}"
 }

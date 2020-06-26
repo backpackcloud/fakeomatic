@@ -34,6 +34,7 @@ import io.quarkus.qute.TemplateInstance;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -54,6 +55,7 @@ public class PayloadProducer {
   }
 
   @Produces
+  @Singleton
   public PayloadGenerator produce() {
     try {
       String content = Files.readString(Paths.get(config.path()));
