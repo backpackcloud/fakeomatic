@@ -25,7 +25,6 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.spi.EventTrigger;
-import io.quarkus.vertx.LocalEventBusCodec;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.mutiny.core.eventbus.EventBus;
 
@@ -38,7 +37,6 @@ public class VertxEventTrigger implements EventTrigger {
 
   public VertxEventTrigger(EventBus eventBus) {
     this.eventBus = eventBus;
-    this.eventBus.registerCodec(new LocalEventBusCodec("object"));
   }
 
   @Override
