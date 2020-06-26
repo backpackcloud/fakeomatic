@@ -57,6 +57,14 @@ public interface Configuration extends Supplier<String> {
     }
   }
 
+  default List<String> readLines() {
+    try {
+      return Files.readAllLines(Path.of(get()));
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
+    }
+  }
+
   @JsonCreator
   static Configuration create(String value) {
     return new RawValueConfiguration(value);

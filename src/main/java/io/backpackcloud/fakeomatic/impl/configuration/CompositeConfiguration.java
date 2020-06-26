@@ -28,6 +28,7 @@ import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class CompositeConfiguration implements Configuration {
 
@@ -45,11 +46,24 @@ public class CompositeConfiguration implements Configuration {
 
   @Override
   public String get() {
+    return first(Configuration::get);
+  }
+
+  @Override
+  public String read() {
+    return first(Configuration::read);
+  }
+
+  @Override
+  public List<String> readLines() {
+    return first(Configuration::readLines);
+  }
+
+  private <T> T first(Function<Configuration, T> mapper) {
     return values.stream()
                  .filter(Configuration::isSet)
                  .findFirst()
-                 .map(Configuration::get)
+                 .map(mapper)
                  .orElseThrow(UnbelievableException::new);
   }
-
 }

@@ -27,25 +27,23 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 
 @RegisterForReflection
-public class FileSample implements Sample<String> {
+public class ExternalSample implements Sample<String> {
 
   private final Sample<String> listSample;
 
   @JsonCreator
-  public FileSample(@JacksonInject Random random,
-                    @JsonProperty("file") String file) throws IOException {
-    List<String> strings = Files.readAllLines(Paths.get(URI.create(file)));
+  public ExternalSample(@JacksonInject Random random,
+                        @JsonProperty("location") Configuration location) throws IOException {
+    List<String> strings = location.readLines();
 
     this.listSample = new ListSample(random, strings);
   }

@@ -31,6 +31,9 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 @RegisterForReflection
 public class ResourceConfiguration implements Configuration {
@@ -59,6 +62,20 @@ public class ResourceConfiguration implements Configuration {
   @Override
   public String read() {
     return get();
+  }
+
+  @Override
+  public List<String> readLines() {
+    try (inputStream) {
+      Scanner      scanner = new Scanner(inputStream);
+      List<String> lines   = new ArrayList<>();
+      while (scanner.hasNextLine()) {
+        lines.add(scanner.nextLine());
+      }
+      return lines;
+    } catch (IOException e) {
+      throw new UnbelievableException(e);
+    }
   }
 
 }

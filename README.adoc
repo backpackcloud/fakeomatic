@@ -110,8 +110,6 @@ The priority for getting the value is:
 
 ==== Samples
 
-Samples might have 3 different types:
-
 chars::
 This sample can pick any character from a given string. Useful for defining a set of characters that can be used to
 produce IDs or any other information that is not meant to be read. It takes a String param `values` for configuring
@@ -228,16 +226,17 @@ samples:
 Notice that the sum of the weights don't necessary need to be `100`, but using a total weight of `100` helps to see the
 weights as percentage.
 
-file::
-This sample loads a file and maps each line as a item on a `list` sample. It takes a String param `file` with the file
-location and an optional String param `charset` with the charset to read the file (defaults to `UTF-8`).
+external::
+This sample loads a file and maps each line as an item on a `list` sample. It takes a <<configuration,configuration>>
+param `location` pointing to where it should look for the samples.
 
 [source,yaml]
 ----
 samples:
   history:
-    type: file
-    file: file:///temp/history.txt
+    type: external
+    location:
+      file: /temp/history.txt
 ----
 
 range::
@@ -258,7 +257,6 @@ samples:
 ----
 
 today::
-
 Gets the today date in the specified parameter `format` as defined in the
 https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html[SimpleDateFormat]
 documentation.
