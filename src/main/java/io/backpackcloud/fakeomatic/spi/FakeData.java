@@ -84,30 +84,6 @@ public interface FakeData {
     return (E) sample(sampleName).get();
   }
 
-  default <E> E fake(String sampleName) {
-    return some(sampleName);
-  }
-
-  default <E> E particular(String sampleName) {
-    return some(sampleName);
-  }
-
-  default <E> E one(String sampleName) {
-    return some(sampleName);
-  }
-
-  default <E> E data(String sampleName) {
-    return some(sampleName);
-  }
-
-  default <E> E random(String sampleName) {
-    return some(sampleName);
-  }
-
-  default <E> E specific(String sampleName) {
-    return some(sampleName);
-  }
-
   /**
    * Generates a random expression looking for placeholders in the given expression.
    *
