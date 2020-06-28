@@ -18,14 +18,12 @@ s2i build . quay.io/quarkus/ubi-quarkus-native-s2i:19.3.2-java11 backpackcloud/f
 ----
 
 Fake-O-Matic is also published at https://quay.io/backpackcloud/fakeomatic[Quay.io] and the library is pushed to the
-https://repo1.maven.org/maven/[Central Maven Repo] under the following properties:
+https://repo1.maven.org/maven2/io/backpackcloud/fakeomatic/[Central Maven Repo] under the following properties:
 
 groupId::
 io.backpackcloud
 artifactId::
 fakeomatic
-version::
-0.7.0
 
 == How to Configure
 
