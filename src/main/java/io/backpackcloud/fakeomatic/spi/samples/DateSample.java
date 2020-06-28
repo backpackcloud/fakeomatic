@@ -27,6 +27,7 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -59,14 +60,38 @@ public class DateSample implements Sample<LocalDate> {
   public static DateSample create(@JacksonInject Random random,
                                   @JsonProperty("from") String fromDate,
                                   @JsonProperty("to") String toDate,
-                                  @JsonProperty("format") String formatString) {
+                                  @JsonProperty("period") String periodString,
+                                  @JsonProperty("format") String formatString,
+                                  @JsonProperty("inclusive") boolean inclusive) {
     DateTimeFormatter format = DateTimeFormatter.ofPattern(Optional.ofNullable(formatString).orElse("yyyy-MM-dd"));
 
-    LocalDate start  = LocalDate.parse(fromDate, format);
-    LocalDate end    = LocalDate.parse(toDate, format);
-    Period    period = Period.between(start, end);
+    LocalDate start = parseDate(fromDate, format);
+    LocalDate end;
+    if (toDate != null) {
+      end = parseDate(toDate, format);
+    } else if (periodString != null) {
+      Period period = Period.parse(periodString);
+      end = start.plus(period);
+    } else {
+      throw new UnbelievableException("No end date or period given.");
+    }
 
-    return new DateSample(random, start, period.getDays());
+    int days = (int) (end.toEpochDay() - start.toEpochDay());
+
+    return new DateSample(random, start, inclusive ? days + 1 : days);
+  }
+
+  private static LocalDate parseDate(String date, DateTimeFormatter format) {
+    switch (date) {
+      case "today":
+        return LocalDate.now();
+      case "tomorrow":
+        return LocalDate.now().plusDays(1);
+      case "yesterday":
+        return LocalDate.now().minusDays(1);
+      default:
+        return LocalDate.parse(date, format);
+    }
   }
 
 }

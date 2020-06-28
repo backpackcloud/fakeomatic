@@ -70,15 +70,13 @@ public abstract class BaseTest {
   }
 
   protected void times(int times, Consumer<Integer> consumer) {
-    for (int i = 0; i < times; i++) {
+    for (int i = 1; i <= times; i++) {
       consumer.accept(i);
     }
   }
 
   protected void times(int times, Runnable runnable) {
-    for (int i = 0; i < times; i++) {
-      runnable.run();
-    }
+    times(times, integer -> runnable.run());
   }
 
   protected <E> void times(int times, Sample<E> sample, Consumer<E> consumer) {
