@@ -30,11 +30,11 @@ import io.backpackcloud.fakeomatic.spi.samples.ApiSample;
 import io.backpackcloud.fakeomatic.spi.samples.CacheSample;
 import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
+import io.backpackcloud.fakeomatic.spi.samples.DateSample;
 import io.backpackcloud.fakeomatic.spi.samples.ExpressionSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.TemplateSample;
-import io.backpackcloud.fakeomatic.spi.samples.TodaySample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -52,11 +52,11 @@ import java.util.function.Supplier;
     @JsonSubTypes.Type(value = CacheSample.class,      name = "cache"),
     @JsonSubTypes.Type(value = CharSample.class,       name = "chars"),
     @JsonSubTypes.Type(value = CompositeSample.class,  name = "composite"),
+    @JsonSubTypes.Type(value = DateSample.class,       name = "date"),
     @JsonSubTypes.Type(value = ExpressionSample.class, name = "expression"),
     @JsonSubTypes.Type(value = ListSample.class,       name = "list"),
     @JsonSubTypes.Type(value = RangeSample.class,      name = "range"),
     @JsonSubTypes.Type(value = TemplateSample.class,   name = "template"),
-    @JsonSubTypes.Type(value = TodaySample.class,      name = "today"),
     @JsonSubTypes.Type(value = UuidSample.class,       name = "uuid"),
     @JsonSubTypes.Type(value = WeightedSample.class,   name = "weight"),
 })

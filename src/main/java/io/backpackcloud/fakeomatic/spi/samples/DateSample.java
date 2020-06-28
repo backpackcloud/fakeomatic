@@ -24,27 +24,49 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+import java.util.Random;
 
 @RegisterForReflection
-public class TodaySample implements Sample<String> {
+public class DateSample implements Sample<LocalDate> {
 
-  private final SimpleDateFormat dateFormat;
+  private final Random    random;
+  private final LocalDate start;
+  private final int       maxDays;
 
-  @JsonCreator
-  public TodaySample(@JsonProperty("format") String format) {
-    this.dateFormat = new SimpleDateFormat(format);
+  public DateSample(Random random, LocalDate start, int maxDays) {
+    this.random = random;
+    this.start = start;
+    this.maxDays = maxDays;
   }
 
   @Override
-  public String get() {
-    return dateFormat.format(new Date());
+  public LocalDate get() {
+    return start.plus(random.nextInt(maxDays), ChronoUnit.DAYS);
+  }
+
+  @JsonCreator
+  public static DateSample create(@JacksonInject Random random,
+                                  @JsonProperty("from") String fromDate,
+                                  @JsonProperty("to") String toDate,
+                                  @JsonProperty("format") String formatString) {
+    DateTimeFormatter format = DateTimeFormatter.ofPattern(Optional.ofNullable(formatString).orElse("yyyy-MM-dd"));
+
+    LocalDate start  = LocalDate.parse(fromDate, format);
+    LocalDate end    = LocalDate.parse(toDate, format);
+    Period    period = Period.between(start, end);
+
+    return new DateSample(random, start, period.getDays());
   }
 
 }
