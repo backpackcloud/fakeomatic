@@ -30,14 +30,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 
+import java.util.Optional;
+
 public class CacheSample implements Sample {
 
   private final Sample sample;
+  private final int    ttl;
 
   private Object cachedValue;
+  private int    hits;
 
-  public CacheSample(Sample sample) {
+  public CacheSample(Sample sample, int ttl) {
     this.sample = sample;
+    this.ttl = ttl;
   }
 
   @Override
@@ -45,13 +50,20 @@ public class CacheSample implements Sample {
     if (this.cachedValue == null) {
       this.cachedValue = this.sample.get();
     }
-    return this.cachedValue;
+    try {
+      return this.cachedValue;
+    } finally {
+      if (++hits == ttl) {
+        this.cachedValue = null;
+      }
+    }
   }
 
   @JsonCreator
   public static CacheSample create(@JacksonInject("root") FakeData fakeData,
-                                   @JsonProperty("sample") String sampleName) {
-    return new CacheSample(fakeData.sample(sampleName));
+                                   @JsonProperty("sample") String sampleName,
+                                   @JsonProperty("ttl") Integer ttl) {
+    return new CacheSample(fakeData.sample(sampleName), Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE));
   }
 
 }
