@@ -56,7 +56,7 @@ public class ExpressionSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static ExpressionSample createFromExpression(String expression,
+  public static ExpressionSample createFromExpression(@JsonProperty("expression") String expression,
                                                       @JacksonInject("root") FakeData fakeData) {
     return new ExpressionSample(() -> expression, fakeData);
   }
