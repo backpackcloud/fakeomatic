@@ -582,10 +582,9 @@ The following examples can be used with the built-in configuration.
 [source,json]
 ----
 {
-  "id": "{fake('uuid')}",
-  "cause": "{fake('cause')}",
-  "device": "{expression('%%-#####')}",
-  "when": "{today('yyyy-MM-dd HH.mm.ss Z')}"
+  "id": "{some('uuid')}",
+  "cause": "{some('cause')}",
+  "device": "{expression('%%-#####')}"
 }
 ----
 
@@ -593,6 +592,6 @@ The following examples can be used with the built-in configuration.
 ----
 {
   "level": "{oneOf('INFO', 'WARN', 'ERROR')}",
-  "message": "{fake('cause')}"
+  "message": "{some('cause')}"
 }
 ----
