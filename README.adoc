@@ -110,10 +110,20 @@ The priority for getting the value is:
 
 ==== Samples
 
-chars::
+===== Characters
+
 This sample can pick any character from a given string. Useful for defining a set of characters that can be used to
-produce IDs or any other information that is not meant to be read. It takes a String param `values` for configuring
-the chars.
+produce IDs or any other information that is not meant to be read.
+
+====== Configuration
+
+type::
+`chars`
+
+value::
+String that holds the chars
+
+====== Example
 
 [source,yaml]
 ----
@@ -126,10 +136,27 @@ samples:
     value: "0123456789"
 ----
 
-list::
-This sample can pick any item from a given list of objects. The object will be used in its `string` form. Useful for
-defining a set of data that is meant to be read, like cities and names. It takes an Array param `values`
-configuring the items.
+===== List
+
+This sample can pick any item from a given list of objects.
+
+====== Configuration
+
+type::
+`list`
+
+values::
+List of raw values to use.
+
+samples::
+List of Samples to use.
+
+location::
+A <<configuration,configuration>> pointing to where to locate the list of values.
+
+NOTE: You need to supply only one way of loading the values (`values`, `samples` or `location`).
+
+====== Example
 
 [source,yaml]
 ----
@@ -146,25 +173,61 @@ samples:
       - "poor power conditioning"
       - "static buildup"
       - "doppler effect"
+  first_name:
+    type: list
+    samples:
+      - man_name
+      - woman_name
+  story:
+    type: list
+    location:
+      env: STORIES
+      property: stories
+      default: stories.txt
 ----
 
-api::
-This sample actually calls a given API to get data to use every time it's asked for a data. The possible parameters it
-can take are:
+===== API
 
-- `url`: defines the API endpoint (this is a <<configuration,configuration>> value).
-- `return`: an optional https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the API response
-            represents the data (uses the whole response if not supplied). The return is a `JsonNode`.
-- `method`: which HTTP method to use (defaults to `GET`)
-- `payload`: optional payload object to use for calling the API. Useful for `POST` requests.
-    * `template`: the template to use (this is a <<configuration,configuration>> value)
-    * `type`: the content type of the template (defaults to `application/json`)
-- `insecure`: if the certificates should be trusted without checking.
-- `options`: any additional option to pass to the webclient (see `io.vertx.ext.web.client.WebClientOptions` docs).
-- `path_vars`: A string,string map containing all the samples that forms the path on the uri (example: `/api/{uuid}`
-               will be replaced by the value gotten from the sample `uuid`).
+This sample actually calls a given API to get data to use every time it's asked for a data.
 
-Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the dependent API.
+====== Configuration
+
+type::
+`api`
+
+url::
+A <<configuration,configuration>> value defining the API endpoint.
+
+return::
+An optional https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the API response represents the
+data (uses the whole response if not supplied). The return is a `JsonNode`.
+
+method::
+Which HTTP method to use (defaults to `GET`).
+
+payload::
+An optional payload object to use for calling the API. Useful for `POST` requests.
+
+template:::
+A <<configuration,configuration>> defining which template to use
+
+type:::
+The content type of the template (defaults to `application/json`).
+
+insecure::
+Defines if the certificates should be trusted without checking (defaults to `false`).
+
+options::
+Any additional option to pass to the webclient (see `io.vertx.ext.web.client.WebClientOptions` docs).
+
+path_vars::
+A `string,string` map containing all the samples that forms the path on the uri (example: `/api/{uuid}` will be
+replaced by the value from the sample `uuid`).
+
+WARN: Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
+dependent API.
+
+====== Example
 
 [source,yaml]
 ----
@@ -175,9 +238,16 @@ samples:
     return: /value
 ----
 
-uuid::
+===== Universally Unique Identifier
+
 This sample will produce a https://en.wikipedia.org/wiki/Universally_unique_identifier[universally unique identifier].
-It doesn't take any specific param.
+
+====== Configuration
+
+type::
+`uuid`
+
+====== Example
 
 [source,yaml]
 ----
@@ -186,14 +256,27 @@ samples:
     type: uuid
 ----
 
-composite::
-This sample will gather other samples and join them into a unique data. It takes an Array param `samples` to specify
-the samples to gather and an optional String param `separator` to specify the separator (defaults to `""`).
+===== Composite
+
+This sample will gather other samples and join them into one data.
+
+====== Configuration
+
+type::
+`composite`
+
+samples::
+Which samples to join
+
+separator::
+Which separator to use (defaults to an empty string).
+
+====== Example
 
 [source,yaml]
 ----
 samples:
-  name:
+  full_name:
     type: composite
     separator: " "
     samples:
@@ -201,9 +284,28 @@ samples:
       - last_name
 ----
 
-weight::
-This sample allows you to define weights to each list item. It takes an Array param `values` with a `weight` and a
-`value` field.
+===== Weight
+
+A sample that allows you to define specific weights to each element.
+
+====== Configuration
+
+type::
+`weight`
+
+values::
+The list of values.
+
+weight:::
+The weight of the value.
+
+value:::
+The value to use.
+
+sample:::
+The sample to use as a value.
+
+====== Example
 
 [source,yaml]
 ----
@@ -223,25 +325,25 @@ samples:
         value: cyan
 ----
 
-Notice that the sum of the weights don't necessary need to be `100`, but using a total weight of `100` helps to see the
+NOTE: The sum of the weights don't necessary need to be `100`, but using a total weight of `100` helps to see the
 weights as percentage.
 
-external::
-This sample loads a file and maps each line as an item on a `list` sample. It takes a <<configuration,configuration>>
-param `location` pointing to where it should look for the samples.
+===== Range
 
-[source,yaml]
-----
-samples:
-  history:
-    type: external
-    location:
-      file: /temp/history.txt
-----
+This sample generates numbers from a given interval.
 
-range::
-This sample generates numbers from a given interval. It takes an Integer param `min` that holds the minimum value and
-another Integer param `max` that holds the maximum value.
+====== Configuration
+
+type::
+`range`
+
+min::
+The minimum value.
+
+max::
+The maximum value.
+
+====== Example
 
 [source,yaml]
 ----
@@ -256,21 +358,24 @@ samples:
     max: 20
 ----
 
-today::
-Gets the today date in the specified parameter `format` as defined in the
-https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html[SimpleDateFormat]
-documentation.
+===== Expression
 
-[source,yaml]
-----
-samples:
-  now:
-    type: today
-    format: dd-MM-yyyy
-----
+A sample that generates data based on expressions.
+
+====== Configuration
+
+type::
+`expression`
+
+sample::
+The sample to use as an expression.
 
 expression::
-A composite sample that takes a sample value and evaluates it as an expression.
+The expression to use.
+
+NOTE: You need to supply a `sample` or an `expression`.
+
+====== Example
 
 [source,yaml]
 ----
@@ -284,6 +389,113 @@ samples:
   address:
     type: expression
     sample: address_expression
+  credit_card:
+    type: expression
+    expression: "################"
+----
+
+===== Template
+
+A sample that can produce data based on external templates.
+
+====== Configuration
+
+type::
+`template`
+
+template::
+A <<configuration,configuration>> pointing to where the template is.
+
+====== Example
+
+[source,yaml]
+----
+samples:
+  address:
+    type: template
+    location:
+      env: ADDRESS_TEMPLATE
+      default: /usr/share/templates/address.json
+----
+
+===== Date
+
+A sample that can generate dates based on a given interval.
+
+====== Configuration
+
+type::
+`date`
+
+from::
+Defines the start date.
+
+to::
+Defines the end date.
+
+period::
+Defines a period instead of an end date. See the docs for `java.time.Period#parse`.
+
+format::
+The format to parse the supplied dates. Defaults to `dd-MM-yyyy`. See the docs for
+`java.time.format.DateTimeFormatter#ofPatter`.
+
+inclusive::
+Sets if the end date is part of the interval or not.
+
+NOTE: It is possible to use `today`, `yesterday` or `tomorrow` instead of the actual date values.
+
+====== Example
+
+[source,yaml]
+----
+samples:
+  day_in_2020:
+    type: date
+    from: 2020-01-01
+    to: 2021-01-01
+  day_in_quarter:
+    type: date
+    from: 2020-01-01
+    period: P3M
+  yesterday_to_tomorrow:
+    type: date
+    from: yesterday
+    to: tomorrow
+    inclusive: true
+----
+
+===== Cache
+
+A sample that caches the value. Useful when used with an API sample that posts data in order to create a data
+dependency.
+
+====== Configuration
+
+type::
+`cache`
+
+sample::
+The sample that should be cached.
+
+ttl::
+How many hits the value should last until the cache gets another one.
+
+====== Example
+
+[source,yaml]
+----
+samples:
+  new_person:
+    type: api
+    url: http://api.example.com/persons
+    method: POST
+    payload:
+      template: person.json
+    return: /id
+  person:
+    type: cache
+    sample: new_person
 ----
 
 ==== Placeholders
@@ -314,7 +526,7 @@ Fake-O-Matic uses https://quarkus.io/guides/qute-reference[Qute] templates to pr
 can be used to get a fake data, the main one are:
 
 some(sampleName)::
-Gets a random sample from the given sample name. Can also be used as `particular`, `fake`, `one` or `random`.
+Gets a random sample from the given sample name.
 
 expression(placeholders)::
 Gets a random data produced by replacing each placeholder by a random sample associated with it.
