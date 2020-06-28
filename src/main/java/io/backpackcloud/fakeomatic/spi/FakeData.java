@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Defines a component that can produce fake data.
@@ -84,6 +85,10 @@ public interface FakeData {
     return (E) sample(sampleName).get();
   }
 
+  default String some(String sampleName, String format) {
+    return String.format(format, some(sampleName));
+  }
+
   /**
    * Generates a random expression looking for placeholders in the given expression.
    *
@@ -108,7 +113,7 @@ public interface FakeData {
    * @return a randomly chosen value.
    */
   default <E> E oneOf(E... values) {
-    return new ListSample<E>(random(), Arrays.asList(values)).get();
+    return new ListSample<E>(random(), Arrays.stream(values).map(Sample::of).collect(Collectors.toList())).get();
   }
 
   /**

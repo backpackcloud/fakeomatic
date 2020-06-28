@@ -31,6 +31,7 @@ import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,23 +44,17 @@ import java.util.stream.Collectors;
 @RegisterForReflection
 public class CompositeSample implements Sample<String> {
 
-  private final FakeData     fakeData;
-  private final List<String> samples;
+  private final List<Sample> samples;
   private final String       separator;
 
-  @JsonCreator
-  public CompositeSample(@JacksonInject("root") FakeData fakeData,
-                         @JsonProperty("samples") List<String> samples,
-                         @JsonProperty("separator") String separator) {
-    this.fakeData = fakeData;
+
+  public CompositeSample(String separator, List<Sample> samples) {
     this.samples = samples;
-    this.separator = Optional.ofNullable(separator).orElse("");
+    this.separator = separator;
   }
 
   public List<Sample> samples() {
-    return samples.stream()
-                  .map(fakeData::sample)
-                  .collect(Collectors.toList());
+    return new ArrayList<>(samples);
   }
 
   public String separator() {
@@ -69,10 +64,20 @@ public class CompositeSample implements Sample<String> {
   @Override
   public String get() {
     return samples.stream()
-                  .map(this.fakeData::sample)
                   .map(Sample::get)
                   .map(Object::toString)
                   .collect(Collectors.joining(this.separator));
+  }
+
+  @JsonCreator
+  public static CompositeSample create(@JacksonInject("root") FakeData fakeData,
+                                       @JsonProperty("samples") List<String> samples,
+                                       @JsonProperty("separator") String separator) {
+    return new CompositeSample(Optional.ofNullable(separator).orElse(""),
+        samples.stream()
+               .map(fakeData::sample)
+               .collect(Collectors.toList())
+    );
   }
 
 }

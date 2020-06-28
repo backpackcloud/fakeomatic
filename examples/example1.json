@@ -1,9 +1,6 @@
 {
-  "id": "{fake('uuid')}",
-  "cause1": "{random('cause')}",
-  "cause2": "{one('cause')}",
-  "cause3": "{some('cause')}",
-  "cause4": "{particular('cause')}",
-  "cause4": "{specific('cause')}",
+  "id": "{some('uuid')}",
+  "cause": "{some('cause')}",
+  "message": "{some('commit')}",
   "device": "{expression('%%-#####')}"
 }

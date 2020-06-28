@@ -157,7 +157,10 @@ public class FakeOMaticProducer {
 
     @Override
     public Sample sample(String sampleName) {
-      return delegate.sample(sampleName);
+      // wait before passing the real sample because the hierarchy is being updated
+      // as the objects is being constructed so this enables samples to have a reference
+      // for other samples instead of having to depend on the FakeData instance
+      return () -> delegate.sample(sampleName).get();
     }
 
     @Override

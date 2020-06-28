@@ -31,7 +31,6 @@ import io.backpackcloud.fakeomatic.spi.samples.CacheSample;
 import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
 import io.backpackcloud.fakeomatic.spi.samples.ExpressionSample;
-import io.backpackcloud.fakeomatic.spi.samples.ExternalSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.TemplateSample;
@@ -54,7 +53,6 @@ import java.util.function.Supplier;
     @JsonSubTypes.Type(value = CharSample.class,       name = "chars"),
     @JsonSubTypes.Type(value = CompositeSample.class,  name = "composite"),
     @JsonSubTypes.Type(value = ExpressionSample.class, name = "expression"),
-    @JsonSubTypes.Type(value = ExternalSample.class,   name = "external"),
     @JsonSubTypes.Type(value = ListSample.class,       name = "list"),
     @JsonSubTypes.Type(value = RangeSample.class,      name = "range"),
     @JsonSubTypes.Type(value = TemplateSample.class,   name = "template"),
@@ -72,5 +70,9 @@ public interface Sample<E> extends Supplier<E> {
    * @return a sample data. Might be random.
    */
   E get();
+
+  static <E> Sample<E> of(E value) {
+    return () -> value;
+  }
 
 }

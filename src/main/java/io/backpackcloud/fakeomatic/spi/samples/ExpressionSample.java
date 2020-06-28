@@ -31,22 +31,34 @@ import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.function.Supplier;
+
 @RegisterForReflection
 public class ExpressionSample implements Sample<String> {
 
-  private final String   sampleName;
-  private final FakeData fakeData;
+  private final FakeData         fakeData;
+  private final Supplier<String> expressionSupplier;
 
-  @JsonCreator
-  public ExpressionSample(@JsonProperty("sample") String sampleName,
-                          @JacksonInject("root") FakeData fakeData) {
-    this.sampleName = sampleName;
+  public ExpressionSample(Supplier<String> expressionSupplier, FakeData fakeData) {
+    this.expressionSupplier = expressionSupplier;
     this.fakeData = fakeData;
   }
 
   @Override
   public String get() {
-    return fakeData.expression(fakeData.some(sampleName));
+    return fakeData.expression(expressionSupplier.get());
+  }
+
+  @JsonCreator
+  public static ExpressionSample createFromSample(@JsonProperty("sample") String sampleName,
+                                                  @JacksonInject("root") FakeData fakeData) {
+    return new ExpressionSample(() -> fakeData.sample(sampleName).get().toString(), fakeData);
+  }
+
+  @JsonCreator
+  public static ExpressionSample createFromExpression(String expression,
+                                                      @JacksonInject("root") FakeData fakeData) {
+    return new ExpressionSample(() -> expression, fakeData);
   }
 
 }

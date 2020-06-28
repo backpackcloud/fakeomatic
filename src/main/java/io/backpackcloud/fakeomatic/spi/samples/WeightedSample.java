@@ -27,6 +27,8 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -71,7 +73,8 @@ public class WeightedSample<E> implements Sample<E> {
     int position = random.nextInt(totalWeight);
     return (E) values.stream()
                      .filter(weightedValue -> weightedValue.isSelected(position))
-                     .map(WeightedValue::value)
+                     .map(WeightedValue::sample)
+                     .map(Sample::get)
                      .findFirst()
                      .get();
   }
@@ -81,32 +84,48 @@ public class WeightedSample<E> implements Sample<E> {
 
     private final int weight;
 
-    private final E value;
+    private final Sample<E> sample;
 
-    @JsonCreator
-    public WeightedValueDefinition(@JsonProperty("weight") int weight, @JsonProperty("value") E value) {
+    public WeightedValueDefinition(int weight, Sample<E> sample) {
       this.weight = weight;
-      this.value = value;
+      this.sample = sample;
     }
 
     public int weight() {
       return weight;
     }
 
-    public Object value() {
-      return value;
+    public Sample<E> sample() {
+      return sample;
+    }
+
+    @JsonCreator
+    public static WeightedValueDefinition create(@JacksonInject("root") FakeData fakeData,
+                                                 @JsonProperty("weight") int weight,
+                                                 @JsonProperty("value") Object value,
+                                                 @JsonProperty("sample") String sampleName) {
+      Sample sample;
+      if (value != null) {
+        sample = () -> value;
+      } else if (sampleName != null) {
+        sample = fakeData.sample(sampleName);
+      } else {
+        throw new UnbelievableException("Unable to create instance, a value or sample must be given.");
+      }
+
+      return new WeightedValueDefinition(weight, sample);
     }
 
   }
 
   class WeightedValue {
 
-    private final E   value;
-    private final int minPosition;
-    private final int maxPosition;
+    private final Sample<E> sample;
+    private final int       minPosition;
+    private final int       maxPosition;
 
     WeightedValue(int currentPosition, WeightedValueDefinition<E> definition) {
-      this.value = (E) definition.value();
+      this.sample = definition.sample;
       this.minPosition = currentPosition;
       this.maxPosition = currentPosition + definition.weight();
     }
@@ -115,8 +134,8 @@ public class WeightedSample<E> implements Sample<E> {
       return position >= minPosition && position < maxPosition;
     }
 
-    public Object value() {
-      return value;
+    public Sample<E> sample() {
+      return sample;
     }
 
   }

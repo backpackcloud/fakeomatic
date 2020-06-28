@@ -85,7 +85,7 @@ public class WeightedSampleTest extends BaseTest {
     int                                          total       = 1000000;
     int                                          errorMargin = 1;
 
-    definitions.stream().forEach(def -> occurrences.put(def.value(), 0));
+    definitions.stream().forEach(def -> occurrences.put(def.sample().get(), 0));
 
     times(total, () -> occurrences.compute(sample.get(), (o, integer) -> integer + 1));
 
@@ -93,7 +93,7 @@ public class WeightedSampleTest extends BaseTest {
 
     assertTrue(
         definitions.stream()
-                   .map(def -> def.weight() - occurrences.get(def.value()) * sample.totalWeight() / total)
+                   .map(def -> def.weight() - occurrences.get(def.sample().get()) * sample.totalWeight() / total)
                    .allMatch(distance -> distance <= errorMargin)
     );
   }

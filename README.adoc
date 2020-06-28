@@ -324,11 +324,6 @@ Randomly picks one of the given values using the internal `Random` reference.
 
 For more methods, check out the `FakeData` interface.
 
-=== Utilities
-
-env(name)::
-Gets the named environment variable.
-
 === Configuration Properties
 
 The following properties can be configured as a JVM argument (prefix `-D`), environment variable (with upper cases

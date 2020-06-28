@@ -27,11 +27,15 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.Configuration;
+import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * This sample can pick any item from a given list of objects. The object will be used in its
@@ -42,23 +46,46 @@ import java.util.Random;
 @RegisterForReflection
 public class ListSample<E> implements Sample<E> {
 
-  private final Random  random;
-  private final List<E> values;
+  private final Random          random;
+  private final List<Sample<E>> samples;
 
-  @JsonCreator
-  public ListSample(@JacksonInject Random random,
-                    @JsonProperty("values") List<E> values) {
+  public ListSample(Random random, List<Sample<E>> samples) {
     this.random = random;
-    this.values = values;
+    this.samples = samples;
   }
 
-  public List<E> values() {
-    return values;
+  public List<Sample<E>> samples() {
+    return samples;
   }
 
   @Override
   public E get() {
-    return values.get((random.nextInt(values.size())));
+    return samples.get((random.nextInt(samples.size()))).get();
+  }
+
+  @JsonCreator
+  public static ListSample<String> create(@JacksonInject Random random,
+                                          @JacksonInject("root") FakeData fakeData,
+                                          @JsonProperty("values") List<Object> values,
+                                          @JsonProperty("samples") List<String> samplesNames,
+                                          @JsonProperty("location") Configuration location) {
+    List<Sample> samples;
+    if (values != null) {
+      samples = values.stream()
+                      .map(Sample::of)
+                      .collect(Collectors.toList());
+    } else if (samplesNames != null) {
+      samples = samplesNames.stream()
+                            .map(fakeData::sample)
+                            .collect(Collectors.toList());
+    } else if (location != null) {
+      samples = location.readLines().stream()
+                        .map(Sample::of)
+                        .collect(Collectors.toList());
+    } else {
+      throw new UnbelievableException("No valid configuration supplied");
+    }
+    return new ListSample(random, samples);
   }
 
 }

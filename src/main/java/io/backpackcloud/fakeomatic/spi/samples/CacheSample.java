@@ -25,29 +25,33 @@
 package io.backpackcloud.fakeomatic.spi.samples;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 
 public class CacheSample implements Sample {
 
-  private final String   sample;
-  private final FakeData fakeData;
+  private final Sample sample;
 
   private Object cachedValue;
 
-  public CacheSample(@JacksonInject("root") FakeData fakeData,
-                     @JsonProperty("sample") String sample) {
-    this.fakeData = fakeData;
+  public CacheSample(Sample sample) {
     this.sample = sample;
   }
 
   @Override
   public Object get() {
     if (this.cachedValue == null) {
-      this.cachedValue = this.fakeData.sample(sample).get();
+      this.cachedValue = this.sample.get();
     }
     return this.cachedValue;
+  }
+
+  @JsonCreator
+  public static CacheSample create(@JacksonInject("root") FakeData fakeData,
+                                   @JsonProperty("sample") String sampleName) {
+    return new CacheSample(fakeData.sample(sampleName));
   }
 
 }

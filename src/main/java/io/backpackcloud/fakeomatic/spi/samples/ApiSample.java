@@ -33,6 +33,7 @@ import io.backpackcloud.fakeomatic.RequestException;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Payload;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.TemplateInstance;

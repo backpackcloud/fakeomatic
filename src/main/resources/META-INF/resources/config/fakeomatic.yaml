@@ -66,10 +66,10 @@ samples:
     url: http://whatthecommit.com/index.json
     return: /commit_message
   cause:
-    type: external
+    type: list
     location:
       resource: /META-INF/resources/config/causes.txt
   table_flip:
-    type: external
+    type: list
     location:
       resource: /META-INF/resources/config/table_flips.txt

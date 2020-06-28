@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,8 +58,8 @@ public class CompositeSampleTest extends BaseTest {
   }
 
   private void testParse(String name, String... values) {
-    ListSample sample       = (ListSample) fakeData.sample(name);
-    List       sampleValues = sample.values();
+    ListSample<?> sample       = (ListSample) fakeData.sample(name);
+    List          sampleValues = sample.samples().stream().map(Sample::get).collect(Collectors.toList());
     assertNotNull(sample);
     assertEquals(values.length, sampleValues.size());
     for (String value : values) {
@@ -88,10 +89,6 @@ public class CompositeSampleTest extends BaseTest {
       String   generated = sample.get();
       String[] strings   = generated.split("\\s");
       assertEquals(samples.size(), strings.length);
-      for (int i = 0; i < strings.length; i++) {
-        ListSample listSample = (ListSample) samples.get(i);
-        assertTrue(listSample.values().contains(strings[i]));
-      }
     });
   }
 

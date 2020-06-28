@@ -70,34 +70,39 @@ public class Generator implements QuarkusApplication, Events {
     AtomicInteger count      = new AtomicInteger(0);
     AtomicInteger inProgress = new AtomicInteger(0);
 
-    for (int i = 0; i < total; ) {
-      if (inProgress.get() < concurrency) {
-        i++;
-        inProgress.incrementAndGet();
+    try {
+      for (int i = 0; i < total; ) {
+        if (inProgress.get() < concurrency) {
+          i++;
+          inProgress.incrementAndGet();
 
-        if (i % progressLog == 0) {
-          LOGGER.infof("Generating payload %d of %d", i, total);
+          if (i % progressLog == 0) {
+            LOGGER.infof("Generating payload %d of %d", i, total);
+          }
+
+          payload = generator.generate();
+          eventTrigger.trigger(PAYLOAD_GENERATED, new PayloadGeneratedEvent(i, payload));
+          endpoint.postPayload(generator.contentType(), payload)
+                  .exceptionally(logError(i))
+                  .thenAccept(logResponse(i))
+                  .thenRun(inProgress::decrementAndGet)
+                  .thenRun(count::incrementAndGet);
         }
-
-        payload = generator.generate();
-        eventTrigger.trigger(PAYLOAD_GENERATED, new PayloadGeneratedEvent(i, payload));
-        endpoint.postPayload(generator.contentType(), payload)
-                .exceptionally(logError(i))
-                .thenAccept(logResponse(i))
-                .thenRun(inProgress::decrementAndGet)
-                .thenRun(count::incrementAndGet);
       }
-    }
-
-    while (count.get() < total) {
-      LOGGER.infof("Waiting for (%d) ongoing requests to finish...", (total - count.get()));
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        LOGGER.error(e);
+    } catch (Exception e) {
+      LOGGER.error("Error while injecting payload.", e);
+    } finally {
+      while (count.get() < total) {
+        LOGGER.infof("Waiting for (%d) ongoing requests to finish...", (total - count.get()));
+        try {
+          Thread.sleep(500);
+        } catch (InterruptedException e) {
+          LOGGER.error(e);
+        }
       }
     }
     eventTrigger.trigger(FINISHED, total);
+
     return 0;
   }
 

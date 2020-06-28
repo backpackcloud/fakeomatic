@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.spi;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import javax.ws.rs.core.MediaType;
@@ -37,9 +37,8 @@ public class Payload {
   private final String template;
   private final String type;
 
-  public Payload(@JsonProperty("template") Configuration template,
-                 @JsonProperty("type") String type) {
-    this.template = template.read();
+  public Payload(String template, String type) {
+    this.template = template;
     this.type = Optional.ofNullable(type)
                         .orElse(MediaType.APPLICATION_JSON);
   }
@@ -50,6 +49,12 @@ public class Payload {
 
   public String type() {
     return type;
+  }
+
+  @JsonCreator
+  public static Payload create(@JsonProperty("template") Configuration template,
+                               @JsonProperty("type") String type) {
+    return new Payload(template.read(), type);
   }
 
 }
