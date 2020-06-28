@@ -34,6 +34,7 @@ import io.backpackcloud.fakeomatic.spi.samples.ExpressionSample;
 import io.backpackcloud.fakeomatic.spi.samples.ExternalSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
+import io.backpackcloud.fakeomatic.spi.samples.TemplateSample;
 import io.backpackcloud.fakeomatic.spi.samples.TodaySample;
 import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
@@ -56,6 +57,7 @@ import java.util.function.Supplier;
     @JsonSubTypes.Type(value = ExternalSample.class,   name = "external"),
     @JsonSubTypes.Type(value = ListSample.class,       name = "list"),
     @JsonSubTypes.Type(value = RangeSample.class,      name = "range"),
+    @JsonSubTypes.Type(value = TemplateSample.class,   name = "template"),
     @JsonSubTypes.Type(value = TodaySample.class,      name = "today"),
     @JsonSubTypes.Type(value = UuidSample.class,       name = "uuid"),
     @JsonSubTypes.Type(value = WeightedSample.class,   name = "weight"),
