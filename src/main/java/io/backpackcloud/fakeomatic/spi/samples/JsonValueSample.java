@@ -27,47 +27,34 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.jboss.logging.Logger;
-
-import java.util.function.Supplier;
 
 @RegisterForReflection
-public class ExpressionSample implements Sample<String> {
+public class JsonValueSample implements Sample<String> {
 
-  private static final Logger LOGGER = Logger.getLogger(ExpressionSample.class);
+  private final Sample<JsonNode> sample;
+  private final String           jsonPointer;
 
-  private final FakeData         fakeData;
-  private final Supplier<String> expressionSupplier;
-
-  public ExpressionSample(Supplier<String> expressionSupplier, FakeData fakeData) {
-    this.expressionSupplier = expressionSupplier;
-    this.fakeData = fakeData;
+  public JsonValueSample(Sample<JsonNode> sample, String jsonPointer) {
+    this.sample = sample;
+    this.jsonPointer = jsonPointer;
   }
 
   @Override
   public String get() {
-    String expression = expressionSupplier.get();
-    String result = fakeData.expression(expression);
-    LOGGER.debugv("Creating from expression {0}: {1}", expression, result);
-    return result;
+    JsonNode jsonNode = sample.get();
+    return jsonNode.at(jsonPointer).asText();
   }
 
-  // TODO use sample configuration
   @JsonCreator
-  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
-                                        @JsonProperty("expression") String expression,
-                                        @JacksonInject("root") FakeData fakeData) {
-    if (sampleName != null) {
-      return new ExpressionSample(fakeData.sample(sampleName), fakeData);
-    } else if (expression != null) {
-      return new ExpressionSample(() -> expression, fakeData);
-    } else {
-      throw new UnbelievableException("No sample or expression given.");
-    }
+  public static JsonValueSample create(@JacksonInject("root") FakeData fakeData,
+                                       @JsonProperty("path") String jsonPointer,
+                                       @JsonProperty("ref") String sampleName) {
+    Sample<JsonNode> sample = fakeData.sample(sampleName);
+    return new JsonValueSample(sample, jsonPointer);
   }
 
 }

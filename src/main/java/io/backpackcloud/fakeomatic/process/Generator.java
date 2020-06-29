@@ -97,7 +97,7 @@ public class Generator implements QuarkusApplication, Events {
         try {
           Thread.sleep(500);
         } catch (InterruptedException e) {
-          LOGGER.error(e);
+          LOGGER.error("Error while waiting", e);
         }
       }
     }
@@ -108,7 +108,7 @@ public class Generator implements QuarkusApplication, Events {
 
   private Function<Throwable, HttpResponse> logError(int index) {
     return throwable -> {
-      LOGGER.errorv(throwable, "Error while sending payload ({0})", index);
+      LOGGER.error(String.format("Error while sending payload (%d)", index), throwable);
       return null;
     };
   }

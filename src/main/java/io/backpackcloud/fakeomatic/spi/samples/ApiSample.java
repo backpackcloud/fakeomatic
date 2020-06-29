@@ -64,7 +64,7 @@ import java.util.Optional;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class ApiSample implements Sample {
+public class ApiSample implements Sample<JsonNode> {
 
   private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
 
@@ -101,7 +101,7 @@ public class ApiSample implements Sample {
       this.method = Optional.ofNullable(method).orElse("get");
       this.mapper = new ObjectMapper();
       this.url = new URL(url.get());
-      this.returnPath = Optional.ofNullable(returnPath).orElse("/");
+      this.returnPath = Optional.ofNullable(returnPath).orElse("");
       this.pathVars = Optional.ofNullable(pathVars).orElseGet(Collections::emptyMap);
       this.client = WebClient.create(vertx, new WebClientOptions(
           new JsonObject(options == null ? Collections.emptyMap() : options))
@@ -117,7 +117,7 @@ public class ApiSample implements Sample {
   }
 
   @Override
-  public Object get() {
+  public JsonNode get() {
     String requestURI = url.toString();
     for (Map.Entry<String, String> entry : this.pathVars.entrySet()) {
       Object value = fakeData.sample(entry.getValue()).get();
@@ -131,15 +131,24 @@ public class ApiSample implements Sample {
     HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), requestURI);
     Uni<HttpResponse<Buffer>> response;
     if (this.template != null) {
-      response = request
-          .putHeader("Content-Type", payload.type())
-          .sendBuffer(Buffer.buffer(template.render()));
+      try {
+        String payload = template.render();
+        LOGGER.debugv("Payload generated for {0}: {1}", url.toString(), payload);
+        response = request
+            .putHeader("Content-Type", this.payload.type())
+            .sendBuffer(Buffer.buffer(payload));
+      } catch (Exception e) {
+        LOGGER.errorv(e, "Error while rendering template for request {0}.", requestURI);
+        throw new UnbelievableException(e);
+      }
     } else {
       response = request.send();
     }
+    LOGGER.infov("{0} -> {1}", method, requestURI);
     String responseBody = response.onItem()
                                   .apply(resp -> {
                                     int statusCode = resp.statusCode();
+                                    // TODO investigate a way of getting the error
                                     if (statusCode % 200 < 100) {
                                       return resp.bodyAsString();
                                     } else {
@@ -151,8 +160,9 @@ public class ApiSample implements Sample {
                                   // TODO externalize timeout
                                   .await().atMost(Duration.ofSeconds(30));
     try {
+      LOGGER.debug(responseBody);
       JsonNode parsedPayload = this.mapper.readTree(responseBody);
-      return parsedPayload.at(this.returnPath).asText();
+      return parsedPayload.at(this.returnPath);
     } catch (IOException e) {
       LOGGER.error("Error while calling API", e);
       throw new UnbelievableException(e);

@@ -27,6 +27,7 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 
@@ -61,9 +62,16 @@ public class CacheSample implements Sample {
 
   @JsonCreator
   public static CacheSample create(@JacksonInject("root") FakeData fakeData,
-                                   @JsonProperty("sample") String sampleName,
+                                   @JsonProperty("ref") String sampleName,
+                                   @JsonProperty("sample") Sample sample,
                                    @JsonProperty("ttl") Integer ttl) {
-    return new CacheSample(fakeData.sample(sampleName), Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE));
+    Integer timeToLive = Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE);
+    if (sample != null) {
+      return new CacheSample(sample, timeToLive);
+    } else if (sampleName != null) {
+      return new CacheSample(fakeData.sample(sampleName), timeToLive);
+    }
+    throw new UnbelievableException("No sample or reference given");
   }
 
 }

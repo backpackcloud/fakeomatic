@@ -32,6 +32,7 @@ import io.backpackcloud.fakeomatic.spi.samples.CharSample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
 import io.backpackcloud.fakeomatic.spi.samples.DateSample;
 import io.backpackcloud.fakeomatic.spi.samples.ExpressionSample;
+import io.backpackcloud.fakeomatic.spi.samples.JsonValueSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import io.backpackcloud.fakeomatic.spi.samples.TemplateSample;
@@ -54,6 +55,7 @@ import java.util.function.Supplier;
     @JsonSubTypes.Type(value = CompositeSample.class,  name = "composite"),
     @JsonSubTypes.Type(value = DateSample.class,       name = "date"),
     @JsonSubTypes.Type(value = ExpressionSample.class, name = "expression"),
+    @JsonSubTypes.Type(value = JsonValueSample.class,  name = "json"),
     @JsonSubTypes.Type(value = ListSample.class,       name = "list"),
     @JsonSubTypes.Type(value = RangeSample.class,      name = "range"),
     @JsonSubTypes.Type(value = TemplateSample.class,   name = "template"),

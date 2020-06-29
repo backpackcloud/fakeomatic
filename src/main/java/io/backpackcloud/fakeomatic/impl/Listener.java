@@ -45,14 +45,14 @@ public class Listener implements Events {
   @ConsumeEvent(PAYLOAD_GENERATED)
   public void onPayloadGenerated(PayloadGeneratedEvent event) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debugv("Payload {0} generated: {1}", event.index(), event.payload());
+      LOGGER.debugv("Payload %d generated: %s", event.index(), event.payload());
     }
   }
 
   @ConsumeEvent(CLIENT_ERROR)
   public void onClientError(ResponseReceivedEvent event) {
-    LOGGER.warnv(
-        "Got a client error response for payload {0} ({1}): {2}",
+    LOGGER.warnf(
+        "Got a client error response for payload %d (%d): %s",
         event.index(), event.statusCode(), event.statusMessage()
     );
     this.clientErrors.incrementAndGet();
@@ -60,8 +60,8 @@ public class Listener implements Events {
 
   @ConsumeEvent(SERVER_ERROR)
   public void onServerError(ResponseReceivedEvent event) {
-    LOGGER.errorv(
-        "Got a server error response for payload {0} ({1}): {2}",
+    LOGGER.errorf(
+        "Got a server error response for payload %d (%d): %s",
         event.index(), event.statusCode(), event.statusMessage()
     );
     this.serverErrors.incrementAndGet();
@@ -70,15 +70,13 @@ public class Listener implements Events {
   @ConsumeEvent(RESPONSE_OK)
   public void onOk(ResponseReceivedEvent event) {
     this.ok.incrementAndGet();
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debugv("Received response for payload {0}: {1}", event.index(), event.responseBody());
-    }
+    LOGGER.debugf("Received response for payload %d: {1}", event.index(), event.responseBody());
   }
 
   @ConsumeEvent(value = FINISHED)
   public void onFinish(int total) {
-    LOGGER.infov(
-        "Finished generating {0} payloads. OKs ({1}) | Server Errors ({2}) | Client Errors ({3})",
+    LOGGER.infof(
+        "Finished generating %d payloads. OKs (%d) | Server Errors (%d) | Client Errors (%d)",
         total, ok.get(), serverErrors.get(), clientErrors.get()
     );
   }
