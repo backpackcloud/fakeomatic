@@ -27,6 +27,7 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.FakeData;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -50,15 +51,16 @@ public class ExpressionSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static ExpressionSample createFromSample(@JsonProperty("sample") String sampleName,
-                                                  @JacksonInject("root") FakeData fakeData) {
-    return new ExpressionSample(() -> fakeData.sample(sampleName).get().toString(), fakeData);
-  }
-
-  @JsonCreator
-  public static ExpressionSample createFromExpression(@JsonProperty("expression") String expression,
-                                                      @JacksonInject("root") FakeData fakeData) {
-    return new ExpressionSample(() -> expression, fakeData);
+  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
+                                        @JsonProperty("expression") String expression,
+                                        @JacksonInject("root") FakeData fakeData) {
+    if (sampleName != null) {
+      return new ExpressionSample(() -> fakeData.sample(sampleName).get().toString(), fakeData);
+    } else if (expression != null) {
+      return new ExpressionSample(() -> expression, fakeData);
+    } else {
+      throw new UnbelievableException("No sample or expression given.");
+    }
   }
 
 }
