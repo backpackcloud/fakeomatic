@@ -26,15 +26,12 @@ package io.backpackcloud.fakeomatic.command;
 
 import io.backpackcloud.fakeomatic.process.Generator;
 import io.quarkus.runtime.Quarkus;
-import org.jboss.logging.Logger;
 import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(mixinStandardHelpOptions = true)
 public class GeneratorCommand implements Callable<Integer> {
-
-  private static final Logger LOGGER = Logger.getLogger(GeneratorCommand.class);
 
   @CommandLine.Option(
       names = {"-e", "--endpoint"},
@@ -111,12 +108,12 @@ public class GeneratorCommand implements Callable<Integer> {
     setPropertyIfNotNull("template.path", templatePath);
     setPropertyIfNotNull("template.type", templateType);
 
-    setPropertyIfNotNull("events.log.level", eventsLogLevel);
+    setPropertyIfNotNull("fakeomatic.events.log.level", eventsLogLevel);
 
     try {
       Quarkus.run(Generator.class);
     } catch (Throwable e) {
-      LOGGER.error("Error while faking data", e);
+      e.printStackTrace();
       return 1;
     }
     return 0;
