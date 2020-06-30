@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,16 +40,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RangeSampleTest extends BaseTest {
 
-  FakeData fakeData;
+  Faker faker;
 
   @BeforeEach
   public void init() {
-    fakeData = createFakeData("ranges.yaml");
+    faker = createFakeData("ranges.yaml");
   }
 
   @Test
   public void testParse() {
-    List<Sample> samples = fakeData.samples();
+    List<Sample> samples = faker.samples();
     assertEquals(2, samples.size());
   }
 
@@ -64,7 +64,7 @@ public class RangeSampleTest extends BaseTest {
   }
 
   private void testSample(String sampleName, int min, int max) {
-    RangeSample sample = (RangeSample) fakeData.sample(sampleName);
+    RangeSample sample = (RangeSample) faker.sample(sampleName);
     Set<Integer> generated = new HashSet<>();
 
     assertEquals(min, sample.min());

@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.RequestException;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Payload;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.qute.Engine;
@@ -76,11 +76,11 @@ public class ApiSample implements Sample<JsonNode> {
   private final TemplateInstance    template;
   private final Payload             payload;
   private final Map<String, String> pathVars;
-  private final FakeData            fakeData;
+  private final Faker               faker;
   private final Map<String, String> headers;
 
   @JsonCreator
-  public ApiSample(@JacksonInject("root") FakeData fakeData,
+  public ApiSample(@JacksonInject("root") Faker faker,
                    @JacksonInject Vertx vertx,
                    @JacksonInject Engine templateEngine,
                    @JsonProperty("url") Configuration url,
@@ -91,12 +91,12 @@ public class ApiSample implements Sample<JsonNode> {
                    @JsonProperty("options") Map<String, Object> options,
                    @JsonProperty("headers") Map<String, String> headers,
                    @JsonProperty("path_vars") Map<String, String> pathVars) {
-    this.fakeData = fakeData;
+    this.faker = faker;
     try {
       this.payload = payload;
       if (payload != null) {
         this.template = templateEngine.parse(payload.template())
-                                      .data(fakeData);
+                                      .data(faker);
       } else {
         this.template = null;
       }
@@ -123,7 +123,7 @@ public class ApiSample implements Sample<JsonNode> {
   public JsonNode get() {
     String requestURI = url.toString();
     for (Map.Entry<String, String> entry : this.pathVars.entrySet()) {
-      Object value = fakeData.sample(entry.getValue()).get();
+      Object value = faker.sample(entry.getValue()).get();
       // TODO refactor this
       if (value instanceof JsonNode) {
         value = ((JsonNode) value).asText();

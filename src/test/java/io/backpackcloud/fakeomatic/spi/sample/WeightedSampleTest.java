@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,11 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WeightedSampleTest extends BaseTest {
 
-  FakeData fakeData;
+  Faker faker;
 
   @BeforeEach
   public void init() {
-    fakeData = createFakeData("weight.yaml");
+    faker = createFakeData("weight.yaml");
   }
 
   @Test
@@ -78,7 +78,7 @@ public class WeightedSampleTest extends BaseTest {
   }
 
   private void testSample(String sampleName) {
-    WeightedSample                               sample      = (WeightedSample) fakeData.sample(sampleName);
+    WeightedSample                               sample      = (WeightedSample) faker.sample(sampleName);
     List<WeightedSample.WeightedValueDefinition> definitions = sample.definitions();
     Map<Object, Integer>                         occurrences = new HashMap<>();
     Random                                       random      = new Random();

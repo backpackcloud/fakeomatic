@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -100,7 +100,7 @@ public class WeightedSample<E> implements Sample<E> {
     }
 
     @JsonCreator
-    public static WeightedValueDefinition create(@JacksonInject("root") FakeData fakeData,
+    public static WeightedValueDefinition create(@JacksonInject("root") Faker faker,
                                                  @JsonProperty("weight") int weight,
                                                  @JsonProperty("value") Object value,
                                                  @JsonProperty("sample") String sampleName) {
@@ -108,7 +108,7 @@ public class WeightedSample<E> implements Sample<E> {
       if (value != null) {
         sample = () -> value;
       } else if (sampleName != null) {
-        sample = fakeData.sample(sampleName);
+        sample = faker.sample(sampleName);
       } else {
         throw new UnbelievableException("Unable to create instance, a value or sample must be given.");
       }

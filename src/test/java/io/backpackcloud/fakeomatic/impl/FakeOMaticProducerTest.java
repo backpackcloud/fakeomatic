@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -34,9 +34,9 @@ public class FakeOMaticProducerTest extends BaseTest {
 
   @Test
   public void testCompositeSampleCreation() throws IOException {
-    FakeData fakeData = createFakeData("test.yaml", "test2.yaml");
+    Faker faker = createFakeData("test.yaml", "test2.yaml");
 
-    fakeData.some("foo");
+    faker.some("foo");
   }
 
 }

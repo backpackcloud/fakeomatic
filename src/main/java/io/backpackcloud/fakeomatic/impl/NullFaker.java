@@ -25,14 +25,14 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class NullFakeData implements FakeData {
+public class NullFaker implements Faker {
 
   @Override
   public List<Sample> samples() {

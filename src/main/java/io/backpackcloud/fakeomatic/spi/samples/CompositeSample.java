@@ -27,7 +27,7 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -70,12 +70,12 @@ public class CompositeSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static CompositeSample create(@JacksonInject("root") FakeData fakeData,
+  public static CompositeSample create(@JacksonInject("root") Faker faker,
                                        @JsonProperty("samples") List<String> samples,
                                        @JsonProperty("separator") String separator) {
     return new CompositeSample(Optional.ofNullable(separator).orElse(""),
         samples.stream()
-               .map(fakeData::sample)
+               .map(faker::sample)
                .collect(Collectors.toList())
     );
   }

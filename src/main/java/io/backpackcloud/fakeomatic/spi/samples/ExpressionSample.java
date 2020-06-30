@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
@@ -40,18 +40,18 @@ public class ExpressionSample implements Sample<String> {
 
   private static final Logger LOGGER = Logger.getLogger(ExpressionSample.class);
 
-  private final FakeData         fakeData;
+  private final Faker            faker;
   private final Supplier<String> expressionSupplier;
 
-  public ExpressionSample(Supplier<String> expressionSupplier, FakeData fakeData) {
+  public ExpressionSample(Supplier<String> expressionSupplier, Faker faker) {
     this.expressionSupplier = expressionSupplier;
-    this.fakeData = fakeData;
+    this.faker = faker;
   }
 
   @Override
   public String get() {
     String expression = expressionSupplier.get();
-    String result = fakeData.expression(expression);
+    String result = faker.expression(expression);
     LOGGER.debugv("Creating from expression {0}: {1}", expression, result);
     return result;
   }
@@ -60,11 +60,11 @@ public class ExpressionSample implements Sample<String> {
   @JsonCreator
   public static ExpressionSample create(@JsonProperty("sample") String sampleName,
                                         @JsonProperty("expression") String expression,
-                                        @JacksonInject("root") FakeData fakeData) {
+                                        @JacksonInject("root") Faker faker) {
     if (sampleName != null) {
-      return new ExpressionSample(fakeData.sample(sampleName), fakeData);
+      return new ExpressionSample(faker.sample(sampleName), faker);
     } else if (expression != null) {
-      return new ExpressionSample(() -> expression, fakeData);
+      return new ExpressionSample(() -> expression, faker);
     } else {
       throw new UnbelievableException("No sample or expression given.");
     }

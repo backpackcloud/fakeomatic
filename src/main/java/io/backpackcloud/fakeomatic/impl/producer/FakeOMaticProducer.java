@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.impl.FakeOMatic;
-import io.backpackcloud.fakeomatic.impl.NullFakeData;
+import io.backpackcloud.fakeomatic.impl.FakeOMaticImpl;
+import io.backpackcloud.fakeomatic.impl.NullFaker;
 import io.backpackcloud.fakeomatic.spi.Config;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.TemplateParser;
 import io.quarkus.qute.Engine;
@@ -76,7 +76,7 @@ public class FakeOMaticProducer {
 
   @Produces
   @Singleton
-  public FakeData produce() {
+  public Faker produce() {
     List<InputStream> configs = Arrays
         .stream(config.generator().configs())
         .map(config -> {
@@ -103,26 +103,26 @@ public class FakeOMaticProducer {
 
   @Produces
   @Singleton
-  public TemplateParser produceParser(FakeData fakeData) {
-    return new QuteTemplateParser(templateEngine, fakeData);
+  public TemplateParser produceParser(Faker faker) {
+    return new QuteTemplateParser(templateEngine, faker);
   }
 
   public static InputStream defaultConfig() {
-    return FakeOMatic.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
+    return FakeOMaticImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
-  public static FakeData newInstance(List<InputStream> configs,
-                                     Engine engine,
-                                     Consumer<InjectableValues.Std> injectableValuesConsumer) {
+  public static Faker newInstance(List<InputStream> configs,
+                                  Engine engine,
+                                  Consumer<InjectableValues.Std> injectableValuesConsumer) {
     ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
     InjectableValues.Std std = new InjectableValues.Std();
 
     objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-    FakeData parent = new NullFakeData();
+    Faker parent = new NullFaker();
     // the composite sample needs access to the whole fake data and not the parent one
-    RootFakeData rootFakeData = new RootFakeData();
+    RootFaker rootFakeData = new RootFaker();
 
     injectableValuesConsumer.accept(std);
     std.addValue("parent", parent);
@@ -133,7 +133,7 @@ public class FakeOMaticProducer {
 
     try {
       for (InputStream config : configs) {
-        parent = objectMapper.readValue(config, FakeOMatic.class);
+        parent = objectMapper.readValue(config, FakeOMaticImpl.class);
         std.addValue("parent", parent);
       }
     } catch (Throwable e) {
@@ -146,9 +146,9 @@ public class FakeOMaticProducer {
     return parent;
   }
 
-  static class RootFakeData implements FakeData {
+  static class RootFaker implements Faker {
 
-    FakeData delegate;
+    Faker delegate;
 
     @Override
     public Random random() {
@@ -186,17 +186,17 @@ public class FakeOMaticProducer {
 
   static class QuteTemplateParser implements TemplateParser {
 
-    private final Engine   engine;
-    private final FakeData fakeData;
+    private final Engine engine;
+    private final Faker  faker;
 
-    QuteTemplateParser(Engine engine, FakeData fakeData) {
+    QuteTemplateParser(Engine engine, Faker faker) {
       this.engine = engine;
-      this.fakeData = fakeData;
+      this.faker = faker;
     }
 
     @Override
     public TemplateInstance parse(String template) {
-      return engine.parse(template).data(fakeData);
+      return engine.parse(template).data(faker);
     }
   }
 

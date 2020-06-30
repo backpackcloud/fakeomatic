@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +33,8 @@ public class ExpressionSampleTest extends BaseTest {
 
   @Test
   public void testSampleExpression() {
-    FakeData fakeData = createFakeData("expressions.yaml");
-    Sample<String> sample = fakeData.sample("address");
+    Faker          faker  = createFakeData("expressions.yaml");
+    Sample<String> sample = faker.sample("address");
     times(100000, sample, address -> {
       address.matches("^(Some Street|Another Street|Galaxy) (\\d{2,3})$");
     });
@@ -42,8 +42,8 @@ public class ExpressionSampleTest extends BaseTest {
 
   @Test
   public void testStringExpression() {
-    FakeData fakeData = createFakeData("expressions.yaml");
-    Sample<String> sample = fakeData.sample("credit_card");
+    Faker          faker  = createFakeData("expressions.yaml");
+    Sample<String> sample = faker.sample("credit_card");
     times(100000, sample, address -> {
       address.matches("^\\d{16}$");
     });

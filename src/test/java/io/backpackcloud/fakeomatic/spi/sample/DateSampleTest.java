@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +40,8 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testWithEndDate() {
-    FakeData          fakeData   = createFakeData("dates.yaml");
-    Sample<LocalDate> sample     = fakeData.sample("2020");
+    Faker             faker      = createFakeData("dates.yaml");
+    Sample<LocalDate> sample     = faker.sample("2020");
     Set<Integer>      daysOfYear = new HashSet<>();
     times(100000, sample, date -> {
       assertEquals(2020, date.getYear());
@@ -53,8 +53,8 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testWithPeriod() {
-    FakeData          fakeData   = createFakeData("dates.yaml");
-    Sample<LocalDate> sample     = fakeData.sample("quarter");
+    Faker             faker      = createFakeData("dates.yaml");
+    Sample<LocalDate> sample     = faker.sample("quarter");
     Set<Integer>      daysOfYear = new HashSet<>();
     times(100000, sample, date -> {
       assertEquals(2020, date.getYear());
@@ -66,9 +66,9 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testYesterdayOrToday() {
-    FakeData          fakeData = createFakeData("dates.yaml");
-    Sample<LocalDate> sample   = fakeData.sample("yesterday_or_today");
-    Set<LocalDate>    dates    = new HashSet<>();
+    Faker             faker  = createFakeData("dates.yaml");
+    Sample<LocalDate> sample = faker.sample("yesterday_or_today");
+    Set<LocalDate>    dates  = new HashSet<>();
     times(10000, sample, dates::add);
     assertEquals(2, dates.size());
     assertTrue(dates.contains(LocalDate.now()));
@@ -77,9 +77,9 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testYesterdayToTomorrow() {
-    FakeData          fakeData = createFakeData("dates.yaml");
-    Sample<LocalDate> sample   = fakeData.sample("yesterday_to_tomorrow");
-    Set<LocalDate>    dates    = new HashSet<>();
+    Faker             faker  = createFakeData("dates.yaml");
+    Sample<LocalDate> sample = faker.sample("yesterday_to_tomorrow");
+    Set<LocalDate>    dates  = new HashSet<>();
     times(10000, sample, dates::add);
     assertEquals(3, dates.size());
     assertTrue(dates.contains(LocalDate.now()));

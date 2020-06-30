@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -65,7 +65,7 @@ public class ListSample<E> implements Sample<E> {
 
   @JsonCreator
   public static ListSample<String> create(@JacksonInject Random random,
-                                          @JacksonInject("root") FakeData fakeData,
+                                          @JacksonInject("root") Faker faker,
                                           @JsonProperty("values") List<Object> values,
                                           @JsonProperty("samples") List<String> samplesNames,
                                           @JsonProperty("location") Configuration location) {
@@ -76,7 +76,7 @@ public class ListSample<E> implements Sample<E> {
                       .collect(Collectors.toList());
     } else if (samplesNames != null) {
       samples = samplesNames.stream()
-                            .map(fakeData::sample)
+                            .map(faker::sample)
                             .collect(Collectors.toList());
     } else if (location != null) {
       samples = location.readLines().stream()

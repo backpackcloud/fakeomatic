@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.impl;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,8 +34,8 @@ public class ExpressionTest extends BaseTest {
 
   @Test
   public void testExpression() {
-    FakeData fakeData = createFakeData("expressions.yaml");
-    assertEquals("000aaa", fakeData.expression("###%%%"));
+    Faker faker = createFakeData("expressions.yaml");
+    assertEquals("000aaa", faker.expression("###%%%"));
   }
 
 }

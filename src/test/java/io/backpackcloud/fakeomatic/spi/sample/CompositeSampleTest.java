@@ -25,7 +25,7 @@
 package io.backpackcloud.fakeomatic.spi.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
 import io.backpackcloud.fakeomatic.spi.samples.ListSample;
@@ -41,16 +41,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CompositeSampleTest extends BaseTest {
 
-  FakeData fakeData;
+  Faker faker;
 
   @BeforeEach
   public void init() {
-    fakeData = createFakeData("composite.yaml");
+    faker = createFakeData("composite.yaml");
   }
 
   @Test
   public void testParse() {
-    List<Sample> samples = fakeData.samples();
+    List<Sample> samples = faker.samples();
     assertEquals(6, samples.size());
     testParse("first_name", "Atadolfo", "Biru", "Calicusco", "Danete", "Elisvaldino");
     testParse("middle_name", "Lombardino", "Jurubebo", "Molibidemo");
@@ -58,7 +58,7 @@ public class CompositeSampleTest extends BaseTest {
   }
 
   private void testParse(String name, String... values) {
-    ListSample<?> sample       = (ListSample) fakeData.sample(name);
+    ListSample<?> sample       = (ListSample) faker.sample(name);
     List          sampleValues = sample.samples().stream().map(Sample::get).collect(Collectors.toList());
     assertNotNull(sample);
     assertEquals(values.length, sampleValues.size());
@@ -83,7 +83,7 @@ public class CompositeSampleTest extends BaseTest {
   }
 
   private void test(String sampleName) {
-    CompositeSample sample  = (CompositeSample) fakeData.sample(sampleName);
+    CompositeSample sample  = (CompositeSample) faker.sample(sampleName);
     List<Sample>    samples = sample.samples();
     times(1000, () -> {
       String   generated = sample.get();

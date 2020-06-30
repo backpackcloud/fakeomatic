@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * @author Marcelo Guimarães
  * @see Sample
  */
-public interface FakeData {
+public interface Faker {
 
   /**
    * Gets the random object being used by this FakeData.
@@ -132,7 +132,7 @@ public interface FakeData {
    * @param locations the locations of the configurations
    * @return a new FakeData
    */
-  static FakeData load(Random random, InputStream... locations) {
+  static Faker load(Random random, InputStream... locations) {
     return FakeOMaticProducer.newInstance(Arrays.asList(locations), Engine.builder().addDefaults().build(), std -> {
       std.addValue(Random.class, random);
       std.addValue(Vertx.class, Vertx.vertx());
@@ -145,7 +145,7 @@ public interface FakeData {
    * @param locations the locations of the configurations
    * @return a new FakeData
    */
-  static FakeData load(InputStream... locations) {
+  static Faker load(InputStream... locations) {
     return load(new Random(), locations);
   }
 

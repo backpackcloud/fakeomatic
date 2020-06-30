@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -50,10 +50,10 @@ public class JsonValueSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static JsonValueSample create(@JacksonInject("root") FakeData fakeData,
+  public static JsonValueSample create(@JacksonInject("root") Faker faker,
                                        @JsonProperty("path") String jsonPointer,
                                        @JsonProperty("ref") String sampleName) {
-    Sample<JsonNode> sample = fakeData.sample(sampleName);
+    Sample<JsonNode> sample = faker.sample(sampleName);
     return new JsonValueSample(sample, jsonPointer);
   }
 

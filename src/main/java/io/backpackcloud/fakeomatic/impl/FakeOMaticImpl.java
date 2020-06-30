@@ -27,7 +27,7 @@ package io.backpackcloud.fakeomatic.impl;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.FakeData;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -40,10 +40,10 @@ import java.util.Optional;
 import java.util.Random;
 
 @RegisterForReflection
-@TemplateData(target = FakeData.class)
-public class FakeOMatic implements FakeData {
+@TemplateData(target = Faker.class)
+public class FakeOMaticImpl implements Faker {
 
-  private final FakeData parent;
+  private final Faker parent;
 
   private final Random random;
 
@@ -51,10 +51,10 @@ public class FakeOMatic implements FakeData {
   private final Map<String, String> placeholders;
 
   @JsonCreator
-  public FakeOMatic(@JacksonInject Random random,
-                    @JacksonInject("parent") FakeData parent,
-                    @JsonProperty("samples") Map<String, Sample> samples,
-                    @JsonProperty("placeholders") Map<String, String> placeholders) {
+  public FakeOMaticImpl(@JacksonInject Random random,
+                        @JacksonInject("parent") Faker parent,
+                        @JsonProperty("samples") Map<String, Sample> samples,
+                        @JsonProperty("placeholders") Map<String, String> placeholders) {
     this.random = random;
     this.parent = parent;
     this.samples = Optional.ofNullable(samples).orElseGet(Collections::emptyMap);
