@@ -45,7 +45,7 @@ public class Listener implements Events {
   @ConsumeEvent(PAYLOAD_GENERATED)
   public void onPayloadGenerated(PayloadGeneratedEvent event) {
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debugv("Payload %d generated: %s", event.index(), event.payload());
+      LOGGER.debugf("Payload %d generated: %s", event.index(), event.payload());
     }
   }
 
@@ -70,7 +70,7 @@ public class Listener implements Events {
   @ConsumeEvent(RESPONSE_OK)
   public void onOk(ResponseReceivedEvent event) {
     this.ok.incrementAndGet();
-    LOGGER.debugf("Received response for payload %d: {1}", event.index(), event.responseBody());
+    LOGGER.debugf("Received response for payload %d: %s", event.index(), event.responseBody());
   }
 
   @ConsumeEvent(value = FINISHED)
