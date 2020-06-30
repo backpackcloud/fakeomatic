@@ -33,6 +33,7 @@ import io.backpackcloud.fakeomatic.impl.configuration.FileContentConfiguration;
 import io.backpackcloud.fakeomatic.impl.configuration.RawValueConfiguration;
 import io.backpackcloud.fakeomatic.impl.configuration.ResourceConfiguration;
 import io.backpackcloud.fakeomatic.impl.configuration.SystemPropertyConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.UrlConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.IOException;
@@ -75,6 +76,7 @@ public interface Configuration extends Supplier<String> {
                               @JsonProperty("property") String property,
                               @JsonProperty("file") String file,
                               @JsonProperty("resource") String resource,
+                              @JsonProperty("url") String url,
                               @JsonProperty("default") String defaultValue) {
     List<Configuration> values = new ArrayList<>();
 
@@ -89,6 +91,9 @@ public interface Configuration extends Supplier<String> {
     }
     if (resource != null) {
       values.add(new ResourceConfiguration(resource));
+    }
+    if (url != null) {
+      values.add(new UrlConfiguration(url));
     }
     if (defaultValue != null) {
       values.add(new RawValueConfiguration(defaultValue));

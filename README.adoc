@@ -78,6 +78,15 @@ param:
                                             # file inside the com.example package
 ----
 
+url::
+Reads the value from the given URL by using GET `url`.
+
+[source,yaml]
+----
+param:
+  url: http://something.example.com/some-param
+----
+
 default::
 Supplies a default value.
 
@@ -104,6 +113,7 @@ The priority for getting the value is:
 . `property`
 . `file`
 . `resource`
+. `url`
 . `defaultValue`
 
 ==== Samples

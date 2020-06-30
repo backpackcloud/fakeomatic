@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+// TODO support pointing to a URL
 @RegisterForReflection
 public class EnvironmentVariableConfiguration implements Configuration {
 
