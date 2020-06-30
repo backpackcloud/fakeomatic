@@ -30,6 +30,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer.DEFAULT_CONFIG;
@@ -45,6 +47,9 @@ public class FakeOMaticConfig implements Config {
 
   @ConfigProperty(name = "endpoint.insecure", defaultValue = "false")
   boolean insecure;
+
+  @ConfigProperty(name = "endpoint.headers", defaultValue = "")
+  String headers;
 
   @ConfigProperty(name = "generator.total", defaultValue = "10")
   int total;
@@ -81,6 +86,16 @@ public class FakeOMaticConfig implements Config {
       @Override
       public boolean insecure() {
         return insecure;
+      }
+
+      @Override
+      public Map<String, String> headers() {
+        Map<String, String> headersMap = new HashMap<>();
+        headers.lines().forEach(line -> {
+          int i = line.indexOf("=");
+          headersMap.put(line.substring(0, i), line.substring(i + 1));
+        });
+        return headersMap;
       }
     };
   }

@@ -29,6 +29,7 @@ import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
+import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
@@ -36,6 +37,7 @@ import javax.enterprise.context.ApplicationScoped;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -43,8 +45,9 @@ import java.util.function.Function;
 @ApplicationScoped
 public class EndpointConnection implements Endpoint {
 
-  private final URL       url;
-  private final WebClient client;
+  private final URL                 url;
+  private final WebClient           client;
+  private final Map<String, String> headers;
 
   public EndpointConnection(Config.EndpointConfig config, Vertx vertx) throws MalformedURLException {
     this.url = new URL(config.url());
@@ -55,17 +58,24 @@ public class EndpointConnection implements Endpoint {
         .setSsl("https".equals(this.url.getProtocol()))
         .setTrustAll(config.insecure())
     );
+    this.headers = config.headers();
   }
 
   @Override
   public CompletionStage<HttpResponse> postPayload(String contentType, String payload) {
-    return CompletableFuture.supplyAsync(() -> client.post(url.toString())
-                                                     .putHeader("Content-Type", contentType)
-                                                     .sendBuffer(Buffer.buffer(payload))
-                                                     .onItem()
-                                                     .apply(Function.identity())
-                                                     // TODO externalize this
-                                                     .await().atMost(Duration.ofSeconds(30)));
+    return CompletableFuture.supplyAsync(() -> {
+      HttpRequest<Buffer> request = client.post(url.toString());
+      for (Map.Entry<String, String> header : this.headers.entrySet()) {
+        request.putHeader(header.getKey(), header.getValue());
+      }
+      return request
+          .putHeader("Content-Type", contentType)
+          .sendBuffer(Buffer.buffer(payload))
+          .onItem()
+          .apply(Function.identity())
+          // TODO externalize this
+          .await().atMost(Duration.ofSeconds(30));
+    });
   }
 
 }

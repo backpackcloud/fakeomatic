@@ -28,6 +28,7 @@ import io.backpackcloud.fakeomatic.process.Generator;
 import io.quarkus.runtime.Quarkus;
 import picocli.CommandLine;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(mixinStandardHelpOptions = true)
@@ -93,12 +94,22 @@ public class GeneratorCommand implements Callable<Integer> {
   )
   String eventsLogLevel;
 
+  @CommandLine.Option(
+      names = "--header",
+      description = "Adds a header to the endpoint call"
+  )
+  List<String> headers;
+
   @Override
   public Integer call() {
 
     setPropertyIfNotNull("endpoint.url", endpointUrl);
     setPropertyIfNotNull("endpoint.concurrency", concurrency);
     setPropertyIfNotNull("endpoint.insecure", insecure);
+
+    if (headers != null) {
+      setPropertyIfNotNull("endpoint.headers", String.join("\n", headers));
+    }
 
     setPropertyIfNotNull("generator.total", total);
     setPropertyIfNotNull("generator.buffer", buffer);

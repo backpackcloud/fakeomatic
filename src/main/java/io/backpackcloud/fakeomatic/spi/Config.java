@@ -24,6 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -49,6 +50,8 @@ public interface Config {
     int concurrency();
 
     boolean insecure();
+
+    Map<String, String> headers();
 
   }
 

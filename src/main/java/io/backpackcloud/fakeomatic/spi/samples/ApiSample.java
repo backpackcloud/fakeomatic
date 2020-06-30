@@ -77,6 +77,7 @@ public class ApiSample implements Sample<JsonNode> {
   private final Payload             payload;
   private final Map<String, String> pathVars;
   private final FakeData            fakeData;
+  private final Map<String, String> headers;
 
   @JsonCreator
   public ApiSample(@JacksonInject("root") FakeData fakeData,
@@ -88,6 +89,7 @@ public class ApiSample implements Sample<JsonNode> {
                    @JsonProperty("return") String returnPath,
                    @JsonProperty("insecure") boolean insecure,
                    @JsonProperty("options") Map<String, Object> options,
+                   @JsonProperty("headers") Map<String, String> headers,
                    @JsonProperty("path_vars") Map<String, String> pathVars) {
     this.fakeData = fakeData;
     try {
@@ -102,6 +104,7 @@ public class ApiSample implements Sample<JsonNode> {
       this.mapper = new ObjectMapper();
       this.url = new URL(url.get());
       this.returnPath = Optional.ofNullable(returnPath).orElse("");
+      this.headers = Optional.ofNullable(headers).orElseGet(Collections::emptyMap);
       this.pathVars = Optional.ofNullable(pathVars).orElseGet(Collections::emptyMap);
       this.client = WebClient.create(vertx, new WebClientOptions(
           new JsonObject(options == null ? Collections.emptyMap() : options))
@@ -130,6 +133,9 @@ public class ApiSample implements Sample<JsonNode> {
 
     HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), requestURI);
     Uni<HttpResponse<Buffer>> response;
+    for (Map.Entry<String, String> header : headers.entrySet()) {
+      request.putHeader(header.getKey(), header.getValue());
+    }
     if (this.template != null) {
       try {
         String payload = template.render();
