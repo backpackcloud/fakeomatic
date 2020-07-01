@@ -164,7 +164,7 @@ public class FakeOMaticProducer {
     }
 
     @Override
-    public String some(String sampleName) {
+    public Object some(String sampleName) {
       return delegate.some(sampleName);
     }
 
