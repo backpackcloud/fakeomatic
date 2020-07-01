@@ -61,7 +61,7 @@ public class VertxEndpoint implements Endpoint {
 
   private final int concurrency;
 
-  private AtomicInteger inProgress = new AtomicInteger(0);
+  private final AtomicInteger inProgress = new AtomicInteger(0);
 
 
   public VertxEndpoint(URL url, HttpRequest<Buffer> request, int concurrency) {
