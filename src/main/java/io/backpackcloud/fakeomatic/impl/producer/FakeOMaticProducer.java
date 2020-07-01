@@ -29,9 +29,10 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.impl.FakeOMaticImpl;
+import io.backpackcloud.fakeomatic.impl.FakerImpl;
 import io.backpackcloud.fakeomatic.impl.NullFaker;
 import io.backpackcloud.fakeomatic.spi.Config;
+import io.backpackcloud.fakeomatic.spi.FakeOMatic;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.TemplateParser;
@@ -76,7 +77,7 @@ public class FakeOMaticProducer {
 
   @Produces
   @Singleton
-  public Faker produce() {
+  public FakeOMatic produce() {
     List<InputStream> configs = Arrays
         .stream(config.generator().configs())
         .map(config -> {
@@ -108,12 +109,12 @@ public class FakeOMaticProducer {
   }
 
   public static InputStream defaultConfig() {
-    return FakeOMaticImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
+    return FakerImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
-  public static Faker newInstance(List<InputStream> configs,
-                                  Engine engine,
-                                  Consumer<InjectableValues.Std> injectableValuesConsumer) {
+  public static FakeOMatic newInstance(List<InputStream> configs,
+                                       Engine engine,
+                                       Consumer<InjectableValues.Std> injectableValuesConsumer) {
     ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
     InjectableValues.Std std = new InjectableValues.Std();
@@ -133,7 +134,7 @@ public class FakeOMaticProducer {
 
     try {
       for (InputStream config : configs) {
-        parent = objectMapper.readValue(config, FakeOMaticImpl.class);
+        parent = objectMapper.readValue(config, FakerImpl.class);
         std.addValue("parent", parent);
       }
     } catch (Throwable e) {
