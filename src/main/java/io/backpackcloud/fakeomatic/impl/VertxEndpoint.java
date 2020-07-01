@@ -104,6 +104,7 @@ public class VertxEndpoint implements Endpoint {
         LOGGER.error(e);
       }
     }
+    inProgress.incrementAndGet();
     return CompletableFuture.supplyAsync(
         () -> requestFunction.apply(this.request)
                              .onItem()
@@ -119,13 +120,13 @@ public class VertxEndpoint implements Endpoint {
   }
 
   public static Endpoint create(Vertx vertx, Configuration location,
-                                String method,
+                                Configuration method,
                                 Payload payload,
                                 Map<String, Configuration> endpointHeaders,
                                 Map<String, Configuration> params,
-                                int concurrency,
-                                int buffer,
-                                boolean insecure) {
+                                Configuration concurrency,
+                                Configuration buffer,
+                                Configuration insecure) {
     try {
       String requestURI = location.get();
       if (params != null) {
@@ -135,15 +136,16 @@ public class VertxEndpoint implements Endpoint {
       }
       URL url = new URL(requestURI);
       WebClient client = WebClient.create(vertx, new WebClientOptions()
-          .setMaxPoolSize(concurrency)
+          .setMaxPoolSize(Optional.ofNullable(concurrency).map(Configuration::getInt).orElse(10))
           .setDefaultHost(url.getHost())
           .setDefaultPort(url.getPort() == -1 ? url.getDefaultPort() : url.getPort())
           .setSsl("https".equals(url.getProtocol()))
-          .setTrustAll(insecure)
+          .setTrustAll(Optional.ofNullable(insecure).map(Configuration::getBoolean).orElse(false))
       );
       HttpRequest<Buffer> request = client.request(
           HttpMethod.valueOf(
               Optional.ofNullable(method)
+                      .map(Configuration::get)
                       .map(String::toUpperCase)
                       .orElse(payload == null ? "GET" : "POST")),
           url.toString()
@@ -156,7 +158,14 @@ public class VertxEndpoint implements Endpoint {
           request.putHeader("Content-Type", payload.contentType());
         }
       }
-      return new VertxEndpoint(url, payload, request, concurrency + buffer);
+      return new VertxEndpoint(
+          url,
+          payload,
+          request,
+          Optional.ofNullable(concurrency).map(Configuration::getInt).orElse(10)
+              +
+              Optional.ofNullable(buffer).map(Configuration::getInt).orElse(10)
+      );
     } catch (Exception e) {
       throw new UnbelievableException(e);
     }
