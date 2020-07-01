@@ -82,21 +82,33 @@ samples:
     type: chars
     value: "0123456789abcdef"
   chuck_norris:
-    type: api
-    url: https://api.chucknorris.io/jokes/random
-    return: /value
+    type: json
+    sample:
+      type: api
+      endpoint:
+        url: https://api.chucknorris.io/jokes/random
+    path: /value
   tronald_dump:
-    type: api
-    url: https://api.tronalddump.io/random/quote
-    return: /value
+    type: json
+    sample:
+      type: api
+      endpoint:
+        url: https://api.tronalddump.io/random/quote
+    path: /value
   business_bullshit:
-    type: api
-    url: https://corporatebs-generator.sameerkumar.website
-    return: /phrase
+    type: json
+    sample:
+      type: api
+      endpoint:
+        url: https://corporatebs-generator.sameerkumar.website
+    path: /phrase
   commit:
-    type: api
-    url: http://whatthecommit.com/index.json
-    return: /commit_message
+    type: json
+    sample:
+      type: api
+      endpoint:
+        url: http://whatthecommit.com/index.json
+    path: /commit_message
   cause:
     type: list
     location:
