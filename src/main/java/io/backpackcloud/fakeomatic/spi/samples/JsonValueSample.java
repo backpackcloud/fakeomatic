@@ -27,7 +27,10 @@ package io.backpackcloud.fakeomatic.spi.samples;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -35,26 +38,33 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class JsonValueSample implements Sample<String> {
 
-  private final Sample<JsonNode> sample;
-  private final String           jsonPointer;
+  private final ObjectMapper objectMapper;
+  private final Sample       sample;
+  private final String       jsonPointer;
 
-  public JsonValueSample(Sample<JsonNode> sample, String jsonPointer) {
+  public JsonValueSample(ObjectMapper objectMapper, Sample sample, String jsonPointer) {
+    this.objectMapper = objectMapper;
     this.sample = sample;
     this.jsonPointer = jsonPointer;
   }
 
   @Override
   public String get() {
-    JsonNode jsonNode = sample.get();
-    return jsonNode.at(jsonPointer).asText();
+    try {
+      String   content  = sample.get().toString();
+      JsonNode jsonNode = objectMapper.readTree(content);
+      return jsonNode.at(jsonPointer).asText();
+    } catch (JsonProcessingException e) {
+      throw new UnbelievableException(e);
+    }
   }
 
   @JsonCreator
   public static JsonValueSample create(@JacksonInject("root") Faker faker,
                                        @JsonProperty("path") String jsonPointer,
-                                       @JsonProperty("ref") String sampleName) {
-    Sample<JsonNode> sample = faker.sample(sampleName);
-    return new JsonValueSample(sample, jsonPointer);
+                                       @JsonProperty("ref") String sampleName,
+                                       @JsonProperty("sample") Sample sample) {
+    return new JsonValueSample(new ObjectMapper(), sampleName != null ? faker.sample(sampleName) : sample, jsonPointer);
   }
 
 }
