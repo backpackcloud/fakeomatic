@@ -24,27 +24,23 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.impl.configuration.CompositeConfiguration;
-import io.backpackcloud.fakeomatic.impl.configuration.EnvironmentVariableConfiguration;
-import io.backpackcloud.fakeomatic.impl.configuration.FileContentConfiguration;
-import io.backpackcloud.fakeomatic.impl.configuration.RawValueConfiguration;
-import io.backpackcloud.fakeomatic.impl.configuration.ResourceConfiguration;
-import io.backpackcloud.fakeomatic.impl.configuration.SystemPropertyConfiguration;
-import io.backpackcloud.fakeomatic.impl.configuration.UrlConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.ConfigurationDeserializer;
+import io.backpackcloud.fakeomatic.impl.configuration.NotSuppliedConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RegisterForReflection
+@JsonDeserialize(using = ConfigurationDeserializer.class)
 public interface Configuration extends Supplier<String> {
+
+  Configuration NOT_SUPPLIED = new NotSuppliedConfiguration();
 
   boolean isSet();
 
@@ -74,40 +70,16 @@ public interface Configuration extends Supplier<String> {
     }
   }
 
-  @JsonCreator
-  static Configuration create(String value) {
-    return new RawValueConfiguration(value);
+  default String or(String defaultValue) {
+    return isSet() ? get() : defaultValue;
   }
 
-  @JsonCreator
-  static Configuration create(@JsonProperty("env") String env,
-                              @JsonProperty("property") String property,
-                              @JsonProperty("file") String file,
-                              @JsonProperty("resource") String resource,
-                              @JsonProperty("url") String url,
-                              @JsonProperty("default") String defaultValue) {
-    List<Configuration> values = new ArrayList<>();
+  default int or(int defaultValue) {
+    return isSet() ? getInt() : defaultValue;
+  }
 
-    if (env != null) {
-      values.add(new EnvironmentVariableConfiguration(env));
-    }
-    if (property != null) {
-      values.add(new SystemPropertyConfiguration(property));
-    }
-    if (file != null) {
-      values.add(new FileContentConfiguration(file));
-    }
-    if (resource != null) {
-      values.add(new ResourceConfiguration(resource));
-    }
-    if (url != null) {
-      values.add(new UrlConfiguration(url));
-    }
-    if (defaultValue != null) {
-      values.add(new RawValueConfiguration(defaultValue));
-    }
-
-    return new CompositeConfiguration(values);
+  default boolean or(boolean defaultValue) {
+    return isSet() ? getBoolean() : defaultValue;
   }
 
 }

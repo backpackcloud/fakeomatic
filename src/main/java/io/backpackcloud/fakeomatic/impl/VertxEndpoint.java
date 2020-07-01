@@ -43,7 +43,6 @@ import org.jboss.logging.Logger;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -134,20 +133,18 @@ public class VertxEndpoint implements Endpoint {
           requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue().get());
         }
       }
-      URL url = new URL(requestURI);
+      URL url         = new URL(requestURI);
+      int maxPoolSize = concurrency.or(10);
+
       WebClient client = WebClient.create(vertx, new WebClientOptions()
-          .setMaxPoolSize(Optional.ofNullable(concurrency).map(Configuration::getInt).orElse(10))
+          .setMaxPoolSize(maxPoolSize)
           .setDefaultHost(url.getHost())
           .setDefaultPort(url.getPort() == -1 ? url.getDefaultPort() : url.getPort())
           .setSsl("https".equals(url.getProtocol()))
-          .setTrustAll(Optional.ofNullable(insecure).map(Configuration::getBoolean).orElse(false))
+          .setTrustAll(insecure.or(false))
       );
       HttpRequest<Buffer> request = client.request(
-          HttpMethod.valueOf(
-              Optional.ofNullable(method)
-                      .map(Configuration::get)
-                      .map(String::toUpperCase)
-                      .orElse(payload == null ? "GET" : "POST")),
+          HttpMethod.valueOf(method.or(payload == null ? "GET" : "POST").toUpperCase()),
           url.toString()
       );
       if (endpointHeaders != null) {
@@ -162,9 +159,7 @@ public class VertxEndpoint implements Endpoint {
           url,
           payload,
           request,
-          Optional.ofNullable(concurrency).map(Configuration::getInt).orElse(10)
-              +
-              Optional.ofNullable(buffer).map(Configuration::getInt).orElse(10)
+          maxPoolSize + buffer.or(10)
       );
     } catch (Exception e) {
       throw new UnbelievableException(e);

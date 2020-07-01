@@ -31,6 +31,8 @@ import io.quarkus.qute.Engine;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import javax.ws.rs.core.MediaType;
+
 @RegisterForReflection
 public class QutePayloadTemplate implements Payload {
 
@@ -56,7 +58,7 @@ public class QutePayloadTemplate implements Payload {
     String           content          = template.read();
     TemplateInstance templateInstance = engine.parse(content).data(faker);
 
-    return new QutePayloadTemplate(contentType.get(), templateInstance);
+    return new QutePayloadTemplate(contentType.or(MediaType.APPLICATION_JSON), templateInstance);
   }
 
 }

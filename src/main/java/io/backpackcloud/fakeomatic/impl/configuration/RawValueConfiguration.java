@@ -28,6 +28,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 @RegisterForReflection
 public class RawValueConfiguration implements Configuration {
 
@@ -46,6 +50,21 @@ public class RawValueConfiguration implements Configuration {
   @Override
   public boolean isSet() {
     return true;
+  }
+
+  @Override
+  public String read() {
+    return value;
+  }
+
+  @Override
+  public List<String> readLines() {
+    Scanner        scanner = new Scanner(read());
+    List<String> lines   = new ArrayList<>();
+    while (scanner.hasNextLine()) {
+      lines.add(scanner.nextLine());
+    }
+    return lines;
   }
 
 }

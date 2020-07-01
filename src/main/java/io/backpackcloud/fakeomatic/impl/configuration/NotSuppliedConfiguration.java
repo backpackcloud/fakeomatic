@@ -21,24 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.backpackcloud.fakeomatic.spi;
 
-public class PayloadGeneratedEvent {
+package io.backpackcloud.fakeomatic.impl.configuration;
 
-  private final int    index;
-  private final String payload;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 
-  public PayloadGeneratedEvent(int index, String payload) {
-    this.index = index;
-    this.payload = payload;
+import java.util.Collections;
+import java.util.List;
+
+public class NotSuppliedConfiguration implements Configuration {
+
+  @Override
+  public boolean isSet() {
+    return false;
   }
 
-  public int index() {
-    return index;
+  @Override
+  public String get() {
+    return "";
   }
 
-  public String payload() {
-    return payload;
+  @Override
+  public int getInt() {
+    return 0;
+  }
+
+  @Override
+  public boolean getBoolean() {
+    return false;
+  }
+
+  @Override
+  public String read() {
+    return "";
+  }
+
+  @Override
+  public List<String> readLines() {
+    return Collections.emptyList();
   }
 
 }
