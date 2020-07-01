@@ -22,13 +22,11 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.sample;
+package io.backpackcloud.fakeomatic.impl.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.impl.samples.CompositeSample;
-import io.backpackcloud.fakeomatic.impl.samples.ListSample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

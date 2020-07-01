@@ -22,52 +22,47 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.samples;
+package io.backpackcloud.fakeomatic.impl.sample;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Faker;
+import io.backpackcloud.fakeomatic.spi.Endpoint;
+import io.backpackcloud.fakeomatic.spi.EndpointResponse;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
-import java.util.function.Supplier;
+import java.util.concurrent.ExecutionException;
 
+/**
+ * This sample actually calls a given API to get data to use every time it's asked for a data.
+ * <p>
+ * Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
+ * dependent API.
+ *
+ * @author Marcelo Guimarães
+ */
 @RegisterForReflection
-public class ExpressionSample implements Sample<String> {
+public class ApiSample implements Sample<EndpointResponse> {
 
-  private static final Logger LOGGER = Logger.getLogger(ExpressionSample.class);
+  private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
 
-  private final Faker            faker;
-  private final Supplier<String> expressionSupplier;
+  private final Endpoint endpoint;
 
-  public ExpressionSample(Supplier<String> expressionSupplier, Faker faker) {
-    this.expressionSupplier = expressionSupplier;
-    this.faker = faker;
+  @JsonCreator
+  public ApiSample(@JsonProperty("endpoint") Endpoint endpoint) {
+    this.endpoint = endpoint;
   }
 
   @Override
-  public String get() {
-    String expression = expressionSupplier.get();
-    String result = faker.expression(expression);
-    LOGGER.debugv("Creating from expression {0}: {1}", expression, result);
-    return result;
-  }
-
-  // TODO use sample configuration
-  @JsonCreator
-  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
-                                        @JsonProperty("expression") String expression,
-                                        @JacksonInject("root") Faker faker) {
-    if (sampleName != null) {
-      return new ExpressionSample(faker.sample(sampleName), faker);
-    } else if (expression != null) {
-      return new ExpressionSample(() -> expression, faker);
-    } else {
-      throw new UnbelievableException("No sample or expression given.");
+  public EndpointResponse get() {
+    try {
+      return endpoint.call().toCompletableFuture().get();
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error(e);
     }
+    throw new UnbelievableException("Unable to call the endpoint");
   }
 
 }

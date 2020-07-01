@@ -22,43 +22,60 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.samples;
+package io.backpackcloud.fakeomatic.impl.sample;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.BaseTest;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.Random;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-@RegisterForReflection
-public class RangeSample implements Sample<Integer> {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-  private final Random random;
-  private final int    min;
-  private final int    max;
+public class RangeSampleTest extends BaseTest {
 
-  @JsonCreator
-  public RangeSample(@JacksonInject Random random,
-                     @JsonProperty("min") int min,
-                     @JsonProperty("max") int max) {
-    this.random = random;
-    this.min = min;
-    this.max = max;
+  Faker faker;
+
+  @BeforeEach
+  public void init() {
+    faker = createFakeData("ranges.yaml");
   }
 
-  public int min() {
-    return min;
+  @Test
+  public void testParse() {
+    List<Sample> samples = faker.samples();
+    assertEquals(2, samples.size());
   }
 
-  public int max() {
-    return max;
+  @Test
+  public void test1() {
+    testSample("test1", -100, 100);
   }
 
-  @Override
-  public Integer get() {
-    return min + random.nextInt((max + 1) - min);
+  @Test
+  public void test2() {
+    testSample("test2", 20, 40);
+  }
+
+  private void testSample(String sampleName, int min, int max) {
+    RangeSample sample = (RangeSample) faker.sample(sampleName);
+    Set<Integer> generated = new HashSet<>();
+
+    assertEquals(min, sample.min());
+    assertEquals(max, sample.max());
+
+    times(100000, sample, i -> {
+      generated.add(i);
+      assertTrue(i >= min);
+      assertTrue(i <= max);
+    });
+
+    assertEquals(max - min + 1, generated.size());
   }
 
 }

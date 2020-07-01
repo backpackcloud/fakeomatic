@@ -22,61 +22,31 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.sample;
+package io.backpackcloud.fakeomatic.impl.sample;
 
 import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.impl.samples.RangeSample;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class RangeSampleTest extends BaseTest {
-
-  Faker faker;
-
-  @BeforeEach
-  public void init() {
-    faker = createFakeData("ranges.yaml");
-  }
+public class ExpressionSampleTest extends BaseTest {
 
   @Test
-  public void testParse() {
-    List<Sample> samples = faker.samples();
-    assertEquals(2, samples.size());
-  }
-
-  @Test
-  public void test1() {
-    testSample("test1", -100, 100);
-  }
-
-  @Test
-  public void test2() {
-    testSample("test2", 20, 40);
-  }
-
-  private void testSample(String sampleName, int min, int max) {
-    RangeSample sample = (RangeSample) faker.sample(sampleName);
-    Set<Integer> generated = new HashSet<>();
-
-    assertEquals(min, sample.min());
-    assertEquals(max, sample.max());
-
-    times(100000, sample, i -> {
-      generated.add(i);
-      assertTrue(i >= min);
-      assertTrue(i <= max);
+  public void testSampleExpression() {
+    Faker          faker  = createFakeData("expressions.yaml");
+    Sample<String> sample = faker.sample("address");
+    times(100000, sample, address -> {
+      address.matches("^(Some Street|Another Street|Galaxy) (\\d{2,3})$");
     });
+  }
 
-    assertEquals(max - min + 1, generated.size());
+  @Test
+  public void testStringExpression() {
+    Faker          faker  = createFakeData("expressions.yaml");
+    Sample<String> sample = faker.sample("credit_card");
+    times(100000, sample, address -> {
+      address.matches("^\\d{16}$");
+    });
   }
 
 }

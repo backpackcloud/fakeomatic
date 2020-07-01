@@ -32,7 +32,7 @@ for reproducibility.
 
 === Data Generation
 
-The rules for generating data can contain `samples` and `placeholders`. Samples are a set of data that Fake-O-Matic can
+The rules for generating data can contain `sample` and `placeholders`. Samples are a set of data that Fake-O-Matic can
 randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
 expressions for generating data.
 
@@ -162,7 +162,7 @@ List of Samples to use.
 location::
 A <<configuration,configuration>> pointing to where to locate the list of values.
 
-NOTE: You need to supply only one way of loading the values (`values`, `samples` or `location`).
+NOTE: You need to supply only one way of loading the values (`values`, `sample` or `location`).
 
 ====== Example
 

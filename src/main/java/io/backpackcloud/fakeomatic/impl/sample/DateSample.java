@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.samples;
+package io.backpackcloud.fakeomatic.impl.sample;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;

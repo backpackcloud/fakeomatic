@@ -22,39 +22,34 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.samples;
+package io.backpackcloud.fakeomatic.impl.sample;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
- * This sample can pick any character from a given string. Useful for defining a
- * set of characters that can be used to produce IDs or any other information
- * that is not meant to be read.
+ * A sample that generates UUIDs.
  *
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class CharSample implements Sample<String> {
+public class UuidSample implements Sample<UUID> {
 
   private final Random random;
-  private final String value;
 
   @JsonCreator
-  public CharSample(@JacksonInject Random random,
-                    @JsonProperty("value") String value) {
+  public UuidSample(@JacksonInject Random random) {
     this.random = random;
-    this.value = value;
   }
 
   @Override
-  public String get() {
-    return String.valueOf(value.charAt(random.nextInt(value.length())));
+  public UUID get() {
+    return new UUID(random.nextLong(), random.nextLong());
   }
 
 }

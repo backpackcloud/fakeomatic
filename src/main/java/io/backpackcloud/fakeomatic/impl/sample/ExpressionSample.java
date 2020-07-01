@@ -22,62 +22,52 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.samples;
+package io.backpackcloud.fakeomatic.impl.sample;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.jboss.logging.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
-/**
- * A sample that collects other samples and combine them as a unique data.
- *
- * @author Marcelo Guimarães
- */
 @RegisterForReflection
-public class CompositeSample implements Sample<String> {
+public class ExpressionSample implements Sample<String> {
 
-  private final List<Sample> samples;
-  private final String       separator;
+  private static final Logger LOGGER = Logger.getLogger(ExpressionSample.class);
 
+  private final Faker            faker;
+  private final Supplier<String> expressionSupplier;
 
-  public CompositeSample(String separator, List<Sample> samples) {
-    this.samples = samples;
-    this.separator = separator;
-  }
-
-  public List<Sample> samples() {
-    return new ArrayList<>(samples);
-  }
-
-  public String separator() {
-    return separator;
+  public ExpressionSample(Supplier<String> expressionSupplier, Faker faker) {
+    this.expressionSupplier = expressionSupplier;
+    this.faker = faker;
   }
 
   @Override
   public String get() {
-    return samples.stream()
-                  .map(Sample::get)
-                  .map(Object::toString)
-                  .collect(Collectors.joining(this.separator));
+    String expression = expressionSupplier.get();
+    String result = faker.expression(expression);
+    LOGGER.debugv("Creating from expression {0}: {1}", expression, result);
+    return result;
   }
 
+  // TODO use sample configuration
   @JsonCreator
-  public static CompositeSample create(@JacksonInject("root") Faker faker,
-                                       @JsonProperty("samples") List<String> samples,
-                                       @JsonProperty("separator") String separator) {
-    return new CompositeSample(Optional.ofNullable(separator).orElse(""),
-        samples.stream()
-               .map(faker::sample)
-               .collect(Collectors.toList())
-    );
+  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
+                                        @JsonProperty("expression") String expression,
+                                        @JacksonInject("root") Faker faker) {
+    if (sampleName != null) {
+      return new ExpressionSample(faker.sample(sampleName), faker);
+    } else if (expression != null) {
+      return new ExpressionSample(() -> expression, faker);
+    } else {
+      throw new UnbelievableException("No sample or expression given.");
+    }
   }
 
 }

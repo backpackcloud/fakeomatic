@@ -22,31 +22,43 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.sample;
+package io.backpackcloud.fakeomatic.impl.sample;
 
-import io.backpackcloud.fakeomatic.BaseTest;
-import io.backpackcloud.fakeomatic.spi.Faker;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import org.junit.jupiter.api.Test;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-public class ExpressionSampleTest extends BaseTest {
+import java.util.Random;
 
-  @Test
-  public void testSampleExpression() {
-    Faker          faker  = createFakeData("expressions.yaml");
-    Sample<String> sample = faker.sample("address");
-    times(100000, sample, address -> {
-      address.matches("^(Some Street|Another Street|Galaxy) (\\d{2,3})$");
-    });
+@RegisterForReflection
+public class RangeSample implements Sample<Integer> {
+
+  private final Random random;
+  private final int    min;
+  private final int    max;
+
+  @JsonCreator
+  public RangeSample(@JacksonInject Random random,
+                     @JsonProperty("min") int min,
+                     @JsonProperty("max") int max) {
+    this.random = random;
+    this.min = min;
+    this.max = max;
   }
 
-  @Test
-  public void testStringExpression() {
-    Faker          faker  = createFakeData("expressions.yaml");
-    Sample<String> sample = faker.sample("credit_card");
-    times(100000, sample, address -> {
-      address.matches("^\\d{16}$");
-    });
+  public int min() {
+    return min;
+  }
+
+  public int max() {
+    return max;
+  }
+
+  @Override
+  public Integer get() {
+    return min + random.nextInt((max + 1) - min);
   }
 
 }
