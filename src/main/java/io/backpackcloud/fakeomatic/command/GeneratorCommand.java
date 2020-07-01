@@ -119,10 +119,13 @@ public class GeneratorCommand implements Callable<Integer> {
     setPropertyIfNotNull("endpoint.insecure", insecure);
 
     setPropertyIfNotNull("generator.total", total);
-    setPropertyIfNotNull("generator.configs", String.join(",", configs));
     setPropertyIfNotNull("generator.seed", seed);
 
     setPropertyIfNotNull("fakeomatic.events.log.level", eventsLogLevel);
+
+    if (configs != null) {
+      setPropertyIfNotNull("generator.configs", String.join(",", configs));
+    }
 
     try {
       Quarkus.run(Generator.class);
