@@ -24,43 +24,46 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.BaseTest;
+import org.junit.jupiter.api.Test;
 
-public interface EndpointResponse {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-  int statusCode();
+public class StatusTest extends BaseTest {
 
-  String statusMessage();
-
-  String body();
-
-  default Status status() {
-    return Status.statusOf(statusCode());
+  @Test
+  public void testInformationStatus() {
+    for (int i = 100 ; i < 200 ; i++) {
+      assertEquals(EndpointResponse.Status.INFORMATIONAL, EndpointResponse.Status.statusOf(i));
+    }
   }
 
-  enum Status {
-
-    INFORMATIONAL(100),
-    SUCCESS(200),
-    REDIRECTION(300),
-    CLIENT_ERROR(400),
-    SERVER_ERROR(500);
-
-    private final int baseStatus;
-
-    Status(int baseStatus) {
-      this.baseStatus = baseStatus;
+  @Test
+  public void testSuccessStatus() {
+    for (int i = 200 ; i < 300 ; i++) {
+      assertEquals(EndpointResponse.Status.SUCCESS, EndpointResponse.Status.statusOf(i));
     }
+  }
 
-    static Status statusOf(int statusCode) {
-      for(Status status : values()) {
-        if (Math.abs(statusCode - status.baseStatus) < 100) {
-          return status;
-        }
-      }
-      throw new UnbelievableException("Invalid status code: " + statusCode);
+  @Test
+  public void testRedirectionStatus() {
+    for (int i = 300 ; i < 400 ; i++) {
+      assertEquals(EndpointResponse.Status.REDIRECTION, EndpointResponse.Status.statusOf(i));
     }
+  }
 
+  @Test
+  public void testClientErrorStatus() {
+    for (int i = 400 ; i < 500 ; i++) {
+      assertEquals(EndpointResponse.Status.CLIENT_ERROR, EndpointResponse.Status.statusOf(i));
+    }
+  }
+
+  @Test
+  public void testServerErrorStatus() {
+    for (int i = 500 ; i < 600 ; i++) {
+      assertEquals(EndpointResponse.Status.SERVER_ERROR, EndpointResponse.Status.statusOf(i));
+    }
   }
 
 }
