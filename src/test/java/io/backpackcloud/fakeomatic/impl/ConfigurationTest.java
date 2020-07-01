@@ -95,16 +95,6 @@ public class ConfigurationTest extends BaseTest {
     assertTrue(value.get().contains("placeholders:"));
   }
 
-  @Test
-  public void testCompositeValue() {
-    Configuration value = value("composition");
-    assertTrue(value.isSet());
-    assertTrue(value.get().contains("MIT"));
-    System.setProperty("fakeomatic.test", "bar");
-    assertTrue(value.isSet());
-    assertEquals("bar", value.get());
-  }
-
   public static class TestObject {
 
     public final Map<String, Configuration> map;
