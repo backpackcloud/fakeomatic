@@ -26,17 +26,17 @@ package io.backpackcloud.fakeomatic.spi;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.backpackcloud.fakeomatic.spi.samples.ApiSample;
-import io.backpackcloud.fakeomatic.spi.samples.CacheSample;
-import io.backpackcloud.fakeomatic.spi.samples.CharSample;
-import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
-import io.backpackcloud.fakeomatic.spi.samples.DateSample;
-import io.backpackcloud.fakeomatic.spi.samples.ExpressionSample;
-import io.backpackcloud.fakeomatic.spi.samples.JsonValueSample;
-import io.backpackcloud.fakeomatic.spi.samples.ListSample;
-import io.backpackcloud.fakeomatic.spi.samples.RangeSample;
-import io.backpackcloud.fakeomatic.spi.samples.UuidSample;
-import io.backpackcloud.fakeomatic.spi.samples.WeightedSample;
+import io.backpackcloud.fakeomatic.impl.samples.ApiSample;
+import io.backpackcloud.fakeomatic.impl.samples.CacheSample;
+import io.backpackcloud.fakeomatic.impl.samples.CharSample;
+import io.backpackcloud.fakeomatic.impl.samples.CompositeSample;
+import io.backpackcloud.fakeomatic.impl.samples.DateSample;
+import io.backpackcloud.fakeomatic.impl.samples.ExpressionSample;
+import io.backpackcloud.fakeomatic.impl.samples.JsonValueSample;
+import io.backpackcloud.fakeomatic.impl.samples.ListSample;
+import io.backpackcloud.fakeomatic.impl.samples.RangeSample;
+import io.backpackcloud.fakeomatic.impl.samples.UuidSample;
+import io.backpackcloud.fakeomatic.impl.samples.WeightedSample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.function.Supplier;

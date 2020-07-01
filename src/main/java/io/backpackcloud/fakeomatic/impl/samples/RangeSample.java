@@ -22,62 +22,43 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl.samples;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Random;
 
-/**
- * A sample that collects other samples and combine them as a unique data.
- *
- * @author Marcelo Guimarães
- */
 @RegisterForReflection
-public class CompositeSample implements Sample<String> {
+public class RangeSample implements Sample<Integer> {
 
-  private final List<Sample> samples;
-  private final String       separator;
+  private final Random random;
+  private final int    min;
+  private final int    max;
 
-
-  public CompositeSample(String separator, List<Sample> samples) {
-    this.samples = samples;
-    this.separator = separator;
+  @JsonCreator
+  public RangeSample(@JacksonInject Random random,
+                     @JsonProperty("min") int min,
+                     @JsonProperty("max") int max) {
+    this.random = random;
+    this.min = min;
+    this.max = max;
   }
 
-  public List<Sample> samples() {
-    return new ArrayList<>(samples);
+  public int min() {
+    return min;
   }
 
-  public String separator() {
-    return separator;
+  public int max() {
+    return max;
   }
 
   @Override
-  public String get() {
-    return samples.stream()
-                  .map(Sample::get)
-                  .map(Object::toString)
-                  .collect(Collectors.joining(this.separator));
-  }
-
-  @JsonCreator
-  public static CompositeSample create(@JacksonInject("root") Faker faker,
-                                       @JsonProperty("samples") List<String> samples,
-                                       @JsonProperty("separator") String separator) {
-    return new CompositeSample(Optional.ofNullable(separator).orElse(""),
-        samples.stream()
-               .map(faker::sample)
-               .collect(Collectors.toList())
-    );
+  public Integer get() {
+    return min + random.nextInt((max + 1) - min);
   }
 
 }

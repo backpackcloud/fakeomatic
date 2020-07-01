@@ -27,8 +27,8 @@ package io.backpackcloud.fakeomatic.spi.sample;
 import io.backpackcloud.fakeomatic.BaseTest;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.spi.samples.CompositeSample;
-import io.backpackcloud.fakeomatic.spi.samples.ListSample;
+import io.backpackcloud.fakeomatic.impl.samples.CompositeSample;
+import io.backpackcloud.fakeomatic.impl.samples.ListSample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

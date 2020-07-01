@@ -22,47 +22,62 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl.samples;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Endpoint;
-import io.backpackcloud.fakeomatic.spi.EndpointResponse;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import org.jboss.logging.Logger;
 
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * This sample actually calls a given API to get data to use every time it's asked for a data.
- * <p>
- * Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
- * dependent API.
+ * A sample that collects other samples and combine them as a unique data.
  *
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class ApiSample implements Sample<EndpointResponse> {
+public class CompositeSample implements Sample<String> {
 
-  private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
+  private final List<Sample> samples;
+  private final String       separator;
 
-  private final Endpoint endpoint;
 
-  @JsonCreator
-  public ApiSample(@JsonProperty("endpoint") Endpoint endpoint) {
-    this.endpoint = endpoint;
+  public CompositeSample(String separator, List<Sample> samples) {
+    this.samples = samples;
+    this.separator = separator;
+  }
+
+  public List<Sample> samples() {
+    return new ArrayList<>(samples);
+  }
+
+  public String separator() {
+    return separator;
   }
 
   @Override
-  public EndpointResponse get() {
-    try {
-      return endpoint.call().toCompletableFuture().get();
-    } catch (InterruptedException | ExecutionException e) {
-      LOGGER.error(e);
-    }
-    throw new UnbelievableException("Unable to call the endpoint");
+  public String get() {
+    return samples.stream()
+                  .map(Sample::get)
+                  .map(Object::toString)
+                  .collect(Collectors.joining(this.separator));
+  }
+
+  @JsonCreator
+  public static CompositeSample create(@JacksonInject("root") Faker faker,
+                                       @JsonProperty("samples") List<String> samples,
+                                       @JsonProperty("separator") String separator) {
+    return new CompositeSample(Optional.ofNullable(separator).orElse(""),
+        samples.stream()
+               .map(faker::sample)
+               .collect(Collectors.toList())
+    );
   }
 
 }

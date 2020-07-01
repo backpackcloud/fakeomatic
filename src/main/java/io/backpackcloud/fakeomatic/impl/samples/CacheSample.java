@@ -22,43 +22,56 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl.samples;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Random;
+import java.util.Optional;
 
-@RegisterForReflection
-public class RangeSample implements Sample<Integer> {
+public class CacheSample implements Sample {
 
-  private final Random random;
-  private final int    min;
-  private final int    max;
+  private final Sample sample;
+  private final int    ttl;
 
-  @JsonCreator
-  public RangeSample(@JacksonInject Random random,
-                     @JsonProperty("min") int min,
-                     @JsonProperty("max") int max) {
-    this.random = random;
-    this.min = min;
-    this.max = max;
-  }
+  private Object cachedValue;
+  private int    hits;
 
-  public int min() {
-    return min;
-  }
-
-  public int max() {
-    return max;
+  public CacheSample(Sample sample, int ttl) {
+    this.sample = sample;
+    this.ttl = ttl;
   }
 
   @Override
-  public Integer get() {
-    return min + random.nextInt((max + 1) - min);
+  public Object get() {
+    if (this.cachedValue == null) {
+      this.cachedValue = this.sample.get();
+    }
+    try {
+      return this.cachedValue;
+    } finally {
+      if (++hits == ttl) {
+        this.cachedValue = null;
+      }
+    }
+  }
+
+  @JsonCreator
+  public static CacheSample create(@JacksonInject("root") Faker faker,
+                                   @JsonProperty("ref") String sampleName,
+                                   @JsonProperty("sample") Sample sample,
+                                   @JsonProperty("ttl") Integer ttl) {
+    Integer timeToLive = Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE);
+    if (sample != null) {
+      return new CacheSample(sample, timeToLive);
+    } else if (sampleName != null) {
+      return new CacheSample(faker.sample(sampleName), timeToLive);
+    }
+    throw new UnbelievableException("No sample or reference given");
   }
 
 }

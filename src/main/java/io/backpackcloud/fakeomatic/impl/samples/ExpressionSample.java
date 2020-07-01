@@ -22,49 +22,52 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl.samples;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.jboss.logging.Logger;
+
+import java.util.function.Supplier;
 
 @RegisterForReflection
-public class JsonValueSample implements Sample<String> {
+public class ExpressionSample implements Sample<String> {
 
-  private final ObjectMapper objectMapper;
-  private final Sample       sample;
-  private final String       jsonPointer;
+  private static final Logger LOGGER = Logger.getLogger(ExpressionSample.class);
 
-  public JsonValueSample(ObjectMapper objectMapper, Sample sample, String jsonPointer) {
-    this.objectMapper = objectMapper;
-    this.sample = sample;
-    this.jsonPointer = jsonPointer;
+  private final Faker            faker;
+  private final Supplier<String> expressionSupplier;
+
+  public ExpressionSample(Supplier<String> expressionSupplier, Faker faker) {
+    this.expressionSupplier = expressionSupplier;
+    this.faker = faker;
   }
 
   @Override
   public String get() {
-    try {
-      String   content  = sample.get().toString();
-      JsonNode jsonNode = objectMapper.readTree(content);
-      return jsonNode.at(jsonPointer).asText();
-    } catch (JsonProcessingException e) {
-      throw new UnbelievableException(e);
-    }
+    String expression = expressionSupplier.get();
+    String result = faker.expression(expression);
+    LOGGER.debugv("Creating from expression {0}: {1}", expression, result);
+    return result;
   }
 
+  // TODO use sample configuration
   @JsonCreator
-  public static JsonValueSample create(@JacksonInject("root") Faker faker,
-                                       @JsonProperty("path") String jsonPointer,
-                                       @JsonProperty("ref") String sampleName,
-                                       @JsonProperty("sample") Sample sample) {
-    return new JsonValueSample(new ObjectMapper(), sampleName != null ? faker.sample(sampleName) : sample, jsonPointer);
+  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
+                                        @JsonProperty("expression") String expression,
+                                        @JacksonInject("root") Faker faker) {
+    if (sampleName != null) {
+      return new ExpressionSample(faker.sample(sampleName), faker);
+    } else if (expression != null) {
+      return new ExpressionSample(() -> expression, faker);
+    } else {
+      throw new UnbelievableException("No sample or expression given.");
+    }
   }
 
 }

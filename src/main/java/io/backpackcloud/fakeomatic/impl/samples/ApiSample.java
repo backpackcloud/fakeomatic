@@ -22,56 +22,47 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl.samples;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Faker;
+import io.backpackcloud.fakeomatic.spi.Endpoint;
+import io.backpackcloud.fakeomatic.spi.EndpointResponse;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.jboss.logging.Logger;
 
-import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
-public class CacheSample implements Sample {
+/**
+ * This sample actually calls a given API to get data to use every time it's asked for a data.
+ * <p>
+ * Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
+ * dependent API.
+ *
+ * @author Marcelo Guimarães
+ */
+@RegisterForReflection
+public class ApiSample implements Sample<EndpointResponse> {
 
-  private final Sample sample;
-  private final int    ttl;
+  private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
 
-  private Object cachedValue;
-  private int    hits;
+  private final Endpoint endpoint;
 
-  public CacheSample(Sample sample, int ttl) {
-    this.sample = sample;
-    this.ttl = ttl;
+  @JsonCreator
+  public ApiSample(@JsonProperty("endpoint") Endpoint endpoint) {
+    this.endpoint = endpoint;
   }
 
   @Override
-  public Object get() {
-    if (this.cachedValue == null) {
-      this.cachedValue = this.sample.get();
-    }
+  public EndpointResponse get() {
     try {
-      return this.cachedValue;
-    } finally {
-      if (++hits == ttl) {
-        this.cachedValue = null;
-      }
+      return endpoint.call().toCompletableFuture().get();
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error(e);
     }
-  }
-
-  @JsonCreator
-  public static CacheSample create(@JacksonInject("root") Faker faker,
-                                   @JsonProperty("ref") String sampleName,
-                                   @JsonProperty("sample") Sample sample,
-                                   @JsonProperty("ttl") Integer ttl) {
-    Integer timeToLive = Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE);
-    if (sample != null) {
-      return new CacheSample(sample, timeToLive);
-    } else if (sampleName != null) {
-      return new CacheSample(faker.sample(sampleName), timeToLive);
-    }
-    throw new UnbelievableException("No sample or reference given");
+    throw new UnbelievableException("Unable to call the endpoint");
   }
 
 }

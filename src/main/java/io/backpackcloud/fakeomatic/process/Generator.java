@@ -62,9 +62,9 @@ public class Generator implements QuarkusApplication, Events {
     Endpoint endpoint = fakeOMatic.endpoint(config.endpoint())
                                   .orElseThrow(UnbelievableException::new);
 
-    for (int i = 0; i < total; i++) {
+    for (int i = 1; i <= total; i++) {
       if (i % progressLog == 0) {
-        LOGGER.infof("Sending payload %d of %d", i + 1, total);
+        LOGGER.infof("Sending payload %d of %d", i, total);
       }
       endpoint.call()
               .exceptionally(logError(i))
@@ -98,7 +98,11 @@ public class Generator implements QuarkusApplication, Events {
           case CLIENT_ERROR:
             eventTrigger.trigger(CLIENT_ERROR, event);
             break;
+          default:
+            LOGGER.warnv("Received {0} from payload {1}: {2}", response.statusCode(), index, response.body());
         }
+      } else {
+        LOGGER.warnv("No response received for payload {0}", index);
       }
     };
   }
