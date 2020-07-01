@@ -27,12 +27,12 @@ endpoints:
     url:
       env: ENDPOINT_URL
       property: endpoint.url
-      default: http://localhost:8080
+      value: http://localhost:8080
     payload:
       content-type:
         env: ENDPOINT_CONTENT_TYPE
         property: endpoint.content_type
-        default: application/json
+        value: application/json
       template:
         env: ENDPOINT_TEMPLATE
         property: endpoint.template
@@ -40,19 +40,19 @@ endpoints:
     method:
       env: ENDPOINT_METHOD
       property: endpoint.method
-      default: POST
+      value: POST
     concurrency:
       env: ENDPOINT_CONCURRENCY
       property: endpoint.concurrency
-      default: 10
+      value: 10
     buffer:
       env: ENDPOINT_BUFFER
       property: endpoint.buffer
-      default: 10
+      value: 10
     insecure:
       env: ENDPOINT_INSECURE
       property: endpoint.insecure
-      default: false
+      value: false
 
 placeholders:
   "#": digit
