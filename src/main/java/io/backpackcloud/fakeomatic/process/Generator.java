@@ -64,7 +64,7 @@ public class Generator implements QuarkusApplication, Events {
 
     for (int i = 0; i < total; i++) {
       if (i % progressLog == 0) {
-        LOGGER.infof("Sending payload %d of %d", i, total);
+        LOGGER.infof("Sending payload %d of %d", i + 1, total);
       }
       endpoint.call()
               .exceptionally(logError(i))
