@@ -24,18 +24,10 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.CompletionStage;
 
-public interface Endpoint {
+public interface FakeOMatic extends Faker {
 
-  URL url();
-
-  Optional<PayloadTemplate> template();
-
-  CompletionStage<EndpointResponse> call();
-
-  void waitForOngoingCalls();
+  Optional<Endpoint> endpoint(String name);
 
 }

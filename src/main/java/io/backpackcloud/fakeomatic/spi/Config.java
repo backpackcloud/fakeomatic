@@ -57,7 +57,7 @@ public interface Config {
 
   interface GeneratorConfig {
 
-    int buffer();
+    String endpoint();
 
     /**
      * @return The number of generated payloads.

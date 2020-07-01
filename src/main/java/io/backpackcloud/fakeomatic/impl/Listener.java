@@ -53,7 +53,7 @@ public class Listener implements Events {
   public void onClientError(ResponseReceivedEvent event) {
     LOGGER.warnf(
         "Got a client error response for payload %d (%d): %s",
-        event.index(), event.statusCode(), event.statusMessage()
+        event.index(), event.response().statusCode(), event.response().statusMessage()
     );
     this.clientErrors.incrementAndGet();
   }
@@ -62,7 +62,7 @@ public class Listener implements Events {
   public void onServerError(ResponseReceivedEvent event) {
     LOGGER.errorf(
         "Got a server error response for payload %d (%d): %s",
-        event.index(), event.statusCode(), event.statusMessage()
+        event.index(), event.response().statusCode(), event.response().statusMessage()
     );
     this.serverErrors.incrementAndGet();
   }
@@ -70,7 +70,7 @@ public class Listener implements Events {
   @ConsumeEvent(RESPONSE_OK)
   public void onOk(ResponseReceivedEvent event) {
     this.ok.incrementAndGet();
-    LOGGER.debugf("Received response for payload %d: %s", event.index(), event.responseBody());
+    LOGGER.debugf("Received response for payload %d: %s", event.index(), event.response().body());
   }
 
   @ConsumeEvent(value = FINISHED)

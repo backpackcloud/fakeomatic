@@ -24,6 +24,8 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import io.backpackcloud.fakeomatic.UnbelievableException;
+
 public interface EndpointResponse {
 
   int statusCode();
@@ -31,5 +33,34 @@ public interface EndpointResponse {
   String statusMessage();
 
   String body();
+
+  default Status status() {
+    return Status.statusOf(statusCode());
+  }
+
+  enum Status {
+
+    INFORMATIONAL(100),
+    SUCCESS(200),
+    REDIRECTION(300),
+    CLIENT_ERROR(400),
+    SERVER_ERROR(500);
+
+    private final int baseStatus;
+
+    Status(int baseStatus) {
+      this.baseStatus = baseStatus;
+    }
+
+    static Status statusOf(int statusCode) {
+      for(Status status : values()) {
+        if (statusCode % status.baseStatus < 100) {
+          return status;
+        }
+      }
+      throw new UnbelievableException("Invalid status code: " + statusCode);
+    }
+
+  }
 
 }

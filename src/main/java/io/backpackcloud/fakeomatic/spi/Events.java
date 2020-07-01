@@ -27,9 +27,9 @@ package io.backpackcloud.fakeomatic.spi;
 public interface Events {
 
   String PAYLOAD_GENERATED = "io.backpackcloud.fakeomatic.events.PAYLOAD_GENERATED";
-  String RESPONSE_OK = "io.backpackcloud.fakeomatic.events.RESPONSE_OK";
-  String SERVER_ERROR = "io.backpackcloud.fakeomatic.events.SERVER_ERROR";
-  String CLIENT_ERROR = "io.backpackcloud.fakeomatic.events.CLIENT_ERROR";
-  String FINISHED = "io.backpackcloud.fakeomatic.events.FINISHED";
+  String RESPONSE_OK       = "io.backpackcloud.fakeomatic.events.RESPONSE_OK";
+  String SERVER_ERROR      = "io.backpackcloud.fakeomatic.events.SERVER_ERROR";
+  String CLIENT_ERROR      = "io.backpackcloud.fakeomatic.events.CLIENT_ERROR";
+  String FINISHED          = "io.backpackcloud.fakeomatic.events.FINISHED";
 
 }

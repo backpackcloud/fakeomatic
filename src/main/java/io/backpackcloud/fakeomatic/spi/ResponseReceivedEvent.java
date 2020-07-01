@@ -31,33 +31,19 @@ public class ResponseReceivedEvent {
 
   private final int index;
 
-  private final int statusCode;
+  private final EndpointResponse response;
 
-  private final String statusMessage;
-
-  private final String responseBody;
-
-  public ResponseReceivedEvent(int index, int statusCode, String statusMessage, String responseBody) {
+  public ResponseReceivedEvent(int index, EndpointResponse response) {
     this.index = index;
-    this.statusCode = statusCode;
-    this.statusMessage = statusMessage;
-    this.responseBody = responseBody;
+    this.response = response;
   }
 
   public int index() {
     return index;
   }
 
-  public int statusCode() {
-    return statusCode;
-  }
-
-  public String statusMessage() {
-    return statusMessage;
-  }
-
-  public String responseBody() {
-    return responseBody;
+  public EndpointResponse response() {
+    return response;
   }
 
 }

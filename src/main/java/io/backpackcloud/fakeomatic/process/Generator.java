@@ -24,19 +24,18 @@
 
 package io.backpackcloud.fakeomatic.process;
 
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
+import io.backpackcloud.fakeomatic.spi.EndpointResponse;
 import io.backpackcloud.fakeomatic.spi.EventTrigger;
 import io.backpackcloud.fakeomatic.spi.Events;
-import io.backpackcloud.fakeomatic.spi.PayloadGeneratedEvent;
-import io.backpackcloud.fakeomatic.spi.PayloadGenerator;
+import io.backpackcloud.fakeomatic.spi.FakeOMatic;
 import io.backpackcloud.fakeomatic.spi.ResponseReceivedEvent;
 import io.quarkus.runtime.QuarkusApplication;
-import io.vertx.mutiny.ext.web.client.HttpResponse;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -45,90 +44,61 @@ public class Generator implements QuarkusApplication, Events {
 
   private static final Logger LOGGER = Logger.getLogger(Generator.class);
 
-  private final Config config;
-
-  private final PayloadGenerator generator;
-
-  private final Endpoint endpoint;
-
+  private final Config       config;
+  private final FakeOMatic   fakeOMatic;
   private final EventTrigger eventTrigger;
 
-  public Generator(Config config, PayloadGenerator generator, Endpoint endpoint, EventTrigger eventTrigger) {
+  public Generator(Config config, FakeOMatic fakeOMatic, EventTrigger eventTrigger) {
     this.config = config;
-    this.generator = generator;
-    this.endpoint = endpoint;
+    this.fakeOMatic = fakeOMatic;
     this.eventTrigger = eventTrigger;
   }
 
   @Override
   public int run(String... args) {
-    int    total       = config.generator().total();
-    int    concurrency = config.endpoint().concurrency() + config.generator().buffer();
-    int    progressLog = Math.max(total / 100, 1);
-    String payload;
+    int total       = config.generator().total();
+    int progressLog = Math.max(total / 100, 1);
 
-    AtomicInteger count      = new AtomicInteger(0);
-    AtomicInteger inProgress = new AtomicInteger(0);
+    Endpoint endpoint = fakeOMatic.endpoint(config.generator().endpoint())
+                                  .orElseThrow(UnbelievableException::new);
 
-    try {
-      for (int i = 0; i < total; ) {
-        if (inProgress.get() < concurrency) {
-          i++;
-          inProgress.incrementAndGet();
-
-          if (i % progressLog == 0) {
-            LOGGER.infof("Generating payload %d of %d", i, total);
-          }
-
-          payload = generator.generate();
-          eventTrigger.trigger(PAYLOAD_GENERATED, new PayloadGeneratedEvent(i, payload));
-          endpoint.postPayload(generator.contentType(), payload)
-                  .exceptionally(logError(i))
-                  .thenAccept(logResponse(i))
-                  .thenRun(inProgress::decrementAndGet)
-                  .thenRun(count::incrementAndGet);
-        }
+    for (int i = 0; i < total; i++) {
+      if (i % progressLog == 0) {
+        LOGGER.infof("Generating payload %d of %d", i, total);
       }
-    } catch (Exception e) {
-      LOGGER.error("Error while injecting payload.", e);
-    } finally {
-      while (count.get() < total) {
-        LOGGER.infof("Waiting for (%d) ongoing requests to finish...", (total - count.get()));
-        try {
-          Thread.sleep(500);
-        } catch (InterruptedException e) {
-          LOGGER.error("Error while waiting", e);
-        }
-      }
+
+      endpoint.call()
+              .exceptionally(logError(i))
+              .thenAccept(logResponse(i));
     }
+
+    endpoint.waitForOngoingCalls();
     eventTrigger.trigger(FINISHED, total);
 
     return 0;
   }
 
-  private Function<Throwable, HttpResponse> logError(int index) {
+  private Function<Throwable, EndpointResponse> logError(int index) {
     return throwable -> {
       LOGGER.error(String.format("Error while sending payload (%d)", index), throwable);
       return null;
     };
   }
 
-  private Consumer<HttpResponse> logResponse(int index) {
+  private Consumer<EndpointResponse> logResponse(int index) {
     return response -> {
       if (response != null) {
-        int statusCode = response.statusCode();
-        ResponseReceivedEvent event = new ResponseReceivedEvent(
-            index,
-            statusCode,
-            response.statusMessage(),
-            response.bodyAsString()
-        );
-        if (statusCode % 400 < 100) {
-          eventTrigger.trigger(CLIENT_ERROR, event);
-        } else if (statusCode % 500 < 100) {
-          eventTrigger.trigger(SERVER_ERROR, event);
-        } else if (statusCode % 200 < 100) {
-          eventTrigger.trigger(RESPONSE_OK, event);
+        ResponseReceivedEvent event = new ResponseReceivedEvent(index, response);
+        switch (response.status()) {
+          case SUCCESS:
+            eventTrigger.trigger(RESPONSE_OK, event);
+            break;
+          case SERVER_ERROR:
+            eventTrigger.trigger(SERVER_ERROR, event);
+            break;
+          case CLIENT_ERROR:
+            eventTrigger.trigger(CLIENT_ERROR, event);
+            break;
         }
       }
     };

@@ -24,12 +24,12 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import java.util.concurrent.CompletionStage;
+public interface PayloadTemplate {
 
-public interface EndpointClient {
+  String contentType();
 
-  CompletionStage<EndpointResponse> send();
+  String content();
 
-  CompletionStage<EndpointResponse> send(String payload);
+  String render();
 
 }

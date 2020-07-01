@@ -542,7 +542,7 @@ Gets a random data produced by replacing each placeholder by a random sample ass
 oneOf(values...)::
 Randomly picks one of the given values using the internal `Random` reference.
 
-For more methods, check out the `FakeData` interface.
+For more methods, check out the `Faker` interface.
 
 === Configuration Properties
 

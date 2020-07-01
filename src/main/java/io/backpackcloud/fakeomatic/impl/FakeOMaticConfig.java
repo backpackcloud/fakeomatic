@@ -39,6 +39,9 @@ import static io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer.DEFAU
 @ApplicationScoped
 public class FakeOMaticConfig implements Config {
 
+  @ConfigProperty(name = "endpoint.name", defaultValue = "default")
+  String endpoint;
+
   @ConfigProperty(name = "endpoint.url", defaultValue = "http://localhost:8080")
   String endpointUrl;
 
@@ -106,8 +109,8 @@ public class FakeOMaticConfig implements Config {
     return new GeneratorConfig() {
 
       @Override
-      public int buffer() {
-        return buffer;
+      public String endpoint() {
+        return endpoint;
       }
 
       @Override
