@@ -24,18 +24,38 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.impl.VertxEndpoint;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.vertx.mutiny.core.Vertx;
+
 import java.net.URL;
-import java.util.Optional;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
+@RegisterForReflection
 public interface Endpoint {
 
   URL url();
 
-  Optional<PayloadTemplate> template();
-
   CompletionStage<EndpointResponse> call();
 
   void waitForOngoingCalls();
+
+  @JsonCreator
+  static Endpoint newInstance(@JacksonInject Vertx vertx,
+                              @JsonProperty("url") Configuration location,
+                              @JsonProperty("payload") Payload payload,
+                              @JsonProperty("method") Configuration method,
+                              @JsonProperty("headers") Map<String, Configuration> endpointHeaders,
+                              @JsonProperty("params") Map<String, Configuration> params,
+                              @JsonProperty("concurrency") Configuration concurrency,
+                              @JsonProperty("buffer") Configuration buffer,
+                              @JsonProperty("insecure") Configuration insecure) {
+    return VertxEndpoint.create(vertx, location, method.read(), payload, endpointHeaders, params,
+        concurrency.getInt(), buffer.getInt(), insecure.getBoolean());
+  }
 
 }

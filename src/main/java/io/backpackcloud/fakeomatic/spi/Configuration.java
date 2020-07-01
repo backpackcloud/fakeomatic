@@ -50,6 +50,14 @@ public interface Configuration extends Supplier<String> {
 
   String get();
 
+  default int getInt() {
+    return Integer.parseInt(get());
+  }
+
+  default boolean getBoolean() {
+    return Boolean.parseBoolean(get());
+  }
+
   default String read() {
     try {
       return Files.readString(Path.of(get()));

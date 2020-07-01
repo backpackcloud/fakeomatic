@@ -24,36 +24,16 @@
 
 package io.backpackcloud.fakeomatic.spi.samples;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.backpackcloud.fakeomatic.RequestException;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.backpackcloud.fakeomatic.spi.Faker;
-import io.backpackcloud.fakeomatic.spi.Payload;
+import io.backpackcloud.fakeomatic.spi.Endpoint;
+import io.backpackcloud.fakeomatic.spi.EndpointResponse;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.qute.Engine;
-import io.quarkus.qute.TemplateInstance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.smallrye.mutiny.Uni;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.WebClientOptions;
-import io.vertx.mutiny.core.Vertx;
-import io.vertx.mutiny.core.buffer.Buffer;
-import io.vertx.mutiny.ext.web.client.HttpRequest;
-import io.vertx.mutiny.ext.web.client.HttpResponse;
-import io.vertx.mutiny.ext.web.client.WebClient;
 import org.jboss.logging.Logger;
 
-import java.io.IOException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This sample actually calls a given API to get data to use every time it's asked for a data.
@@ -64,115 +44,25 @@ import java.util.Optional;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class ApiSample implements Sample<JsonNode> {
+public class ApiSample implements Sample<EndpointResponse> {
 
   private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
 
-  private final URL                 url;
-  private final String              method;
-  private final String              returnPath;
-  private final WebClient           client;
-  private final ObjectMapper        mapper;
-  private final TemplateInstance    template;
-  private final Payload             payload;
-  private final Map<String, String> pathVars;
-  private final Faker               faker;
-  private final Map<String, String> headers;
+  private final Endpoint endpoint;
 
   @JsonCreator
-  public ApiSample(@JacksonInject("root") Faker faker,
-                   @JacksonInject Vertx vertx,
-                   @JacksonInject Engine templateEngine,
-                   @JsonProperty("url") Configuration url,
-                   @JsonProperty("method") String method,
-                   @JsonProperty("payload") Payload payload,
-                   @JsonProperty("return") String returnPath,
-                   @JsonProperty("insecure") boolean insecure,
-                   @JsonProperty("options") Map<String, Object> options,
-                   @JsonProperty("headers") Map<String, String> headers,
-                   @JsonProperty("path_vars") Map<String, String> pathVars) {
-    this.faker = faker;
-    try {
-      this.payload = payload;
-      if (payload != null) {
-        this.template = templateEngine.parse(payload.template())
-                                      .data(faker);
-      } else {
-        this.template = null;
-      }
-      this.method = Optional.ofNullable(method).orElse("get");
-      this.mapper = new ObjectMapper();
-      this.url = new URL(url.get());
-      this.returnPath = Optional.ofNullable(returnPath).orElse("");
-      this.headers = Optional.ofNullable(headers).orElseGet(Collections::emptyMap);
-      this.pathVars = Optional.ofNullable(pathVars).orElseGet(Collections::emptyMap);
-      this.client = WebClient.create(vertx, new WebClientOptions(
-          new JsonObject(options == null ? Collections.emptyMap() : options))
-          .setDefaultHost(this.url.getHost())
-          .setDefaultPort(this.url.getPort() == -1 ? this.url.getDefaultPort() : this.url.getPort())
-          .setSsl("https".equals(this.url.getProtocol()))
-          .setTrustAll(insecure)
-      );
-    } catch (Exception e) {
-      LOGGER.error("Error while creating ApiSample", e);
-      throw new UnbelievableException(e);
-    }
+  public ApiSample(@JsonProperty("endpoint") Endpoint endpoint) {
+    this.endpoint = endpoint;
   }
 
   @Override
-  public JsonNode get() {
-    String requestURI = url.toString();
-    for (Map.Entry<String, String> entry : this.pathVars.entrySet()) {
-      Object value = faker.sample(entry.getValue()).get();
-      // TODO refactor this
-      if (value instanceof JsonNode) {
-        value = ((JsonNode) value).asText();
-      }
-      requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", String.valueOf(value));
-    }
-
-    HttpRequest<Buffer>       request = this.client.raw(this.method.toUpperCase(), requestURI);
-    Uni<HttpResponse<Buffer>> response;
-    for (Map.Entry<String, String> header : headers.entrySet()) {
-      request.putHeader(header.getKey(), header.getValue());
-    }
-    if (this.template != null) {
-      try {
-        String payload = template.render();
-        LOGGER.debugv("Payload generated for {0}: {1}", url.toString(), payload);
-        response = request
-            .putHeader("Content-Type", this.payload.type())
-            .sendBuffer(Buffer.buffer(payload));
-      } catch (Exception e) {
-        LOGGER.errorv(e, "Error while rendering template for request {0}.", requestURI);
-        throw new UnbelievableException(e);
-      }
-    } else {
-      response = request.send();
-    }
-    LOGGER.infov("{0} -> {1}", method, requestURI);
-    String responseBody = response.onItem()
-                                  .apply(resp -> {
-                                    int statusCode = resp.statusCode();
-                                    // TODO investigate a way of getting the error
-                                    if (statusCode % 200 < 100) {
-                                      return resp.bodyAsString();
-                                    } else {
-                                      LOGGER.errorv("Got status [{0}] while sending request: {1}", statusCode, resp.statusMessage());
-                                      throw new RequestException(statusCode, resp.statusMessage());
-                                    }
-                                  })
-                                  // TODO add a fallback sample
-                                  // TODO externalize timeout
-                                  .await().atMost(Duration.ofSeconds(30));
+  public EndpointResponse get() {
     try {
-      LOGGER.debug(responseBody);
-      JsonNode parsedPayload = this.mapper.readTree(responseBody);
-      return parsedPayload.at(this.returnPath);
-    } catch (IOException e) {
-      LOGGER.error("Error while calling API", e);
-      throw new UnbelievableException(e);
+      return endpoint.call().toCompletableFuture().get();
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error(e);
     }
+    throw new UnbelievableException("Unable to call the endpoint");
   }
 
 }

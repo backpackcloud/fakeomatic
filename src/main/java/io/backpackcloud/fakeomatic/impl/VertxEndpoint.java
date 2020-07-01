@@ -24,14 +24,11 @@
 
 package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.EndpointResponse;
-import io.backpackcloud.fakeomatic.spi.PayloadTemplate;
+import io.backpackcloud.fakeomatic.spi.Payload;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpMethod;
@@ -50,6 +47,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 @RegisterForReflection
 public class VertxEndpoint implements Endpoint {
@@ -58,26 +56,29 @@ public class VertxEndpoint implements Endpoint {
 
   private final URL                 url;
   private final HttpRequest<Buffer> request;
+  private final Payload             payload;
 
   private final int concurrency;
 
+  private final Function<HttpRequest<Buffer>, Uni<HttpResponse<Buffer>>> requestFunction;
+
   private final AtomicInteger inProgress = new AtomicInteger(0);
 
-
-  public VertxEndpoint(URL url, HttpRequest<Buffer> request, int concurrency) {
+  public VertxEndpoint(URL url, Payload payload, HttpRequest<Buffer> request, int concurrency) {
     this.url = url;
     this.request = request;
     this.concurrency = concurrency;
+    this.payload = payload;
+    if (payload == null) {
+      this.requestFunction = HttpRequest::send;
+    } else {
+      this.requestFunction = httpRequest -> httpRequest.sendBuffer(Buffer.buffer(this.payload.content()));
+    }
   }
 
   @Override
   public URL url() {
     return url;
-  }
-
-  @Override
-  public Optional<PayloadTemplate> template() {
-    return Optional.empty();
   }
 
   @Override
@@ -104,35 +105,33 @@ public class VertxEndpoint implements Endpoint {
       }
     }
     return CompletableFuture.supplyAsync(
-        () -> createResponse(request.send())
+        () -> requestFunction.apply(this.request)
+                             .onItem()
+                             .apply(httpResponse -> {
+                               try {
+                                 return new Response(httpResponse);
+                               } finally {
+                                 inProgress.decrementAndGet();
+                               }
+                             })
+                             .await().atMost(Duration.ofSeconds(30))
     );
   }
 
-  private Response createResponse(Uni<HttpResponse<Buffer>> response) {
-    return response.onItem()
-                   .apply(httpResponse -> {
-                     try {
-                       return new Response(httpResponse);
-                     } finally {
-                       inProgress.decrementAndGet();
-                     }
-                   })
-                   .await().atMost(Duration.ofSeconds(30));
-  }
-
-  @JsonCreator
-  public static Endpoint create(@JacksonInject Vertx vertx,
-                                @JsonProperty("url") Configuration location,
-                                @JsonProperty("method") String method,
-                                @JsonProperty("headers") Map<String, Configuration> endpointHeaders,
-                                @JsonProperty("params") Map<String, Configuration> params,
-                                @JsonProperty("concurrency") int concurrency,
-                                @JsonProperty("buffer") int buffer,
-                                @JsonProperty("insecure") boolean insecure) {
+  public static Endpoint create(Vertx vertx, Configuration location,
+                                String method,
+                                Payload payload,
+                                Map<String, Configuration> endpointHeaders,
+                                Map<String, Configuration> params,
+                                int concurrency,
+                                int buffer,
+                                boolean insecure) {
     try {
       String requestURI = location.get();
-      for (Map.Entry<String, Configuration> entry : params.entrySet()) {
-        requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue().get());
+      if (params != null) {
+        for (Map.Entry<String, Configuration> entry : params.entrySet()) {
+          requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue().get());
+        }
       }
       URL url = new URL(requestURI);
       WebClient client = WebClient.create(vertx, new WebClientOptions()
@@ -143,15 +142,21 @@ public class VertxEndpoint implements Endpoint {
           .setTrustAll(insecure)
       );
       HttpRequest<Buffer> request = client.request(
-          HttpMethod.valueOf(Optional.ofNullable(method).map(String::toUpperCase).orElse("GET")),
+          HttpMethod.valueOf(
+              Optional.ofNullable(method)
+                      .map(String::toUpperCase)
+                      .orElse(payload == null ? "GET" : "POST")),
           url.toString()
       );
       if (endpointHeaders != null) {
         for (Map.Entry<String, Configuration> entry : endpointHeaders.entrySet()) {
           request.putHeader(entry.getKey(), entry.getValue().get());
         }
+        if (payload != null) {
+          request.putHeader("Content-Type", payload.contentType());
+        }
       }
-      return new VertxEndpoint(url, request, concurrency + buffer);
+      return new VertxEndpoint(url, payload, request, concurrency + buffer);
     } catch (Exception e) {
       throw new UnbelievableException(e);
     }
@@ -180,6 +185,10 @@ public class VertxEndpoint implements Endpoint {
       return response.bodyAsString();
     }
 
+    @Override
+    public String toString() {
+      return body();
+    }
   }
 
 }

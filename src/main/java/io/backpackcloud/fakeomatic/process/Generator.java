@@ -56,17 +56,16 @@ public class Generator implements QuarkusApplication, Events {
 
   @Override
   public int run(String... args) {
-    int total       = config.generator().total();
+    int total       = config.total();
     int progressLog = Math.max(total / 100, 1);
 
-    Endpoint endpoint = fakeOMatic.endpoint(config.generator().endpoint())
+    Endpoint endpoint = fakeOMatic.endpoint(config.endpoint())
                                   .orElseThrow(UnbelievableException::new);
 
     for (int i = 0; i < total; i++) {
       if (i % progressLog == 0) {
-        LOGGER.infof("Generating payload %d of %d", i, total);
+        LOGGER.infof("Sending payload %d of %d", i, total);
       }
-
       endpoint.call()
               .exceptionally(logError(i))
               .thenAccept(logResponse(i));

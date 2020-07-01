@@ -22,6 +22,38 @@
 # SOFTWARE.
 #
 
+endpoints:
+  default:
+    url:
+      env: ENDPOINT_URL
+      property: endpoint.url
+      default: http://localhost:8080
+    payload:
+      content-type:
+        env: ENDPOINT_CONTENT_TYPE
+        property: endpoint.content_type
+        default: application/json
+      template:
+        env: ENDPOINT_TEMPLATE
+        property: endpoint.template
+        resource: /META-INF/resources/config/payload.json
+    method:
+      env: ENDPOINT_METHOD
+      property: endpoint.method
+      default: POST
+    concurrency:
+      env: ENDPOINT_CONCURRENCY
+      property: endpoint.concurrency
+      default: 10
+    buffer:
+      env: ENDPOINT_BUFFER
+      property: endpoint.buffer
+      default: 10
+    insecure:
+      env: ENDPOINT_INSECURE
+      property: endpoint.insecure
+      default: false
+
 placeholders:
   "#": digit
   "%": letter

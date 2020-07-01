@@ -28,10 +28,6 @@ import io.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import static io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer.DEFAULT_CONFIG;
@@ -42,23 +38,8 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "endpoint.name", defaultValue = "default")
   String endpoint;
 
-  @ConfigProperty(name = "endpoint.url", defaultValue = "http://localhost:8080")
-  String endpointUrl;
-
-  @ConfigProperty(name = "endpoint.concurrency", defaultValue = "5")
-  int concurrency;
-
-  @ConfigProperty(name = "endpoint.insecure", defaultValue = "false")
-  boolean insecure;
-
-  @ConfigProperty(name = "endpoint.headers", defaultValue = "")
-  String headers;
-
   @ConfigProperty(name = "generator.total", defaultValue = "10")
   int total;
-
-  @ConfigProperty(name = "generator.buffer", defaultValue = "10")
-  int buffer;
 
   @ConfigProperty(name = "generator.configs", defaultValue = DEFAULT_CONFIG)
   String configs;
@@ -66,84 +47,24 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "generator.seed", defaultValue = "")
   Random random;
 
-  @ConfigProperty(name = "template.path", defaultValue = "./payload.json")
-  String templatePath;
-
-  @ConfigProperty(name = "template.type", defaultValue = MediaType.APPLICATION_JSON)
-  String templateType;
-
-  @Produces
   @Override
-  public EndpointConfig endpoint() {
-    return new EndpointConfig() {
-      @Override
-      public String url() {
-        return endpointUrl;
-      }
-
-      @Override
-      public int concurrency() {
-        return concurrency;
-      }
-
-      @Override
-      public boolean insecure() {
-        return insecure;
-      }
-
-      @Override
-      public Map<String, String> headers() {
-        Map<String, String> headersMap = new HashMap<>();
-        headers.lines().forEach(line -> {
-          int i = line.indexOf("=");
-          headersMap.put(line.substring(0, i), line.substring(i + 1));
-        });
-        return headersMap;
-      }
-    };
+  public String endpoint() {
+    return endpoint;
   }
 
-  @Produces
   @Override
-  public GeneratorConfig generator() {
-    return new GeneratorConfig() {
-
-      @Override
-      public String endpoint() {
-        return endpoint;
-      }
-
-      @Override
-      public int total() {
-        return total;
-      }
-
-      @Override
-      public Random random() {
-        return random;
-      }
-
-      @Override
-      public String[] configs() {
-        return configs.split("[,]");
-      }
-    };
+  public int total() {
+    return total;
   }
 
-  @Produces
   @Override
-  public TemplateConfig template() {
-    return new TemplateConfig() {
-      @Override
-      public String path() {
-        return templatePath;
-      }
+  public Random random() {
+    return random;
+  }
 
-      @Override
-      public String type() {
-        return templateType;
-      }
-    };
+  @Override
+  public String[] configs() {
+    return configs.split("[,]");
   }
 
 }

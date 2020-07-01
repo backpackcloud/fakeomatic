@@ -22,14 +22,43 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi;
+package io.backpackcloud.fakeomatic.impl;
 
-public interface PayloadTemplate {
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.spi.Endpoint;
+import io.backpackcloud.fakeomatic.spi.FakeOMatic;
+import io.backpackcloud.fakeomatic.spi.Sample;
 
-  String contentType();
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
-  String content();
+public class NullFakeOMatic implements FakeOMatic {
 
-  String render();
+  @Override
+  public Optional<Endpoint> endpoint(String name) {
+    return Optional.empty();
+  }
+
+  @Override
+  public List<Sample> samples() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public Sample sample(String sampleName) {
+    throw new UnbelievableException("Sample '" + sampleName + "' not found");
+  }
+
+  @Override
+  public String some(char placeholder) {
+    return String.valueOf(placeholder);
+  }
+
+  @Override
+  public Random random() {
+    throw new UnbelievableException();
+  }
 
 }

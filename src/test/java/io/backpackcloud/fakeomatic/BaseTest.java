@@ -45,12 +45,9 @@ import static org.mockito.Mockito.when;
 
 public abstract class BaseTest {
 
-  protected Config                 config;
-  protected Config.TemplateConfig  templateConfig;
-  protected Config.GeneratorConfig generatorConfig;
-  protected Config.EndpointConfig  endpointConfig;
-  protected Random                 random;
-  protected ObjectMapper           objectMapper;
+  protected Config       config;
+  protected Random       random;
+  protected ObjectMapper objectMapper;
 
   @BeforeEach
   public void _init() {
@@ -58,15 +55,8 @@ public abstract class BaseTest {
     objectMapper = new ObjectMapper(new YAMLFactory());
 
     config = mock(Config.class);
-    templateConfig = mock(Config.TemplateConfig.class);
-    generatorConfig = mock(Config.GeneratorConfig.class);
-    endpointConfig = mock(Config.EndpointConfig.class);
 
-    when(config.template()).thenReturn(templateConfig);
-    when(config.generator()).thenReturn(generatorConfig);
-    when(config.endpoint()).thenReturn(endpointConfig);
-
-    when(generatorConfig.random()).thenReturn(random);
+    when(config.random()).thenReturn(random);
   }
 
   protected void times(int times, Consumer<Integer> consumer) {
@@ -89,7 +79,7 @@ public abstract class BaseTest {
                                  .map(name -> "src/test/resources/" + path + "/" + name)
                                  .collect(Collectors.toList());
 
-    when(generatorConfig.configs()).thenReturn(configs.toArray(new String[configs.size()]));
+    when(config.configs()).thenReturn(configs.toArray(new String[configs.size()]));
 
     FakeOMaticProducer producer = new FakeOMaticProducer(
         config,

@@ -29,15 +29,13 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.impl.FakerImpl;
-import io.backpackcloud.fakeomatic.impl.NullFaker;
+import io.backpackcloud.fakeomatic.impl.FakeOMaticImpl;
+import io.backpackcloud.fakeomatic.impl.NullFakeOMatic;
 import io.backpackcloud.fakeomatic.spi.Config;
+import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.FakeOMatic;
-import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.spi.TemplateParser;
 import io.quarkus.qute.Engine;
-import io.quarkus.qute.TemplateInstance;
 import io.vertx.mutiny.core.Vertx;
 import org.jboss.logging.Logger;
 
@@ -50,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public class FakeOMaticProducer {
   @Singleton
   public FakeOMatic produce() {
     List<InputStream> configs = Arrays
-        .stream(config.generator().configs())
+        .stream(config.configs())
         .map(config -> {
           try {
             if (DEFAULT_CONFIG.equals(config)) {
@@ -93,23 +92,14 @@ public class FakeOMaticProducer {
         })
         .collect(Collectors.toList());
     return newInstance(configs, templateEngine, std -> {
-      std.addValue(Random.class, this.config.generator().random());
+      std.addValue(Random.class, this.config.random());
       std.addValue(Vertx.class, this.vertx);
       std.addValue(Config.class, this.config);
-      std.addValue(Config.TemplateConfig.class, this.config.template());
-      std.addValue(Config.GeneratorConfig.class, this.config.generator());
-      std.addValue(Config.EndpointConfig.class, this.config.endpoint());
     });
   }
 
-  @Produces
-  @Singleton
-  public TemplateParser produceParser(Faker faker) {
-    return new QuteTemplateParser(templateEngine, faker);
-  }
-
   public static InputStream defaultConfig() {
-    return FakerImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
+    return FakeOMaticImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
   public static FakeOMatic newInstance(List<InputStream> configs,
@@ -121,20 +111,19 @@ public class FakeOMaticProducer {
 
     objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-    Faker parent = new NullFaker();
+    FakeOMatic parent = new NullFakeOMatic();
     // the composite sample needs access to the whole fake data and not the parent one
-    RootFaker rootFakeData = new RootFaker();
+    RootFakeOMatic root = new RootFakeOMatic();
 
     injectableValuesConsumer.accept(std);
     std.addValue("parent", parent);
-    std.addValue("root", rootFakeData);
+    std.addValue("root", root);
     std.addValue(Engine.class, engine);
-    std.addValue(TemplateParser.class, new QuteTemplateParser(engine, rootFakeData));
     objectMapper.setInjectableValues(std);
 
     try {
       for (InputStream config : configs) {
-        parent = objectMapper.readValue(config, FakerImpl.class);
+        parent = objectMapper.readValue(config, FakeOMaticImpl.class);
         std.addValue("parent", parent);
       }
     } catch (Throwable e) {
@@ -142,14 +131,19 @@ public class FakeOMaticProducer {
       throw new UnbelievableException(e);
     }
 
-    rootFakeData.delegate = parent;
+    root.delegate = parent;
 
     return parent;
   }
 
-  static class RootFaker implements Faker {
+  static class RootFakeOMatic implements FakeOMatic {
 
-    Faker delegate;
+    FakeOMatic delegate;
+
+    @Override
+    public Optional<Endpoint> endpoint(String name) {
+      return delegate.endpoint(name);
+    }
 
     @Override
     public Random random() {
@@ -182,22 +176,6 @@ public class FakeOMaticProducer {
     @Override
     public List<Sample> samples() {
       return delegate.samples();
-    }
-  }
-
-  static class QuteTemplateParser implements TemplateParser {
-
-    private final Engine engine;
-    private final Faker  faker;
-
-    QuteTemplateParser(Engine engine, Faker faker) {
-      this.engine = engine;
-      this.faker = faker;
-    }
-
-    @Override
-    public TemplateInstance parse(String template) {
-      return engine.parse(template).data(faker);
     }
   }
 

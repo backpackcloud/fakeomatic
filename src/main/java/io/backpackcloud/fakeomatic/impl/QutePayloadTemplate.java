@@ -22,35 +22,41 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.spi.samples;
+package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.spi.TemplateParser;
+import io.backpackcloud.fakeomatic.spi.Faker;
+import io.backpackcloud.fakeomatic.spi.Payload;
+import io.quarkus.qute.Engine;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class TemplateSample implements Sample<String> {
+public class QutePayloadTemplate implements Payload {
 
+  private final String           contentType;
   private final TemplateInstance templateInstance;
 
-  public TemplateSample(TemplateInstance templateInstance) {
+  public QutePayloadTemplate(String contentType, TemplateInstance templateInstance) {
+    this.contentType = contentType;
     this.templateInstance = templateInstance;
   }
 
   @Override
-  public String get() {
+  public String contentType() {
+    return contentType;
+  }
+
+  @Override
+  public String content() {
     return templateInstance.render();
   }
 
-  @JsonCreator
-  public static TemplateSample create(@JsonProperty("location") Configuration location,
-                                      @JacksonInject TemplateParser templateParser) {
-    return new TemplateSample(templateParser.parse(location.read()));
+  public static Payload newInstance(Engine engine, Faker faker, Configuration template, String contentType) {
+    String           content          = template.read();
+    TemplateInstance templateInstance = engine.parse(content).data(faker);
+
+    return new QutePayloadTemplate(contentType, templateInstance);
   }
 
 }

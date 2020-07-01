@@ -35,10 +35,22 @@ import java.util.concurrent.Callable;
 public class GeneratorCommand implements Callable<Integer> {
 
   @CommandLine.Option(
-      names = {"-e", "--endpoint"},
+      names = {"-e", "--endpoint-name"},
+      description = "The name of the configured endpoint to use"
+  )
+  String endpointName;
+
+  @CommandLine.Option(
+      names = {"-u", "--endpoint-url"},
       description = "The endpoint url"
   )
   String endpointUrl;
+
+  @CommandLine.Option(
+      names = {"-m", "--method"},
+      description = "The http method to use"
+  )
+  String method;
 
   @CommandLine.Option(
       names = {"-c", "--concurrency"},
@@ -65,10 +77,10 @@ public class GeneratorCommand implements Callable<Integer> {
   String buffer;
 
   @CommandLine.Option(
-      names = {"-f", "--configs"},
-      description = "The configurations to apply"
+      names = {"-f", "--config"},
+      description = "A configuration to apply (use fakeomatic to apply the built-in one)"
   )
-  String configs;
+  List<String> configs;
 
   @CommandLine.Option(
       names = {"-s", "--seed"},
@@ -78,15 +90,15 @@ public class GeneratorCommand implements Callable<Integer> {
 
   @CommandLine.Option(
       names = {"-p", "--template"},
-      description = "The template to use for payload generation"
+      description = "Location of the template to use"
   )
-  String templatePath;
+  String template;
 
   @CommandLine.Option(
-      names = {"-a", "--template-type"},
-      description = "Defines the content type that the template produces"
+      names = {"-a", "--content-type"},
+      description = "The content type of the template"
   )
-  String templateType;
+  String contentType;
 
   @CommandLine.Option(
       names = "--events-log-level",
@@ -94,30 +106,21 @@ public class GeneratorCommand implements Callable<Integer> {
   )
   String eventsLogLevel;
 
-  @CommandLine.Option(
-      names = "--header",
-      description = "Adds a header to the endpoint call"
-  )
-  List<String> headers;
-
   @Override
   public Integer call() {
 
+    setPropertyIfNotNull("endpoint.name", endpointName);
     setPropertyIfNotNull("endpoint.url", endpointUrl);
+    setPropertyIfNotNull("endpoint.content_type", contentType);
+    setPropertyIfNotNull("endpoint.template", template);
+    setPropertyIfNotNull("endpoint.method", method);
     setPropertyIfNotNull("endpoint.concurrency", concurrency);
+    setPropertyIfNotNull("endpoint.buffer", buffer);
     setPropertyIfNotNull("endpoint.insecure", insecure);
 
-    if (headers != null) {
-      setPropertyIfNotNull("endpoint.headers", String.join("\n", headers));
-    }
-
     setPropertyIfNotNull("generator.total", total);
-    setPropertyIfNotNull("generator.buffer", buffer);
-    setPropertyIfNotNull("generator.configs", configs);
+    setPropertyIfNotNull("generator.configs", String.join(",", configs));
     setPropertyIfNotNull("generator.seed", seed);
-
-    setPropertyIfNotNull("template.path", templatePath);
-    setPropertyIfNotNull("template.type", templateType);
 
     setPropertyIfNotNull("fakeomatic.events.log.level", eventsLogLevel);
 

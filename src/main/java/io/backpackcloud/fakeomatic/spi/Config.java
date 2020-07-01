@@ -24,7 +24,6 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -34,60 +33,21 @@ import java.util.Random;
  */
 public interface Config {
 
-  EndpointConfig endpoint();
+  String endpoint();
 
-  GeneratorConfig generator();
+  /**
+   * @return The number of generated payloads.
+   */
+  int total();
 
-  TemplateConfig template();
+  /**
+   * @return The Random object to use.
+   */
+  Random random();
 
-  interface EndpointConfig {
-
-    String url();
-
-    /**
-     * @return The maximum number of concurrent requests to the endpoint.
-     */
-    int concurrency();
-
-    boolean insecure();
-
-    Map<String, String> headers();
-
-  }
-
-  interface GeneratorConfig {
-
-    String endpoint();
-
-    /**
-     * @return The number of generated payloads.
-     */
-    int total();
-
-    /**
-     * @return The Random object to use.
-     */
-    Random random();
-
-    /**
-     * @return The endpoint that will receive the generated payloads.
-     */
-    String[] configs();
-
-  }
-
-  interface TemplateConfig {
-
-    /**
-     * @return Where to locate the template for generating the payloads.
-     */
-    String path();
-
-    /**
-     * @return Which Content-Type to pass to the endpoint.
-     */
-    String type();
-
-  }
+  /**
+   * @return The endpoint that will receive the generated payloads.
+   */
+  String[] configs();
 
 }

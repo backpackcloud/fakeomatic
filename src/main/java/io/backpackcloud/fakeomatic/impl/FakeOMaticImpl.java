@@ -43,9 +43,9 @@ import java.util.Random;
 
 @RegisterForReflection
 @TemplateData(target = Faker.class)
-public class FakerImpl implements FakeOMatic {
+public class FakeOMaticImpl implements FakeOMatic {
 
-  private final Faker parent;
+  private final FakeOMatic parent;
 
   private final Random random;
 
@@ -54,11 +54,11 @@ public class FakerImpl implements FakeOMatic {
   private final Map<String, Endpoint> endpoints;
 
   @JsonCreator
-  public FakerImpl(@JacksonInject Random random,
-                   @JacksonInject("parent") Faker parent,
-                   @JsonProperty("samples") Map<String, Sample> samples,
-                   @JsonProperty("placeholders") Map<String, String> placeholders,
-                   @JsonProperty("endpoints") Map<String, Endpoint> endpoints) {
+  public FakeOMaticImpl(@JacksonInject Random random,
+                        @JacksonInject("parent") FakeOMatic parent,
+                        @JsonProperty("samples") Map<String, Sample> samples,
+                        @JsonProperty("placeholders") Map<String, String> placeholders,
+                        @JsonProperty("endpoints") Map<String, Endpoint> endpoints) {
     this.random = random;
     this.parent = parent;
     this.samples = Optional.ofNullable(samples).orElseGet(Collections::emptyMap);
@@ -68,7 +68,7 @@ public class FakerImpl implements FakeOMatic {
 
   @Override
   public Optional<Endpoint> endpoint(String name) {
-    return Optional.ofNullable(endpoints.get(name));
+    return Optional.ofNullable(endpoints.get(name)).or(() -> parent.endpoint(name));
   }
 
   @Override
