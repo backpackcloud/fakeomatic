@@ -77,7 +77,7 @@ public class ConfigurationTest extends BaseTest {
     Configuration value = value("property_value");
     assertFalse(value.isSet());
     System.setProperty("fakeomatic.test", "bar");
-    assertTrue(value.isSet());
+    assertFalse(value.isSet());
     assertEquals("bar", value.get());
   }
 
