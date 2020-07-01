@@ -42,7 +42,7 @@ public interface Payload {
   static Payload newInstance(@JacksonInject Engine engine,
                              @JacksonInject("root") Faker faker,
                              @JsonProperty("template") Configuration template,
-                             @JsonProperty("content-type") String contentType) {
+                             @JsonProperty("content-type") Configuration contentType) {
     return QutePayloadTemplate.newInstance(engine, faker, template, contentType);
   }
 

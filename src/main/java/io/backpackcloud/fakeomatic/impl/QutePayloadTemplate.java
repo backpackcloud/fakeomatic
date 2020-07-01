@@ -52,11 +52,11 @@ public class QutePayloadTemplate implements Payload {
     return templateInstance.render();
   }
 
-  public static Payload newInstance(Engine engine, Faker faker, Configuration template, String contentType) {
+  public static Payload newInstance(Engine engine, Faker faker, Configuration template, Configuration contentType) {
     String           content          = template.read();
     TemplateInstance templateInstance = engine.parse(content).data(faker);
 
-    return new QutePayloadTemplate(contentType, templateInstance);
+    return new QutePayloadTemplate(contentType.get(), templateInstance);
   }
 
 }
