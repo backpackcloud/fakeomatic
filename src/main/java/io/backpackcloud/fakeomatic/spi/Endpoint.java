@@ -54,7 +54,7 @@ public interface Endpoint {
                               @JsonProperty("concurrency") Configuration concurrency,
                               @JsonProperty("buffer") Configuration buffer,
                               @JsonProperty("insecure") Configuration insecure) {
-    return VertxEndpoint.create(vertx, location, method.read(), payload, endpointHeaders, params,
+    return VertxEndpoint.create(vertx, location, method.get(), payload, endpointHeaders, params,
         concurrency.getInt(), buffer.getInt(), insecure.getBoolean());
   }
 
