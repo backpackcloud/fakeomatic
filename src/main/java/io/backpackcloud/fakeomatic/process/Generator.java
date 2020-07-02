@@ -62,6 +62,8 @@ public class Generator implements QuarkusApplication, Events {
     Endpoint endpoint = fakeOMatic.endpoint(config.endpoint())
                                   .orElseThrow(UnbelievableException::new);
 
+    LOGGER.infof("Starting process... will generate %d payloads", total);
+
     for (int i = 1; i <= total; i++) {
       if (i % progressLog == 0) {
         LOGGER.infof("Sending payload %d of %d", i, total);
