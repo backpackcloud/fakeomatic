@@ -22,47 +22,31 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.sample;
+package io.backpackcloud.fakeomatic.spi;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
+import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
-public class CacheSample implements Sample {
+@RegisterForReflection
+public interface SampleConfiguration extends Supplier<Sample<?>> {
 
-  private final Sample sample;
-  private final int    ttl;
-
-  private Object cachedValue;
-  private int    hits;
-
-  public CacheSample(Sample sample, int ttl) {
-    this.sample = sample;
-    this.ttl = ttl;
-  }
-
-  @Override
-  public Object get() {
-    if (this.cachedValue == null) {
-      this.cachedValue = this.sample.get();
-    }
-    try {
-      return this.cachedValue;
-    } finally {
-      if (++hits == ttl) {
-        this.cachedValue = null;
-      }
-    }
-  }
+  Sample<?> get();
 
   @JsonCreator
-  public static CacheSample create(@JsonProperty("source") SampleConfiguration sampleConfiguration,
-                                   @JsonProperty("ttl") Integer ttl) {
-    Integer timeToLive = Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE);
-    return new CacheSample(sampleConfiguration.get(), timeToLive);
+  static SampleConfiguration create(@JacksonInject("root") Faker faker,
+                                    @JsonProperty("ref") String sampleName,
+                                    @JsonProperty("sample") Sample sample) {
+    if (sampleName != null) {
+      return () -> faker.sample(sampleName);
+    } else if (sample != null) {
+      return () -> sample;
+    }
+    throw new UnbelievableException("No sample defined");
   }
 
 }
