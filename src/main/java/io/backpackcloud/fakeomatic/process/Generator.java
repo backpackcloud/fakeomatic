@@ -101,19 +101,6 @@ public class Generator implements QuarkusApplication, Events {
       if (response != null) {
         ResponseReceivedEvent event = new ResponseReceivedEvent(index, response);
         eventTrigger.trigger(RESPONSE_RECEIVED, event);
-        switch (response.status()) {
-          case SUCCESS:
-            eventTrigger.trigger(RESPONSE_OK, event);
-            break;
-          case SERVER_ERROR:
-            eventTrigger.trigger(SERVER_ERROR, event);
-            break;
-          case CLIENT_ERROR:
-            eventTrigger.trigger(CLIENT_ERROR, event);
-            break;
-          default:
-            LOGGER.warnv("Received {0} from payload {1}: {2}", response.statusCode(), index, response.body());
-        }
       }
     };
   }
