@@ -108,11 +108,8 @@ public class VertxEndpoint implements Endpoint {
         () -> requestFunction.apply(this.request)
                              .onItem()
                              .apply(httpResponse -> {
-                               try {
-                                 return new Response(httpResponse);
-                               } finally {
-                                 inProgress.decrementAndGet();
-                               }
+                               inProgress.decrementAndGet();
+                               return new Response(httpResponse);
                              })
                              .await().atMost(Duration.ofSeconds(30))
     );
