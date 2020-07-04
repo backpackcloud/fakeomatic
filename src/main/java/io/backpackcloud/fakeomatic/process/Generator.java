@@ -62,34 +62,45 @@ public class Generator implements QuarkusApplication, Events {
     Endpoint endpoint = fakeOMatic.endpoint(config.endpoint())
                                   .orElseThrow(UnbelievableException::new);
 
-    LOGGER.infof("Starting process... will generate %d payloads", total);
+    GenerationStatistics statistics = new GenerationStatistics();
 
+    LOGGER.infof("Starting process... will generate %d payloads", total);
+    statistics.startNow();
     for (int i = 1; i <= total; i++) {
       if (i % progressLog == 0) {
         LOGGER.infof("Sending payload %d of %d", i, total);
       }
       endpoint.call()
               .exceptionally(logError(i))
-              .thenAccept(logResponse(i));
+              .thenAccept(triggerEvents(i).andThen(updateStatistics(statistics)));
     }
 
     endpoint.waitForOngoingCalls();
-    eventTrigger.trigger(FINISHED, total);
-
+    statistics.endNow();
+    eventTrigger.trigger(FINISHED, statistics);
     return 0;
   }
 
   private Function<Throwable, EndpointResponse> logError(int index) {
     return throwable -> {
-      LOGGER.error(String.format("Error while sending payload (%d)", index), throwable);
+      LOGGER.errorv(throwable, "Error while sending payload (%d)", index);
       return null;
     };
   }
 
-  private Consumer<EndpointResponse> logResponse(int index) {
+  private Consumer<EndpointResponse> updateStatistics(GenerationStatistics statistics) {
+    return response -> {
+      if (response != null) {
+        statistics.update(response);
+      }
+    };
+  }
+
+  private Consumer<EndpointResponse> triggerEvents(int index) {
     return response -> {
       if (response != null) {
         ResponseReceivedEvent event = new ResponseReceivedEvent(index, response);
+        eventTrigger.trigger(RESPONSE_RECEIVED, event);
         switch (response.status()) {
           case SUCCESS:
             eventTrigger.trigger(RESPONSE_OK, event);
@@ -103,8 +114,6 @@ public class Generator implements QuarkusApplication, Events {
           default:
             LOGGER.warnv("Received {0} from payload {1}: {2}", response.statusCode(), index, response.body());
         }
-      } else {
-        LOGGER.warnv("No response received for payload {0}", index);
       }
     };
   }

@@ -24,13 +24,26 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-public interface Events {
+import java.time.LocalDateTime;
 
-  String PAYLOAD_GENERATED = "io.backpackcloud.fakeomatic.events.PAYLOAD_GENERATED";
-  String RESPONSE_RECEIVED = "io.backpackcloud.fakeomatic.events.RESPONSE_RECEIVED";
-  String RESPONSE_OK       = "io.backpackcloud.fakeomatic.events.RESPONSE_OK";
-  String SERVER_ERROR      = "io.backpackcloud.fakeomatic.events.SERVER_ERROR";
-  String CLIENT_ERROR      = "io.backpackcloud.fakeomatic.events.CLIENT_ERROR";
-  String FINISHED          = "io.backpackcloud.fakeomatic.events.FINISHED";
+public interface Statistics {
+
+  int totalResponses();
+
+  int informationalResponses();
+
+  int successResponses();
+
+  int redirectionResponses();
+
+  int clientErrorResponses();
+
+  int serverErrorResponses();
+
+  long processingTime();
+
+  LocalDateTime startTime();
+
+  LocalDateTime endTime();
 
 }
