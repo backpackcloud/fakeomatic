@@ -27,20 +27,16 @@ package io.backpackcloud.fakeomatic.impl;
 import io.backpackcloud.fakeomatic.spi.Events;
 import io.backpackcloud.fakeomatic.spi.PayloadGeneratedEvent;
 import io.backpackcloud.fakeomatic.spi.ResponseReceivedEvent;
+import io.backpackcloud.fakeomatic.spi.Statistics;
 import io.quarkus.vertx.ConsumeEvent;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class Listener implements Events {
 
   private static final Logger LOGGER = Logger.getLogger(Listener.class);
-
-  private final AtomicInteger serverErrors = new AtomicInteger(0);
-  private final AtomicInteger clientErrors = new AtomicInteger(0);
-  private final AtomicInteger ok           = new AtomicInteger(0);
 
   @ConsumeEvent(PAYLOAD_GENERATED)
   public void onPayloadGenerated(PayloadGeneratedEvent event) {
@@ -55,7 +51,6 @@ public class Listener implements Events {
         "Got a client error response for payload %d (%d): %s",
         event.index(), event.response().statusCode(), event.response().statusMessage()
     );
-    this.clientErrors.incrementAndGet();
   }
 
   @ConsumeEvent(SERVER_ERROR)
@@ -64,20 +59,23 @@ public class Listener implements Events {
         "Got a server error response for payload %d (%d): %s",
         event.index(), event.response().statusCode(), event.response().statusMessage()
     );
-    this.serverErrors.incrementAndGet();
   }
 
   @ConsumeEvent(RESPONSE_OK)
   public void onOk(ResponseReceivedEvent event) {
-    this.ok.incrementAndGet();
     LOGGER.debugf("Received response for payload %d: %s", event.index(), event.response().body());
   }
 
   @ConsumeEvent(value = FINISHED)
-  public void onFinish(int total) {
+  public void onFinish(Statistics statistics) {
     LOGGER.infof(
-        "Finished generating %d payloads. OKs (%d) | Server Errors (%d) | Client Errors (%d)",
-        total, ok.get(), serverErrors.get(), clientErrors.get()
+        "Total (%d) | 1xx (%d) | 2xx (%d) | 3xx (%d) | 4xx (%d) | 5xx (%d)",
+        statistics.totalResponses(),
+        statistics.informationalResponses(),
+        statistics.successResponses(),
+        statistics.redirectionResponses(),
+        statistics.clientErrorResponses(),
+        statistics.serverErrorResponses()
     );
   }
 
