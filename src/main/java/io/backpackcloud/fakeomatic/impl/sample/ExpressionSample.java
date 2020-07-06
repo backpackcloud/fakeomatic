@@ -30,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
-import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
@@ -58,11 +57,11 @@ public class ExpressionSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static ExpressionSample create(@JsonProperty("source") SampleConfiguration sampleConfiguration,
+  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
                                         @JsonProperty("expression") String expression,
                                         @JacksonInject("root") Faker faker) {
-    if (sampleConfiguration != null) {
-      return new ExpressionSample(sampleConfiguration.get(), faker);
+    if (sampleName != null) {
+      return new ExpressionSample(faker.sample(sampleName), faker);
     } else if (expression != null) {
       return new ExpressionSample(() -> expression, faker);
     } else {
