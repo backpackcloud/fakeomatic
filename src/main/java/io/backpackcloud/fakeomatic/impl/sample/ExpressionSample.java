@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 
@@ -40,29 +41,28 @@ public class ExpressionSample implements Sample<String> {
 
   private static final Logger LOGGER = Logger.getLogger(ExpressionSample.class);
 
-  private final Faker            faker;
-  private final Supplier<String> expressionSupplier;
+  private final Faker       faker;
+  private final Supplier<?> expressionSupplier;
 
-  public ExpressionSample(Supplier<String> expressionSupplier, Faker faker) {
+  public ExpressionSample(Supplier<?> expressionSupplier, Faker faker) {
     this.expressionSupplier = expressionSupplier;
     this.faker = faker;
   }
 
   @Override
   public String get() {
-    String expression = expressionSupplier.get();
-    String result = faker.expression(expression);
+    String expression = expressionSupplier.get().toString();
+    String result     = faker.expression(expression);
     LOGGER.debugv("Creating from expression {0}: {1}", expression, result);
     return result;
   }
 
-  // TODO use sample configuration
   @JsonCreator
-  public static ExpressionSample create(@JsonProperty("sample") String sampleName,
+  public static ExpressionSample create(@JsonProperty("source") SampleConfiguration sampleConfiguration,
                                         @JsonProperty("expression") String expression,
                                         @JacksonInject("root") Faker faker) {
-    if (sampleName != null) {
-      return new ExpressionSample(faker.sample(sampleName), faker);
+    if (sampleConfiguration != null) {
+      return new ExpressionSample(sampleConfiguration.get(), faker);
     } else if (expression != null) {
       return new ExpressionSample(() -> expression, faker);
     } else {
