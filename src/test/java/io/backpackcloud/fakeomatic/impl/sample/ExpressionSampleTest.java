@@ -33,7 +33,7 @@ public class ExpressionSampleTest extends BaseTest {
 
   @Test
   public void testSampleExpression() {
-    Faker          faker  = createFakeData("expressions.yaml");
+    Faker          faker  = createFakeOMatic("expressions.yaml");
     Sample<String> sample = faker.sample("address");
     times(100000, sample, address -> {
       address.matches("^(Some Street|Another Street|Galaxy) (\\d{2,3})$");
@@ -42,7 +42,7 @@ public class ExpressionSampleTest extends BaseTest {
 
   @Test
   public void testStringExpression() {
-    Faker          faker  = createFakeData("expressions.yaml");
+    Faker          faker  = createFakeOMatic("expressions.yaml");
     Sample<String> sample = faker.sample("credit_card");
     times(100000, sample, address -> {
       address.matches("^\\d{16}$");

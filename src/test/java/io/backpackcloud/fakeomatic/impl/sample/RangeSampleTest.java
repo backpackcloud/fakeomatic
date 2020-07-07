@@ -43,7 +43,7 @@ public class RangeSampleTest extends BaseTest {
 
   @BeforeEach
   public void init() {
-    faker = createFakeData("ranges.yaml");
+    faker = createFakeOMatic("ranges.yaml");
   }
 
   @Test

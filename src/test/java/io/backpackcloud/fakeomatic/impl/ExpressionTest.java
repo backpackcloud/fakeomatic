@@ -34,7 +34,7 @@ public class ExpressionTest extends BaseTest {
 
   @Test
   public void testExpression() {
-    Faker faker = createFakeData("expressions.yaml");
+    Faker faker = createFakeOMatic("expressions.yaml");
     assertEquals("000aaa", faker.expression("###%%%"));
   }
 

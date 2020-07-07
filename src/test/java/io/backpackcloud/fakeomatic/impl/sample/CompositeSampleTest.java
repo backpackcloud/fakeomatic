@@ -43,7 +43,7 @@ public class CompositeSampleTest extends BaseTest {
 
   @BeforeEach
   public void init() {
-    faker = createFakeData("composite.yaml");
+    faker = createFakeOMatic("composite.yaml");
   }
 
   @Test

@@ -40,7 +40,7 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testWithEndDate() {
-    Faker             faker      = createFakeData("dates.yaml");
+    Faker             faker      = createFakeOMatic("dates.yaml");
     Sample<LocalDate> sample     = faker.sample("2020");
     Set<Integer>      daysOfYear = new HashSet<>();
     times(100000, sample, date -> {
@@ -53,7 +53,7 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testWithPeriod() {
-    Faker             faker      = createFakeData("dates.yaml");
+    Faker             faker      = createFakeOMatic("dates.yaml");
     Sample<LocalDate> sample     = faker.sample("quarter");
     Set<Integer>      daysOfYear = new HashSet<>();
     times(100000, sample, date -> {
@@ -66,7 +66,7 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testYesterdayOrToday() {
-    Faker             faker  = createFakeData("dates.yaml");
+    Faker             faker  = createFakeOMatic("dates.yaml");
     Sample<LocalDate> sample = faker.sample("yesterday_or_today");
     Set<LocalDate>    dates  = new HashSet<>();
     times(10000, sample, dates::add);
@@ -77,7 +77,7 @@ public class DateSampleTest extends BaseTest {
 
   @Test
   public void testYesterdayToTomorrow() {
-    Faker             faker  = createFakeData("dates.yaml");
+    Faker             faker  = createFakeOMatic("dates.yaml");
     Sample<LocalDate> sample = faker.sample("yesterday_to_tomorrow");
     Set<LocalDate>    dates  = new HashSet<>();
     times(10000, sample, dates::add);

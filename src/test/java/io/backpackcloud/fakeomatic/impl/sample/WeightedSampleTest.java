@@ -43,7 +43,7 @@ public class WeightedSampleTest extends BaseTest {
 
   @BeforeEach
   public void init() {
-    faker = createFakeData("weight.yaml");
+    faker = createFakeOMatic("weight.yaml");
   }
 
   @Test

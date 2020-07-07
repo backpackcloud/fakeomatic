@@ -34,7 +34,7 @@ public class FakeOMaticProducerTest extends BaseTest {
 
   @Test
   public void testCompositeSampleCreation() throws IOException {
-    Faker faker = createFakeData("test.yaml", "test2.yaml");
+    Faker faker = createFakeOMatic("test.yaml", "test2.yaml");
 
     faker.some("foo");
   }
