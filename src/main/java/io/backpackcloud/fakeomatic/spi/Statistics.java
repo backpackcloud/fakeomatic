@@ -25,25 +25,76 @@
 package io.backpackcloud.fakeomatic.spi;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-public interface Statistics {
+public class Statistics {
 
-  int totalResponses();
+  private final int totalResponses;
+  private final int informationalResponses;
+  private final int successResponses;
+  private final int redirectionResponses;
+  private final int clientErrorResponses;
+  private final int serverErrorResponses;
 
-  int informationalResponses();
+  private final long processingTime;
 
-  int successResponses();
+  private final LocalDateTime startTime;
+  private final LocalDateTime endTime;
 
-  int redirectionResponses();
+  public Statistics(int informationalResponses,
+                    int successResponses,
+                    int redirectionResponses,
+                    int clientErrorResponses,
+                    int serverErrorResponses,
+                    LocalDateTime startTime,
+                    LocalDateTime endTime) {
+    this.informationalResponses = informationalResponses;
+    this.successResponses = successResponses;
+    this.redirectionResponses = redirectionResponses;
+    this.clientErrorResponses = clientErrorResponses;
+    this.serverErrorResponses = serverErrorResponses;
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.totalResponses =
+        informationalResponses + successResponses + redirectionResponses + clientErrorResponses + serverErrorResponses;
+    this.processingTime =
+        endTime.toInstant(ZoneOffset.UTC).toEpochMilli() - startTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+  }
 
-  int clientErrorResponses();
+  public int totalResponses() {
+    return this.totalResponses;
+  }
 
-  int serverErrorResponses();
+  public int informationalResponses() {
+    return this.informationalResponses;
+  }
 
-  long processingTime();
+  public int successResponses() {
+    return this.successResponses;
+  }
 
-  LocalDateTime startTime();
+  public int redirectionResponses() {
+    return this.redirectionResponses;
+  }
 
-  LocalDateTime endTime();
+  public int clientErrorResponses() {
+    return this.clientErrorResponses;
+  }
+
+  public int serverErrorResponses() {
+    return this.serverErrorResponses;
+  }
+
+  public long processingTime() {
+    return this.processingTime;
+  }
+
+  public LocalDateTime startTime() {
+    return this.startTime;
+  }
+
+  public LocalDateTime endTime() {
+    return this.endTime;
+  }
 
 }

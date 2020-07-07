@@ -28,12 +28,11 @@ import io.backpackcloud.fakeomatic.spi.EndpointResponse;
 import io.backpackcloud.fakeomatic.spi.Statistics;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GenerationStatistics implements Statistics {
+public class GeneratorProcessInfo {
 
   private LocalDateTime startTime;
   private LocalDateTime endTime;
@@ -41,7 +40,7 @@ public class GenerationStatistics implements Statistics {
 
   private EnumMap<EndpointResponse.Status, AtomicInteger> responseMap = new EnumMap<>(EndpointResponse.Status.class);
 
-  public GenerationStatistics() {
+  public GeneratorProcessInfo() {
     Arrays.stream(EndpointResponse.Status.values())
           .forEach(status -> responseMap.put(status, new AtomicInteger(0)));
   }
@@ -59,49 +58,16 @@ public class GenerationStatistics implements Statistics {
     responseMap.get(response.status()).incrementAndGet();
   }
 
-  @Override
-  public int totalResponses() {
-    return totalResponses.get();
-  }
-
-  @Override
-  public int informationalResponses() {
-    return responseMap.get(EndpointResponse.Status.INFORMATIONAL).get();
-  }
-
-  @Override
-  public int successResponses() {
-    return responseMap.get(EndpointResponse.Status.SUCCESS).get();
-  }
-
-  @Override
-  public int redirectionResponses() {
-    return responseMap.get(EndpointResponse.Status.REDIRECTION).get();
-  }
-
-  @Override
-  public int clientErrorResponses() {
-    return responseMap.get(EndpointResponse.Status.CLIENT_ERROR).get();
-  }
-
-  @Override
-  public int serverErrorResponses() {
-    return responseMap.get(EndpointResponse.Status.SERVER_ERROR).get();
-  }
-
-  @Override
-  public long processingTime() {
-    return endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC);
-  }
-
-  @Override
-  public LocalDateTime startTime() {
-    return startTime;
-  }
-
-  @Override
-  public LocalDateTime endTime() {
-    return endTime;
+  public Statistics toStatistics() {
+    return new Statistics(
+        responseMap.get(EndpointResponse.Status.INFORMATIONAL).get(),
+        responseMap.get(EndpointResponse.Status.SUCCESS).get(),
+        responseMap.get(EndpointResponse.Status.REDIRECTION).get(),
+        responseMap.get(EndpointResponse.Status.CLIENT_ERROR).get(),
+        responseMap.get(EndpointResponse.Status.SERVER_ERROR).get(),
+        startTime,
+        endTime
+    );
   }
 
 }

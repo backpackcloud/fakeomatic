@@ -62,33 +62,33 @@ public class Generator implements QuarkusApplication, Events {
     Endpoint endpoint = fakeOMatic.endpoint(config.endpoint())
                                   .orElseThrow(UnbelievableException::new);
 
-    GenerationStatistics statistics = new GenerationStatistics();
+    GeneratorProcessInfo info = new GeneratorProcessInfo();
 
     LOGGER.infof("Starting process... will generate %d payloads", total);
-    statistics.startNow();
+    info.startNow();
     for (int i = 1; i <= total; i++) {
       if (i % progressLog == 0) {
         LOGGER.infof("Sending payload %d of %d", i, total);
       }
       endpoint.call()
               .exceptionally(logError(i))
-              .thenAccept(triggerEvents(i).andThen(updateStatistics(statistics)));
+              .thenAccept(triggerEvents(i).andThen(updateStatistics(info)));
     }
 
     endpoint.waitForOngoingCalls();
-    statistics.endNow();
-    eventTrigger.trigger(FINISHED, statistics);
+    info.endNow();
+    eventTrigger.trigger(FINISHED, info.toStatistics());
     return 0;
   }
 
   private Function<Throwable, EndpointResponse> logError(int index) {
     return throwable -> {
-      LOGGER.errorv(throwable, "Error while sending payload (%d)", index);
+      LOGGER.errorv(throwable, "Error while sending payload ({0})", index) ;
       return null;
     };
   }
 
-  private Consumer<EndpointResponse> updateStatistics(GenerationStatistics statistics) {
+  private Consumer<EndpointResponse> updateStatistics(GeneratorProcessInfo statistics) {
     return response -> {
       if (response != null) {
         statistics.update(response);
