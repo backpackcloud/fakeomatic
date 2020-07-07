@@ -1,0 +1,14 @@
+samples:
+  uuid:
+    type: uuid
+
+  cached_uuid:
+    type: cache
+    source:
+      ref: uuid
+
+  ttl_cached_uuid:
+    type: cache
+    source:
+      ref: uuid
+    ttl: 100
