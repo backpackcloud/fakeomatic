@@ -111,6 +111,11 @@ public class VertxEndpoint implements Endpoint {
                                inProgress.decrementAndGet();
                                return new Response(httpResponse);
                              })
+                             .onFailure()
+                             .invoke(throwable -> {
+                               inProgress.decrementAndGet();
+                               LOGGER.error("Error while calling endpoint", throwable);
+                             })
                              .await().atMost(Duration.ofSeconds(30))
     );
   }
