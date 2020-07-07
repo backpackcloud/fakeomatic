@@ -64,11 +64,11 @@ public class ListSample<E> implements Sample<E> {
   }
 
   @JsonCreator
-  public static ListSample<String> create(@JacksonInject Random random,
-                                          @JacksonInject("root") Faker faker,
-                                          @JsonProperty("values") List<Object> values,
-                                          @JsonProperty("samples") List<String> samplesNames,
-                                          @JsonProperty("location") Configuration location) {
+  public static ListSample<?> create(@JacksonInject Random random,
+                                     @JacksonInject("root") Faker faker,
+                                     @JsonProperty("values") List<Object> values,
+                                     @JsonProperty("samples") List<String> samplesNames,
+                                     @JsonProperty("source") Configuration source) {
     List<Sample> samples;
     if (values != null) {
       samples = values.stream()
@@ -78,10 +78,10 @@ public class ListSample<E> implements Sample<E> {
       samples = samplesNames.stream()
                             .map(faker::sample)
                             .collect(Collectors.toList());
-    } else if (location != null) {
-      samples = location.readLines().stream()
-                        .map(Sample::of)
-                        .collect(Collectors.toList());
+    } else if (source != null) {
+      samples = source.readLines().stream()
+                      .map(Sample::of)
+                      .collect(Collectors.toList());
     } else {
       throw new UnbelievableException("No valid configuration supplied");
     }
