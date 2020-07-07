@@ -47,8 +47,8 @@ placeholders: # <3>
   "PLACEHOLDER_CHARACTER": sample_name
 ----
 <1> At least one <<endpoint,endpoint>>
-<2> Ideally as much <<_samples,samples>> as needed
-<3> Optional <<_placeholders,placeholders>> for creating expressions
+<2> Ideally as much <<samples,samples>> as needed
+<3> Optional <<placeholders,placeholders>> for creating expressions
 
 The configuration for each part is covered through this document.
 
@@ -221,7 +221,7 @@ endpoints:
       value: false
 ----
 
-Please see <<_configuration_properties>> for more information.
+Please see <<configuration_properties>> for more information.
 
 === Data Generation
 
@@ -229,6 +229,7 @@ The rules for generating data can contain `sample` and `placeholders`. Samples a
 randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
 expressions for generating data.
 
+[#samples]
 ==== Samples
 
 ===== Characters
@@ -631,6 +632,7 @@ samples:
     sample: new_person
 ----
 
+[#placeholders]
 ==== Placeholders
 
 The placeholders are a single character that can be associated with any of the configured sample. Bellow is an example
@@ -669,6 +671,7 @@ Randomly picks one of the given values using the internal `Random` reference.
 
 For more methods, check out the `Faker` interface.
 
+[#configuration_properties]
 === Configuration Properties
 
 The following properties can be configured as a JVM argument (prefix `-D`), environment variable (with upper cases
