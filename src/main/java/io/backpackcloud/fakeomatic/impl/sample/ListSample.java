@@ -60,7 +60,9 @@ public class ListSample<E> implements Sample<E> {
 
   @Override
   public E get() {
-    return samples.get((random.nextInt(samples.size()))).get();
+    int       index        = random.nextInt(samples.size());
+    Sample<E> randomSample = samples.get(index);
+    return randomSample.get();
   }
 
   @JsonCreator
