@@ -4,6 +4,14 @@ Fake-O-Matic is a utility tool for creating and sending fake payloads to endpoin
 On each iteration, Fake-O-Matic will generate a payload based on a provided template and a set of rules for generating
 fake data.
 
+Fake-O-Matic is published in https://quay.io/backpackcloud/fakeomatic[Quay.io], and the library is published in
+https://repo1.maven.org/maven2/io/backpackcloud/fakeomatic/[Central Maven Repo] under the following properties:
+
+groupId::
+io.backpackcloud
+artifactId::
+fakeomatic
+
 == How to Build
 
 Fake-O-Matic is build with https://quarkus.io[Quarkus] and supports native compilation. THe build is a good and old
@@ -17,27 +25,35 @@ It's also possible to build Fake-O-Matic using https://github.com/openshift/sour
 s2i build . quay.io/quarkus/ubi-quarkus-native-s2i:19.3.2-java11 backpackcloud/fakeomatic
 ----
 
-Fake-O-Matic is also published at https://quay.io/backpackcloud/fakeomatic[Quay.io] and the library is pushed to the
-https://repo1.maven.org/maven2/io/backpackcloud/fakeomatic/[Central Maven Repo] under the following properties:
-
-groupId::
-io.backpackcloud
-artifactId::
-fakeomatic
-
 == How to Configure
 
-Fake-O-Matic expects you to define both data and template to generate the payloads. An optional seed can also be given
-for reproducibility.
+Fake-O-Matic is configured through a set of `yaml` files that forms a hierarchy. If some configuration is not found on
+one file, then the next file is used. That also means that you can override configurations by leaving the default values
+as the last in the hierarchy.
 
-=== Data Generation
+A Fake-O-Matic configuration has:
 
-The rules for generating data can contain `sample` and `placeholders`. Samples are a set of data that Fake-O-Matic can
-randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
-expressions for generating data.
+[source,yaml]
+----
+endpoints: # <1>
+  endpoint_name:
+    # configuration ...
+
+samples: # <2>
+  sample_name:
+    # configuration
+
+placeholders: # <3>
+  "PLACEHOLDER_CHARACTER": sample_name
+----
+<1> At least one <<endpoint,endpoint>>
+<2> Ideally as much <<_samples,samples>> as needed
+<3> Optional <<_placeholders,placeholders>> for creating expressions
+
+The configuration for each part is covered through this document.
 
 [#configuration]
-==== Configuration Values
+=== Configuration Values
 
 Some configuration values can be externalized by different ways additionally to the normal String value:
 
@@ -87,24 +103,24 @@ param:
   url: http://something.example.com/some-param
 ----
 
-default::
-Supplies a default value.
+value::
+Supplies a raw value.
 
 [source,yaml]
 ----
 param:
-  env: PARAM
-  default: bar # uses "bar" as the value if the PARAM environment variable is not present
+  value: bar # uses "bar" as the value if the PARAM environment variable is not present
 ----
 
-It is also possible to combine different approaches for getting the value by passing all the desired options.
+It is also possible to combine different approaches for getting the value by passing all the desired options. The first
+one that holds a value will be used (see the priority bellow):
 
 [source,yaml]
 ----
 param:
   env: PARAM
   property: my.parameter
-  default: bar
+  value: bar
 ----
 
 The priority for getting the value is:
@@ -114,7 +130,104 @@ The priority for getting the value is:
 . `file`
 . `resource`
 . `url`
-. `defaultValue`
+. `value`
+
+It's also possible to supply a raw value without specifying the type `value` if it's the only value:
+
+[source,yaml]
+----
+param: some value # implies a configuration of type "value"
+----
+
+=== Endpoint Connections
+
+An endpoint is primarily used to send generated payloads but can also be used as a source of data for the samples.
+
+[#endpoint]
+==== Configuration
+
+url::
+A <<configuration,configuration>> value defining the API endpoint.
+
+method::
+Which HTTP method to use (defaults to `GET`).
+
+payload::
+An optional payload object to use for calling the API. Useful for `POST` requests.
+
+template:::
+A <<configuration,configuration>> defining which template to use
+
+content-type:::
+The content type of the template (defaults to `application/json`).
+
+insecure::
+Defines if the certificates should be trusted without checking (defaults to `false`).
+
+concurrency::
+A <<configuration,configurable>> `int` value that defines the max ongoing connections to this endpoint.
+(Defaults to `10`.)
+
+buffer::
+A <<configuration,configurable>> `int` value that defines how many requests can be enqueued when the max ongoing
+requests number is reached. (Defaults to `10`.)
+
+This is useful in cases where generating the payloads can take more time than it takes to send them (like depending on
+several external APIs).
+
+headers::
+A `string,<<configuration,configurable>>` map containing the headers to use.
+
+params::
+A `string,<<configuration,configurable>>` map containing all the values that forms the url (example: `/api/{uuid}` will
+be replaced by the value from the path_var `uuid`).
+
+==== Built In
+
+Fake-O-Matic defines a `default` endpoint which can be customized via <<configuration,configuration>> values:
+
+[source,yaml]
+----
+endpoints:
+  default:
+    url:
+      env: ENDPOINT_URL
+      property: endpoint.url
+      value: http://localhost:8080
+    payload:
+      content-type:
+        env: ENDPOINT_CONTENT_TYPE
+        property: endpoint.content_type
+        value: application/json
+      template:
+        env: ENDPOINT_TEMPLATE
+        property: endpoint.template
+        resource: /META-INF/resources/config/payload.json
+    method:
+      env: ENDPOINT_METHOD
+      property: endpoint.method
+      value: POST
+    concurrency:
+      env: ENDPOINT_CONCURRENCY
+      property: endpoint.concurrency
+      value: 10
+    buffer:
+      env: ENDPOINT_BUFFER
+      property: endpoint.buffer
+      value: 10
+    insecure:
+      env: ENDPOINT_INSECURE
+      property: endpoint.insecure
+      value: false
+----
+
+Please see <<_configuration_properties>> for more information.
+
+=== Data Generation
+
+The rules for generating data can contain `sample` and `placeholders`. Samples are a set of data that Fake-O-Matic can
+randomly pick and placeholders are characters that can be associated with the samples for to allow the use of
+expressions for generating data.
 
 ==== Samples
 
@@ -159,10 +272,10 @@ List of raw values to use.
 samples::
 List of Samples to use.
 
-location::
+source::
 A <<configuration,configuration>> pointing to where to locate the list of values.
 
-NOTE: You need to supply only one way of loading the values (`values`, `sample` or `location`).
+NOTE: You need to supply only one way of loading the values (`values`, `sample` or `source`).
 
 ====== Example
 
@@ -188,7 +301,7 @@ samples:
       - woman_name
   story:
     type: list
-    location:
+    source:
       env: STORIES
       property: stories
       default: stories.txt
@@ -198,42 +311,19 @@ samples:
 
 This sample actually calls a given API to get data to use every time it's asked for a data.
 
+WARNING: Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
+dependent API.
+
 ====== Configuration
 
 type::
 `api`
 
-url::
-A <<configuration,configuration>> value defining the API endpoint.
+endpoint::
+An <<endpoint,endpoint>> configuration for the api to use.
 
-return::
-An optional https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the API response represents the
-data (uses the whole response if not supplied). The return is a `JsonNode`.
-
-method::
-Which HTTP method to use (defaults to `GET`).
-
-payload::
-An optional payload object to use for calling the API. Useful for `POST` requests.
-
-template:::
-A <<configuration,configuration>> defining which template to use
-
-type:::
-The content type of the template (defaults to `application/json`).
-
-insecure::
-Defines if the certificates should be trusted without checking (defaults to `false`).
-
-options::
-Any additional option to pass to the webclient (see `io.vertx.ext.web.client.WebClientOptions` docs).
-
-path_vars::
-A `string,string` map containing all the samples that forms the path on the uri (example: `/api/{uuid}` will be
-replaced by the value from the sample `uuid`).
-
-WARN: Due to the nature of this sample, it's not possible to reproduce the same payloads without relying on the
-dependent API.
+NOTE: Although this sample uses an `Endpoint` object, which supports concurrency and buffers, the sample is synchronous
+      so configuring those values will not have any effect on this sample.
 
 ====== Example
 
@@ -242,8 +332,43 @@ dependent API.
 samples:
   chuck_norris:
     type: api
-    url: https://api.chucknorris.io/jokes/random
-    return: /value
+    endpoint:
+      url: https://api.chucknorris.io/jokes/random
+  example:
+    type: api
+    endpoint:
+      url: https://api.example.com/{version}/some/path
+      headers:
+        token:
+          env: EXAMPLE_API_TOKEN
+          property: example.api.token
+      params:
+        version:
+          env: EXAMPLE_API_VERSION
+          property: example.api.version
+          value: v1
+----
+
+===== JSON Pointer
+
+====== Configuration
+
+path::
+A https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the JSON to use.
+
+====== Example
+
+[source,yaml]
+----
+samples:
+  chuck_norris:
+    type: json
+    source:
+      sample:
+        type: api
+        endpoint:
+          url: https://api.chucknorris.io/jokes/random
+    path: /value
 ----
 
 ===== Universally Unique Identifier
@@ -562,11 +687,14 @@ Marks the endpoint as insecure or not. An insecure endpoint will not have its ce
 generator.total|GENERATOR_TOTAL|--total::
 The number of generated payloads. Defaults to `10`.
 
-generator.configs|GENERATOR_CONFIGS|--configs::
+generator.config|GENERATOR_CONFIG|--config::
 Which configuration files should be used. Fake-O-Matic allows you to define parent configurations, so you can reuse them
-in the way it suits you better. The configurations should be comma separated. The built-in configuration can be
-included with a simple `fakeomatic` name. Fake-O-Matic will always follow the configuration order, so the first one
-takes precedence. The built-in configuration can be found at `src/main/resources/META-INF/config/fakeomatic.yaml`.
+in the way it suits you better. The configurations should be comma separated from the most specific to the least
+specific (so the last configuration file becomes the parent one). The built-in configuration can be included with a
+simple `fakeomatic` name. The built-in configuration can be found at
+`src/main/resources/META-INF/config/fakeomatic.yaml`.
+
+NOTE: The `--config` param can be used once for each file to include as a configuration value.
 
 generator.seed|GENERATOR_SEED|--seed::
 The seed to use for the random functions. Fake-O-Matic will generate one if empty.
