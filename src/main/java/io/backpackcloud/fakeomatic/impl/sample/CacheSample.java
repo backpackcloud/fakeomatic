@@ -26,6 +26,7 @@ package io.backpackcloud.fakeomatic.impl.sample;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
 
@@ -60,8 +61,11 @@ public class CacheSample implements Sample {
 
   @JsonCreator
   public static CacheSample create(@JsonProperty("source") SampleConfiguration sampleConfiguration,
-                                   @JsonProperty("ttl") Integer ttl) {
-    Integer timeToLive = Optional.ofNullable(ttl).orElse(Integer.MAX_VALUE);
+                                   @JsonProperty("ttl") Configuration ttl) {
+    Integer timeToLive = Optional.ofNullable(ttl)
+                                 .filter(Configuration::isSet)
+                                 .map(Configuration::getInt)
+                                 .orElse(Integer.MAX_VALUE);
     return new CacheSample(sampleConfiguration.get(), timeToLive);
   }
 
