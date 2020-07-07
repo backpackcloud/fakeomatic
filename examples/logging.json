@@ -1,4 +1,4 @@
 {
   "level": "{oneOf('INFO', 'WARN', 'ERROR')}",
-  "message": "{some('cause')}"
+  "message": "{some('business_bullshit')}"
 }
