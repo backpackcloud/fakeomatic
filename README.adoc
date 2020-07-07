@@ -719,7 +719,7 @@ The following examples can be used with the built-in configuration.
 ----
 {
   "id": "{some('uuid')}",
-  "cause": "{some('cause')}",
+  "cause": "{some('error_cause')}",
   "device": "{expression('%%-#####')}"
 }
 ----
@@ -728,6 +728,6 @@ The following examples can be used with the built-in configuration.
 ----
 {
   "level": "{oneOf('INFO', 'WARN', 'ERROR')}",
-  "message": "{some('cause')}"
+  "message": "{some('business_bullshit')}"
 }
 ----
