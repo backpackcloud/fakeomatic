@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
 import io.backpackcloud.fakeomatic.spi.Config;
-import io.backpackcloud.fakeomatic.spi.Faker;
+import io.backpackcloud.fakeomatic.spi.FakeOMatic;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
@@ -73,7 +73,11 @@ public abstract class BaseTest {
     times(times, () -> consumer.accept(sample.get()));
   }
 
-  protected Faker createFakeData(String... names) {
+  protected FakeOMatic createBuiltin() {
+    return FakeOMatic.load(FakeOMatic.defaultConfigLocation());
+  }
+
+  protected FakeOMatic createFakeOMatic(String... names) {
     String path = getClass().getPackageName().replaceAll("\\.", "/");
     List<String> configs = Arrays.stream(names)
                                  .map(name -> "src/test/resources/" + path + "/" + name)
@@ -83,7 +87,7 @@ public abstract class BaseTest {
 
     FakeOMaticProducer producer = new FakeOMaticProducer(
         config,
-        new Vertx(mock(io.vertx.core.Vertx.class)),
+        Vertx.vertx(),
         Engine.builder().addDefaults().build()
     );
     return producer.produce();
