@@ -90,24 +90,27 @@ samples:
     path: /value
   tronald_dump:
     type: json
-    sample:
-      type: api
-      endpoint:
-        url: https://api.tronalddump.io/random/quote
+    source:
+      sample:
+        type: api
+        endpoint:
+          url: https://api.tronalddump.io/random/quote
     path: /value
   business_bullshit:
     type: json
-    sample:
-      type: api
-      endpoint:
-        url: https://corporatebs-generator.sameerkumar.website
+    source:
+      sample:
+        type: api
+        endpoint:
+          url: https://corporatebs-generator.sameerkumar.website
     path: /phrase
   commit:
     type: json
-    sample:
-      type: api
-      endpoint:
-        url: http://whatthecommit.com/index.json
+    source:
+      sample:
+        type: api
+        endpoint:
+          url: http://whatthecommit.com/index.json
     path: /commit_message
   cause:
     type: list
