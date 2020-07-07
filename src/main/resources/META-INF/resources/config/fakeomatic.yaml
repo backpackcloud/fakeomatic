@@ -56,15 +56,15 @@ endpoints:
 
 placeholders:
   "#": digit
-  "%": letter
+  "%": downcase_letter
+  "*": lowercase_char
   "^": uppercase_letter
-  "*": char
-  "x": hex_digit
+  "$": uppercase_char
 
 samples:
   uuid:
     type: uuid
-  letter:
+  downcase_letter:
     type: chars
     value: "abcdefghijklmnopqrstuvwxyz"
   uppercase_letter:
@@ -73,20 +73,23 @@ samples:
   digit:
     type: chars
     value: "0123456789"
-  char:
-    type: composite
+  lowercase_char:
+    type: list
     samples:
-      - letter
+      - downcase_letter
       - digit
-  hex_digit:
-    type: chars
-    value: "0123456789abcdef"
+  uppercase_char:
+    type: list
+    samples:
+      - uppercase_letter
+      - digit
   chuck_norris:
     type: json
-    sample:
-      type: api
-      endpoint:
-        url: https://api.chucknorris.io/jokes/random
+    source:
+      sample:
+        type: api
+        endpoint:
+          url: https://api.chucknorris.io/jokes/random
     path: /value
   tronald_dump:
     type: json
@@ -95,6 +98,8 @@ samples:
         type: api
         endpoint:
           url: https://api.tronalddump.io/random/quote
+          headers:
+            Accept: application/json
     path: /value
   business_bullshit:
     type: json
@@ -104,7 +109,7 @@ samples:
         endpoint:
           url: https://corporatebs-generator.sameerkumar.website
     path: /phrase
-  commit:
+  commit_message:
     type: json
     source:
       sample:
@@ -112,11 +117,11 @@ samples:
         endpoint:
           url: http://whatthecommit.com/index.json
     path: /commit_message
-  cause:
+  error_cause:
     type: list
-    location:
+    source:
       resource: /META-INF/resources/config/causes.txt
   table_flip:
     type: list
-    location:
+    source:
       resource: /META-INF/resources/config/table_flips.txt
