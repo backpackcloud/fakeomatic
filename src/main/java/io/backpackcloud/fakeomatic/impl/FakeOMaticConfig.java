@@ -41,7 +41,7 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "generator.total", defaultValue = "10")
   int total;
 
-  @ConfigProperty(name = "generator.configs", defaultValue = DEFAULT_CONFIG)
+  @ConfigProperty(name = "generator.config", defaultValue = DEFAULT_CONFIG)
   String configs;
 
   @ConfigProperty(name = "generator.seed", defaultValue = "")
