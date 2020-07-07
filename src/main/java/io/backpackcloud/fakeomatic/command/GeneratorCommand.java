@@ -80,7 +80,7 @@ public class GeneratorCommand implements Callable<Integer> {
       names = {"-f", "--config"},
       description = "A configuration to apply (use fakeomatic to apply the built-in one)"
   )
-  List<String> configs;
+  List<String> config;
 
   @CommandLine.Option(
       names = {"-s", "--seed"},
@@ -123,8 +123,8 @@ public class GeneratorCommand implements Callable<Integer> {
 
     setPropertyIfNotNull("fakeomatic.events.log.level", eventsLogLevel);
 
-    if (configs != null) {
-      setPropertyIfNotNull("generator.configs", String.join(",", configs));
+    if (config != null) {
+      setPropertyIfNotNull("generator.config", String.join(",", config));
     }
 
     try {
