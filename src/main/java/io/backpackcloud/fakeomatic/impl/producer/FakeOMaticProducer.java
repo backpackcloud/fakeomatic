@@ -47,6 +47,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -91,6 +92,8 @@ public class FakeOMaticProducer {
           }
         })
         .collect(Collectors.toList());
+    // Make the last configuration the parent one
+    Collections.reverse(configs);
     return newInstance(configs, templateEngine, std -> {
       std.addValue(Random.class, this.config.random());
       std.addValue(Vertx.class, this.vertx);
