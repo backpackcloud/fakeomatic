@@ -12,6 +12,23 @@ io.backpackcloud
 artifactId::
 fakeomatic
 
+== Quick Example
+
+Navigate to https://requestbin.com/ and create a request bin (uncheck the private option and choose the old bin). Copy
+the Endpoint url.
+
+Now build a JVM version of Fake-O-Matic with `mvn package` and run it (yeah, I know... downloading the internet is not
+quick):
+
+[source,bash]
+----
+$ java -jar target/fakeomatic-$VERSION-runner.jar \
+      --endpoint-url https://YOUR_REQUEST_BIN_ID.x.pipedream.net/ \
+      --template examples/example1.json
+----
+
+NOTE: You may also download the binaries from the releases page.
+
 == How to Build
 
 Fake-O-Matic is build with https://quarkus.io[Quarkus] and supports native compilation. THe build is a good and old
