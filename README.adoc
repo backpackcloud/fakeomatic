@@ -165,21 +165,21 @@ insecure::
 Defines if the certificates should be trusted without checking (defaults to `false`).
 
 concurrency::
-A <<configuration,configurable>> `int` value that defines the max ongoing connections to this endpoint.
+A <<configuration,configuration>> `int` value that defines the max ongoing connections to this endpoint.
 (Defaults to `10`.)
 
 buffer::
-A <<configuration,configurable>> `int` value that defines how many requests can be enqueued when the max ongoing
+A <<configuration,configuration>> `int` value that defines how many requests can be enqueued when the max ongoing
 requests number is reached. (Defaults to `10`.)
 
 This is useful in cases where generating the payloads can take more time than it takes to send them (like depending on
 several external APIs).
 
 headers::
-A `string,<<configuration,configurable>>` map containing the headers to use.
+A `string,<<configuration,configuration>>` map containing the headers to use.
 
 params::
-A `string,<<configuration,configurable>>` map containing all the values that forms the url (example: `/api/{uuid}` will
+A `string,<<configuration,configuration>>` map containing all the values that forms the url (example: `/api/{uuid}` will
 be replaced by the value from the path_var `uuid`).
 
 ==== Built In
@@ -612,7 +612,7 @@ sample::
 The sample that should be cached.
 
 ttl::
-How many hits the value should last until the cache gets another one.
+How many hits the value should last until the cache gets another one. This is a <<configuration,configuration>> value.
 
 ====== Example
 
@@ -674,15 +674,29 @@ For more methods, check out the `Faker` interface.
 The following properties can be configured as a JVM argument (prefix `-D`), environment variable (with upper cases
 and underscores), or a command line parameter:
 
-endpoint.url|ENDPOINT_URL|--endpoint::
-The endpoint that will receive the generated payloads. Fake-O-Matic will use the POST verb for calling it. Defaults to
-`http://localhost:8080`.
+endpoint.name|ENDPOINT_NAME|--endpoint-name::
+Which endpoint in the configuration to use. Defaults to `default`.
+
+endpoint.url|ENDPOINT_URL|--endpoint-url::
+The endpoint url to use for the default endpoint. Defaults to `http://localhost:8080`.
+
+endpoint.method|ENDPOINT_METHOD|--method::
+Which HTTP method to use for calling the endpoint. Defaults to `POST`.
 
 endpoint.concurrency|ENDPOINT_CONCURRENCY|--concurrency::
-The maximum number of concurrent requests to the endpoint. Defaults to `5`.
+The maximum number of concurrent requests to the endpoint. Defaults to `10`.
+
+endpoint.buffer|ENDPOINT_BUFFER|--buffer::
+How many payloads should be buffered while we have ongoing requests. Defaults to `10`.
 
 endpoint.insecure|ENDPOINT_INSECURE|--insecure::
 Marks the endpoint as insecure or not. An insecure endpoint will not have its certificate check. Defaults to `false`.
+
+endpoint.template|ENDPOINT_TEMPLATE|--template::
+Where to locate the template for generating the payloads. Defaults to `./payload.json`.
+
+endpoint.content_type|ENDPOINT_CONTENT_TYPE|--content-type::
+Which `Content-Type` to pass to the endpoint. Defaults to `application/json`.
 
 generator.total|GENERATOR_TOTAL|--total::
 The number of generated payloads. Defaults to `10`.
@@ -694,22 +708,16 @@ specific (so the last configuration file becomes the parent one). The built-in c
 simple `fakeomatic` name. The built-in configuration can be found at
 `src/main/resources/META-INF/config/fakeomatic.yaml`.
 
-NOTE: The `--config` param can be used once for each file to include as a configuration value.
+NOTE: The `--config` param can be also used once for each file to include.
 
 generator.seed|GENERATOR_SEED|--seed::
 The seed to use for the random functions. Fake-O-Matic will generate one if empty.
 
-generator.buffer|GENERATOR_BUFFER|--buffer::
-How many payloads should be buffered while we have ongoing requests. Defaults to `10`.
-
-template.path|TEMPLATE_PATH|--template::
-Where to locate the template for generating the payloads. Defaults to `./payload.json`.
-
-template.type|TEMPLATE_TYPE|--template-type::
-Which `Content-Type` to pass to the endpoint. Defaults to `application/json`.
-
-events.log.level|EVENTS_LOG_LEVEL|--events-log-level::
+fakeomatic.events.log.level|FAKEOMATIC_EVENTS_LOG_LEVEL|--events-log-level::
 Sets the log level for the events. To see all the payloads and responses, set the log level to DEBUG.
+
+NOTE: You can still make use of the endpoint properties if you use the same approach as the built-in one for defining
+      an endpoint.
 
 == Example
 
