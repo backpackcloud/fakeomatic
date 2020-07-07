@@ -24,15 +24,14 @@
 
 package io.backpackcloud.fakeomatic.impl.sample;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -60,11 +59,9 @@ public class JsonValueSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static JsonValueSample create(@JacksonInject("root") Faker faker,
-                                       @JsonProperty("path") String jsonPointer,
-                                       @JsonProperty("ref") String sampleName,
-                                       @JsonProperty("sample") Sample sample) {
-    return new JsonValueSample(new ObjectMapper(), sampleName != null ? faker.sample(sampleName) : sample, jsonPointer);
+  public static JsonValueSample create(@JsonProperty("path") String jsonPointer,
+                                       @JsonProperty("source") SampleConfiguration configuration) {
+    return new JsonValueSample(new ObjectMapper(), configuration.get(), jsonPointer);
   }
 
 }
