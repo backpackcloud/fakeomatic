@@ -34,6 +34,8 @@ import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.Optional;
+
 @RegisterForReflection
 public class JsonValueSample implements Sample<String> {
 
@@ -60,8 +62,19 @@ public class JsonValueSample implements Sample<String> {
 
   @JsonCreator
   public static JsonValueSample create(@JsonProperty("path") String jsonPointer,
-                                       @JsonProperty("source") SampleConfiguration configuration) {
-    return new JsonValueSample(new ObjectMapper(), configuration.get(), jsonPointer);
+                                       @JsonProperty("source") SampleConfiguration source) {
+    return new JsonValueSample(
+        new ObjectMapper(),
+
+        Optional.ofNullable(source)
+                .map(SampleConfiguration::sample)
+                .orElseThrow(UnbelievableException
+                    .because("No source was given.")),
+
+        Optional.ofNullable(jsonPointer)
+                .orElseThrow(UnbelievableException
+                    .because("No pointer was given."))
+    );
   }
 
 }

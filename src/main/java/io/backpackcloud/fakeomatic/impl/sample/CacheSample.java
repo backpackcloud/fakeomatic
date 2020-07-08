@@ -26,6 +26,7 @@ package io.backpackcloud.fakeomatic.impl.sample;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
@@ -60,13 +61,19 @@ public class CacheSample implements Sample {
   }
 
   @JsonCreator
-  public static CacheSample create(@JsonProperty("source") SampleConfiguration sampleConfiguration,
+  public static CacheSample create(@JsonProperty("source") SampleConfiguration source,
                                    @JsonProperty("ttl") Configuration ttl) {
-    Integer timeToLive = Optional.ofNullable(ttl)
-                                 .filter(Configuration::isSet)
-                                 .map(Configuration::getInt)
-                                 .orElse(Integer.MAX_VALUE);
-    return new CacheSample(sampleConfiguration.get(), timeToLive);
+    return new CacheSample(
+        Optional.ofNullable(source)
+                .map(SampleConfiguration::sample)
+                .orElseThrow(UnbelievableException
+                    .because("No source was given.")),
+
+        Optional.ofNullable(ttl)
+                .filter(Configuration::isSet)
+                .map(Configuration::getInt)
+                .orElse(Integer.MAX_VALUE)
+    );
   }
 
 }
