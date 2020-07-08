@@ -26,7 +26,7 @@ package io.backpackcloud.fakeomatic.spi;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.impl.configuration.ConfigurationDeserializer;
+import io.backpackcloud.fakeomatic.impl.jackson.ConfigurationDeserializer;
 import io.backpackcloud.fakeomatic.impl.configuration.NotSuppliedConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

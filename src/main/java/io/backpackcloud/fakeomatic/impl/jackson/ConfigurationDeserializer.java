@@ -22,12 +22,18 @@
  * SOFTWARE.
  */
 
-package io.backpackcloud.fakeomatic.impl.configuration;
+package io.backpackcloud.fakeomatic.impl.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.backpackcloud.fakeomatic.impl.configuration.EnvironmentVariableConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.FileContentConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.RawValueConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.ResourceConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.SystemPropertyConfiguration;
+import io.backpackcloud.fakeomatic.impl.configuration.UrlConfiguration;
 import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

@@ -24,6 +24,8 @@
 
 package io.backpackcloud.fakeomatic;
 
+import java.util.function.Supplier;
+
 public class UnbelievableException extends RuntimeException {
 
   public UnbelievableException() {
@@ -43,6 +45,10 @@ public class UnbelievableException extends RuntimeException {
 
   public UnbelievableException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
+  }
+
+  public static Supplier<UnbelievableException> because(String reason) {
+    return () -> new UnbelievableException(reason);
   }
 
 }

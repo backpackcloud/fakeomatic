@@ -27,14 +27,13 @@ package io.backpackcloud.fakeomatic.spi;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.function.Supplier;
-
 @RegisterForReflection
-public interface SampleConfiguration extends Supplier<Sample<?>> {
+public interface SampleConfiguration {
 
-  Sample<?> get();
+  Sample<?> sample();
 
   @JsonCreator
   static SampleConfiguration create(@JacksonInject("root") Faker faker,
@@ -45,7 +44,7 @@ public interface SampleConfiguration extends Supplier<Sample<?>> {
     } else if (sample != null) {
       return () -> sample;
     }
-    return null;
+    throw new UnbelievableException("Sample not given");
   }
 
 }
