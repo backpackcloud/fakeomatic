@@ -27,9 +27,8 @@ package io.backpackcloud.fakeomatic.impl.sample;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.fakeomatic.spi.SampleConfiguration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.ArrayList;
@@ -100,20 +99,10 @@ public class WeightedSample<E> implements Sample<E> {
     }
 
     @JsonCreator
-    public static WeightedValueDefinition create(@JacksonInject("root") Faker faker,
-                                                 @JsonProperty("weight") int weight,
+    public static WeightedValueDefinition create(@JsonProperty("weight") int weight,
                                                  @JsonProperty("value") Object value,
-                                                 @JsonProperty("sample") String sampleName) {
-      Sample sample;
-      if (value != null) {
-        sample = () -> value;
-      } else if (sampleName != null) {
-        sample = faker.sample(sampleName);
-      } else {
-        throw new UnbelievableException("Unable to create instance, a value or sample must be given.");
-      }
-
-      return new WeightedValueDefinition(weight, sample);
+                                                 @JsonProperty("source") SampleConfiguration source) {
+      return new WeightedValueDefinition(weight, value != null ? Sample.of(value) : source.sample());
     }
 
   }
