@@ -156,6 +156,15 @@ It's also possible to supply a raw value without specifying the type `value` if 
 param: some value # implies a configuration of type "value"
 ----
 
+[#sample_as_configuration]
+=== Sample as Configuration
+
+Some samples take other samples as configuration. In most cases, there are two ways of passing a sample as
+configuration:
+
+. Referring through a `ref` property.
+. Directly through a `sample` property.
+
 === Endpoint Connections
 
 An endpoint is primarily used to send generated payloads but can also be used as a source of data for the samples.
@@ -369,10 +378,18 @@ samples:
 
 ===== JSON Pointer
 
+This sample extracts a value from a JSON object. Useful when used in combination with the API Sample.
+
 ====== Configuration
 
+type::
+`json`
+
 path::
-A https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which part of the JSON to use.
+A https://tools.ietf.org/html/rfc6901[JSON Pointer] to specify which value to take from the JSON object.
+
+source::
+Which <<sample_as_configuration,sample>> sample should be used to obtain the JSON object.
 
 ====== Example
 
@@ -453,8 +470,8 @@ The weight of the value.
 value:::
 The value to use.
 
-sample:::
-The sample to use as a value.
+source:::
+Which <<sample_as_configuration,sample>> sample should be used instead of the `value`.
 
 ====== Example
 
@@ -626,8 +643,8 @@ dependency.
 type::
 `cache`
 
-sample::
-The sample that should be cached.
+source::
+Which <<sample_as_configuration,sample>> sample should be used to obtain the value to cache.
 
 ttl::
 How many hits the value should last until the cache gets another one. This is a <<configuration,configuration>> value.
@@ -646,7 +663,8 @@ samples:
     return: /id
   person:
     type: cache
-    sample: new_person
+    source:
+      ref: new_person
 ----
 
 [#placeholders]
