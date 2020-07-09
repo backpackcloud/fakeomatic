@@ -4,4 +4,4 @@ COPY target/*-runner /work/application
 COPY target/cacerts /work/cacerts
 RUN chmod 775 /work
 EXPOSE 8080
-CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Djavax.net.ssl.trustStore=/work/cacerts"]
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080", "-Djavax.net.ssl.trustStore=/work/cacerts"]
