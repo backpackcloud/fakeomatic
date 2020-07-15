@@ -24,7 +24,7 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.zipper.UnbelievableException;
 
 public interface EndpointResponse {
 

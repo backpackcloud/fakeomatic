@@ -24,11 +24,11 @@
 
 package io.backpackcloud.fakeomatic.impl;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
-import io.backpackcloud.fakeomatic.spi.Configuration;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.EndpointResponse;
 import io.backpackcloud.fakeomatic.spi.Payload;
+import io.backpackcloud.zipper.Configuration;
+import io.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpMethod;

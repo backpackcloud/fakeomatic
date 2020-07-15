@@ -27,8 +27,9 @@ package io.backpackcloud.fakeomatic.spi;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.core.spi.Faker;
 import io.backpackcloud.fakeomatic.impl.QutePayloadTemplate;
-import io.quarkus.qute.Engine;
+import io.backpackcloud.zipper.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -39,11 +40,10 @@ public interface Payload {
   String content();
 
   @JsonCreator
-  static Payload newInstance(@JacksonInject Engine engine,
-                             @JacksonInject("root") Faker faker,
+  static Payload newInstance(@JacksonInject Faker faker,
                              @JsonProperty("template") Configuration template,
                              @JsonProperty("content-type") Configuration contentType) {
-    return QutePayloadTemplate.newInstance(engine, faker, template, contentType);
+    return QutePayloadTemplate.newInstance(faker, template, contentType);
   }
 
 }

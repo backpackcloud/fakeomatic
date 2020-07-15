@@ -24,77 +24,33 @@
 
 package io.backpackcloud.fakeomatic.impl;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.core.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.FakeOMatic;
-import io.backpackcloud.fakeomatic.spi.Faker;
-import io.backpackcloud.fakeomatic.spi.Sample;
-import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 
 @RegisterForReflection
-@TemplateData(target = Faker.class)
 public class FakeOMaticImpl implements FakeOMatic {
 
-  private final FakeOMatic parent;
-
-  private final Random random;
-
-  private final Map<String, Sample>   samples;
-  private final Map<String, String>   placeholders;
   private final Map<String, Endpoint> endpoints;
+  private final Faker faker;
 
-  @JsonCreator
-  public FakeOMaticImpl(@JacksonInject Random random,
-                        @JacksonInject("parent") FakeOMatic parent,
-                        @JsonProperty("samples") Map<String, Sample> samples,
-                        @JsonProperty("placeholders") Map<String, String> placeholders,
-                        @JsonProperty("endpoints") Map<String, Endpoint> endpoints) {
-    this.random = random;
-    this.parent = parent;
-    this.samples = Optional.ofNullable(samples).orElseGet(Collections::emptyMap);
-    this.placeholders = Optional.ofNullable(placeholders).orElseGet(Collections::emptyMap);
-    this.endpoints = Optional.ofNullable(endpoints).orElseGet(Collections::emptyMap);
+  public FakeOMaticImpl(Map<String, Endpoint> endpoints, Faker faker) {
+    this.endpoints = endpoints;
+    this.faker = faker;
   }
 
   @Override
   public Optional<Endpoint> endpoint(String name) {
-    return Optional.ofNullable(endpoints.get(name)).or(() -> parent.endpoint(name));
+    return Optional.ofNullable(endpoints.get(name));
   }
 
   @Override
-  public List<Sample> samples() {
-    ArrayList<Sample> samples = new ArrayList<>(this.samples.values());
-    samples.addAll(parent.samples());
-    return samples;
-  }
-
-  @Override
-  public Random random() {
-    return random;
-  }
-
-  @Override
-  public Sample sample(String sampleName) {
-    return Optional.ofNullable(samples.get(sampleName))
-                   .orElseGet(() -> parent.sample(sampleName));
-  }
-
-  @Override
-  public String some(char placeholder) {
-    return Optional.ofNullable(this.placeholders.get(String.valueOf(placeholder)))
-                   .map(this::some)
-                   .map(Object::toString)
-                   .orElseGet(() -> this.parent.some(placeholder));
+  public Faker faker() {
+    return faker;
   }
 
 }

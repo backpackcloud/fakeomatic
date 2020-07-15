@@ -27,7 +27,7 @@ endpoints:
     url:
       env: ENDPOINT_URL
       property: endpoint.url
-      value: http://localhost:8080
+      value: http://localhost:36664/dump
     payload:
       content-type:
         env: ENDPOINT_CONTENT_TYPE

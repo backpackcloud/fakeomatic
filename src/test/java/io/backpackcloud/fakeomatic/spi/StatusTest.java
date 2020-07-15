@@ -24,12 +24,11 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import io.backpackcloud.fakeomatic.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StatusTest extends BaseTest {
+public class StatusTest {
 
   @Test
   public void testInformationStatus() {

@@ -24,7 +24,6 @@
 
 package io.backpackcloud.fakeomatic.process;
 
-import io.backpackcloud.fakeomatic.UnbelievableException;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.EndpointResponse;
@@ -32,6 +31,7 @@ import io.backpackcloud.fakeomatic.spi.EventTrigger;
 import io.backpackcloud.fakeomatic.spi.Events;
 import io.backpackcloud.fakeomatic.spi.FakeOMatic;
 import io.backpackcloud.fakeomatic.spi.ResponseReceivedEvent;
+import io.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.runtime.QuarkusApplication;
 import org.jboss.logging.Logger;
 

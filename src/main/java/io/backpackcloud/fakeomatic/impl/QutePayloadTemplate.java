@@ -24,9 +24,9 @@
 
 package io.backpackcloud.fakeomatic.impl;
 
-import io.backpackcloud.fakeomatic.spi.Configuration;
-import io.backpackcloud.fakeomatic.spi.Faker;
+import io.backpackcloud.fakeomatic.core.spi.Faker;
 import io.backpackcloud.fakeomatic.spi.Payload;
+import io.backpackcloud.zipper.Configuration;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -54,9 +54,14 @@ public class QutePayloadTemplate implements Payload {
     return templateInstance.render();
   }
 
-  public static Payload newInstance(Engine engine, Faker faker, Configuration template, Configuration contentType) {
-    String           content          = template.read();
-    TemplateInstance templateInstance = engine.parse(content).data(faker);
+  public static Payload newInstance(Faker faker, Configuration template, Configuration contentType) {
+    String content = template.read();
+    TemplateInstance templateInstance = Engine.builder()
+                                              .addDefaults()
+                                              .addValueResolver(new FakerResolver())
+                                              .build()
+                                              .parse(content)
+                                              .data(faker);
 
     return new QutePayloadTemplate(contentType.or(MediaType.APPLICATION_JSON), templateInstance);
   }

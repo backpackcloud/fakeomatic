@@ -24,17 +24,17 @@
 
 package io.backpackcloud.fakeomatic.impl.producer;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.backpackcloud.fakeomatic.core.impl.FakerBuilder;
+import io.backpackcloud.fakeomatic.core.spi.Faker;
+import io.backpackcloud.fakeomatic.core.spi.Sample;
 import io.backpackcloud.fakeomatic.impl.FakeOMaticImpl;
-import io.backpackcloud.fakeomatic.impl.NullFakeOMatic;
+import io.backpackcloud.fakeomatic.impl.sample.ApiSample;
 import io.backpackcloud.fakeomatic.spi.Config;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.FakeOMatic;
-import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
 import org.jboss.logging.Logger;
@@ -45,14 +45,17 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 @ApplicationScoped
 public class FakeOMaticProducer {
@@ -78,87 +81,78 @@ public class FakeOMaticProducer {
   @Produces
   @Singleton
   public FakeOMatic produce() {
-    List<InputStream> configs = Arrays
-        .stream(config.configs())
-        .map(config -> {
-          try {
-            if (DEFAULT_CONFIG.equals(config)) {
-              return defaultConfig();
-            } else {
-              return new FileInputStream(new File(config));
-            }
-          } catch (FileNotFoundException e) {
-            throw new UnbelievableException(e);
-          }
-        })
-        .collect(Collectors.toList());
-    // Make the last configuration the parent one
-    Collections.reverse(configs);
-    return newInstance(configs, templateEngine, std -> {
-      std.addValue(Random.class, this.config.random());
-      std.addValue(Vertx.class, this.vertx);
-      std.addValue(Config.class, this.config);
-    });
+    FakerBuilder builder = new FakerBuilder(config.random());
+    RootFaker rootFaker = new RootFaker();
+    builder.inject(Vertx.class, this.vertx);
+    builder.inject(Engine.class, this.templateEngine);
+    builder.inject(Faker.class, rootFaker);
+    builder.register("api", ApiSample.class);
+
+    List<String> configurations = new ArrayList<>(Arrays.asList(config.configs()));
+    Collections.reverse(configurations);
+
+    Consumer<InputStream> loadFaker   = builder::loadFrom;
+    Map<String, Endpoint> endpointMap = new HashMap<>();
+
+    Consumer<InputStream> loadEndpoints = inputStream -> {
+      try {
+        EndpointConfiguration endpoints = builder.mapper().readValue(inputStream, EndpointConfiguration.class);
+        endpointMap.putAll(endpoints.endpointMap);
+      } catch (IOException e) {
+        throw new UnbelievableException(e);
+      }
+    };
+
+    Function<String, InputStream> convertToInputStream = config -> {
+      try {
+        if (DEFAULT_CONFIG.equals(config)) {
+          return defaultConfig();
+        } else {
+          return new FileInputStream(new File(config));
+        }
+      } catch (FileNotFoundException e) {
+        throw new UnbelievableException(e);
+      }
+    };
+    configurations.stream()
+                  .map(convertToInputStream)
+                  .forEach(loadFaker);
+    configurations.stream()
+                  .map(convertToInputStream)
+                  .forEach(loadEndpoints);
+
+    Faker faker = builder.build();
+    rootFaker.delegate = faker;
+    return new FakeOMaticImpl(endpointMap, faker);
   }
 
   public static InputStream defaultConfig() {
     return FakeOMaticImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
-  public static FakeOMatic newInstance(List<InputStream> configs,
-                                       Engine engine,
-                                       Consumer<InjectableValues.Std> injectableValuesConsumer) {
-    ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+  public static class EndpointConfiguration {
 
-    InjectableValues.Std std = new InjectableValues.Std();
+    final Map<String, Endpoint> endpointMap;
 
-    objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-    FakeOMatic parent = new NullFakeOMatic();
-    // the composite sample needs access to the whole fake data and not the parent one
-    RootFakeOMatic root = new RootFakeOMatic();
-
-    injectableValuesConsumer.accept(std);
-    std.addValue("parent", parent);
-    std.addValue("root", root);
-    std.addValue(Engine.class, engine);
-    objectMapper.setInjectableValues(std);
-
-    try {
-      for (InputStream config : configs) {
-        parent = objectMapper.readValue(config, FakeOMaticImpl.class);
-        std.addValue("parent", parent);
-      }
-    } catch (Throwable e) {
-      LOGGER.error("Error while parsing configuration", e);
-      throw new UnbelievableException(e);
+    @JsonCreator
+    public EndpointConfiguration(@JsonProperty("endpoints") Map<String, Endpoint> endpointMap) {
+      this.endpointMap = endpointMap;
     }
 
-    root.delegate = parent;
-
-    return parent;
   }
 
-  static class RootFakeOMatic implements FakeOMatic {
+  static class RootFaker implements Faker {
 
-    FakeOMatic delegate;
+    Faker delegate;
 
     @Override
-    public Optional<Endpoint> endpoint(String name) {
-      return delegate.endpoint(name);
+    public List<Sample> samples() {
+      return delegate.samples();
     }
 
     @Override
-    public Random random() {
-      return delegate.random();
-    }
-
-    @Override
-    public Sample sample(String sampleName) {
-      // wait before passing the real sample because the hierarchy is being updated
-      // as the objects is being constructed so this enables samples to have a reference
-      // for other samples instead of having to depend on the FakeData instance
-      return () -> delegate.sample(sampleName).get();
+    public Optional<Sample> sample(String sampleName) {
+      return Optional.ofNullable(() -> delegate.sample(sampleName).orElseThrow(UnbelievableException::new).get());
     }
 
     @Override
@@ -167,7 +161,7 @@ public class FakeOMaticProducer {
     }
 
     @Override
-    public Object some(String sampleName) {
+    public <E> E some(String sampleName) {
       return delegate.some(sampleName);
     }
 
@@ -176,10 +170,6 @@ public class FakeOMaticProducer {
       return delegate.expression(expression);
     }
 
-    @Override
-    public List<Sample> samples() {
-      return delegate.samples();
-    }
   }
 
 }

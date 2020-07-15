@@ -424,14 +424,14 @@ samples:
     type: uuid
 ----
 
-===== Composite
+===== Join
 
 This sample will gather other samples and join them into one data.
 
 ====== Configuration
 
 type::
-`composite`
+`join`
 
 samples::
 Which samples to join
@@ -445,7 +445,7 @@ Which separator to use (defaults to an empty string).
 ----
 samples:
   full_name:
-    type: composite
+    type: join
     separator: " "
     samples:
       - first_name
@@ -562,30 +562,6 @@ samples:
     expression: "################"
 ----
 
-===== Template
-
-A sample that can produce data based on external templates.
-
-====== Configuration
-
-type::
-`template`
-
-template::
-A <<configuration,configuration>> pointing to where the template is.
-
-====== Example
-
-[source,yaml]
-----
-samples:
-  address:
-    type: template
-    location:
-      env: ADDRESS_TEMPLATE
-      default: /usr/share/templates/address.json
-----
-
 ===== Date
 
 A sample that can generate dates based on a given interval.
@@ -700,11 +676,6 @@ Gets a random sample from the given sample name.
 
 expression(placeholders)::
 Gets a random data produced by replacing each placeholder by a random sample associated with it.
-
-oneOf(values...)::
-Randomly picks one of the given values using the internal `Random` reference.
-
-For more methods, check out the `Faker` interface.
 
 [#configuration_properties]
 === Configuration Properties

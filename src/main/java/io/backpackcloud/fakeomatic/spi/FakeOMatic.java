@@ -24,50 +24,14 @@
 
 package io.backpackcloud.fakeomatic.spi;
 
-import io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
-import io.quarkus.qute.Engine;
-import io.vertx.mutiny.core.Vertx;
+import io.backpackcloud.fakeomatic.core.spi.Faker;
 
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.Random;
 
-public interface FakeOMatic extends Faker {
+public interface FakeOMatic {
 
   Optional<Endpoint> endpoint(String name);
 
-  /**
-   * Returns the location of the default config for parsing.
-   *
-   * @return the InputSteam that points to the default config location.
-   */
-  static InputStream defaultConfigLocation() {
-    return FakeOMaticProducer.defaultConfig();
-  }
-
-  /**
-   * Loads a new FakeData from the configuration stored in the given InputStreams.
-   *
-   * @param locations the locations of the configurations
-   * @return a new FakeData
-   */
-  static FakeOMatic load(InputStream... locations) {
-    return load(new Random(), locations);
-  }
-
-  /**
-   * Loads a new FakeData from the configuration stored in the given InputStreams.
-   *
-   * @param random    the random object to use for randomness
-   * @param locations the locations of the configurations
-   * @return a new FakeData
-   */
-  static FakeOMatic load(Random random, InputStream... locations) {
-    return FakeOMaticProducer.newInstance(Arrays.asList(locations), Engine.builder().addDefaults().build(), std -> {
-      std.addValue(Random.class, random);
-      std.addValue(Vertx.class, Vertx.vertx());
-    });
-  }
+  Faker faker();
 
 }

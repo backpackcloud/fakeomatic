@@ -26,10 +26,10 @@ package io.backpackcloud.fakeomatic.impl.sample;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.backpackcloud.fakeomatic.UnbelievableException;
+import io.backpackcloud.fakeomatic.core.spi.Sample;
 import io.backpackcloud.fakeomatic.spi.Endpoint;
 import io.backpackcloud.fakeomatic.spi.EndpointResponse;
-import io.backpackcloud.fakeomatic.spi.Sample;
+import io.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jboss.logging.Logger;
 

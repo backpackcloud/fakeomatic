@@ -24,37 +24,65 @@
 
 package io.backpackcloud.fakeomatic;
 
-import io.backpackcloud.fakeomatic.spi.FakeOMatic;
-import org.junit.jupiter.api.BeforeEach;
+import io.backpackcloud.fakeomatic.core.spi.Faker;
+import io.backpackcloud.fakeomatic.core.spi.Sample;
+import io.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
+import io.backpackcloud.fakeomatic.spi.Config;
+import io.quarkus.qute.Engine;
+import io.vertx.mutiny.core.Vertx;
 import org.junit.jupiter.api.Test;
+
+import java.util.Random;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BuiltInConfigurationTest extends BaseTest {
+public class BuiltInConfigurationTest {
 
-  FakeOMatic fakeOMatic;
+  Faker faker;
 
-  @BeforeEach
-  public void init() {
-    fakeOMatic = createBuiltin();
+  public BuiltInConfigurationTest() {
+    Config config = new Config() {
+      @Override
+      public String endpoint() {
+        return "default";
+      }
+
+      @Override
+      public int total() {
+        return 100;
+      }
+
+      @Override
+      public Random random() {
+        return new Random();
+      }
+
+      @Override
+      public String[] configs() {
+        return new String[]{"fakeomatic"};
+      }
+    };
+    FakeOMaticProducer producer = new FakeOMaticProducer(config, Vertx.vertx(), Engine.builder().addDefaults().build());
+    faker = producer.produce().faker();
   }
 
   @Test
   public void testPlaceholders() {
     times(1000, () -> {
-      assertTrue(fakeOMatic.some('#').matches("^\\d$"));
-      assertTrue(fakeOMatic.some('%').matches("^[a-z]$"));
-      assertTrue(fakeOMatic.some('^').matches("^[A-Z]$"));
-      assertTrue(fakeOMatic.some('*').matches("^[a-z0-9]$"));
-      assertTrue(fakeOMatic.some('$').matches("^[A-Z0-9]$"));
+      assertTrue(faker.some('#').matches("^\\d$"));
+      assertTrue(faker.some('%').matches("^[a-z]$"));
+      assertTrue(faker.some('^').matches("^[A-Z]$"));
+      assertTrue(faker.some('*').matches("^[a-z0-9]$"));
+      assertTrue(faker.some('$').matches("^[A-Z0-9]$"));
     });
   }
 
   @Test
   public void testChuckNorrisSample() {
-    String value = fakeOMatic.some("chuck_norris");
+    String value = faker.some("chuck_norris");
     assertNotNull(value);
     assertFalse(value.isEmpty());
     assertFalse(value.isBlank());
@@ -62,7 +90,7 @@ public class BuiltInConfigurationTest extends BaseTest {
 
   @Test
   public void testTronaldDumpSample() {
-    String value = fakeOMatic.some("tronald_dump");
+    String value = faker.some("tronald_dump");
     assertNotNull(value);
     assertFalse(value.isEmpty());
     assertFalse(value.isBlank());
@@ -70,7 +98,7 @@ public class BuiltInConfigurationTest extends BaseTest {
 
   @Test
   public void testBusinessBullshitSample() {
-    String value = fakeOMatic.some("business_bullshit");
+    String value = faker.some("business_bullshit");
     assertNotNull(value);
     assertFalse(value.isEmpty());
     assertFalse(value.isBlank());
@@ -78,7 +106,7 @@ public class BuiltInConfigurationTest extends BaseTest {
 
   @Test
   public void testCommitMessageSample() {
-    String value = fakeOMatic.some("commit_message");
+    String value = faker.some("commit_message");
     assertNotNull(value);
     assertFalse(value.isEmpty());
     assertFalse(value.isBlank());
@@ -86,7 +114,7 @@ public class BuiltInConfigurationTest extends BaseTest {
 
   @Test
   public void testErrorCauseSample() {
-    times(10000, fakeOMatic.sample("error_cause"), value -> {
+    times(10000, faker.sample("error_cause").get(), value -> {
       assertNotNull(value);
       assertFalse(value.toString().isEmpty());
       assertFalse(value.toString().isBlank());
@@ -95,11 +123,25 @@ public class BuiltInConfigurationTest extends BaseTest {
 
   @Test
   public void testTableFlipSample() {
-    times(10000, fakeOMatic.sample("table_flip"), value -> {
+    times(10000, faker.sample("table_flip").get(), value -> {
       assertNotNull(value);
       assertFalse(value.toString().isEmpty());
       assertFalse(value.toString().isBlank());
     });
+  }
+
+  private <E> void times(int times, Sample<E> sample, Consumer<E> consumer) {
+    times(times, () -> consumer.accept(sample.get()));
+  }
+
+  private void times(int times, Runnable runnable) {
+    times(times, integer -> runnable.run());
+  }
+
+  private void times(int times, Consumer<Integer> consumer) {
+    for (int i = 1; i <= times; i++) {
+      consumer.accept(i);
+    }
   }
 
 }

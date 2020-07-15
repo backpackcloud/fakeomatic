@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.backpackcloud.fakeomatic.impl.VertxEndpoint;
+import io.backpackcloud.zipper.Configuration;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.mutiny.core.Vertx;
 
