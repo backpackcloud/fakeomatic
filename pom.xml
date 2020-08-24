@@ -36,7 +36,7 @@
 
   <groupId>io.backpackcloud</groupId>
   <artifactId>fakeomatic</artifactId>
-  <version>0.10.1</version>
+  <version>0.10.2</version>
 
   <description>
     Fake-O-Matic is a library for generating and ingesting fake data.
@@ -195,10 +195,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
