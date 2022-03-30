@@ -66,7 +66,7 @@ public class BuiltInConfigurationTest {
       assertTrue(faker.some('#').matches("^\\d$"));
       assertTrue(faker.some('%').matches("^[a-z]$"));
       assertTrue(faker.some('^').matches("^[A-Z]$"));
-      assertTrue(faker.some('*').matches("^[a-z0-9]$"));
+      assertTrue(faker.some('@').matches("^[a-z0-9]$"));
       assertTrue(faker.some('$').matches("^[A-Z0-9]$"));
     });
   }

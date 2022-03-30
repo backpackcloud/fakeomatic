@@ -60,7 +60,7 @@ public class Generator implements QuarkusApplication {
           .addDefaults()
           .addValueResolver(new FakerResolver())
           .build()
-          .parse(Files.readString(Path.of(value)))
+          .parse(value)
           .data(faker)
           .render();
         System.out.println(render);

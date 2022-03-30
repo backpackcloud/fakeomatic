@@ -25,9 +25,10 @@
 placeholders:
   "#": digit
   "%": downcase_letter
-  "*": lowercase_char
+  "@": lowercase_char
   "^": uppercase_letter
   "$": uppercase_char
+  "*": character
 
 samples:
   uuid:
@@ -49,6 +50,12 @@ samples:
   uppercase_char:
     type: list
     samples:
+      - uppercase_letter
+      - digit
+  character:
+    type: list
+    samples:
+      - lowercase_letter
       - uppercase_letter
       - digit
   chuck_norris:
