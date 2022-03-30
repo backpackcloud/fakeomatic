@@ -24,6 +24,7 @@
 
 package com.backpackcloud.fakeomatic.spi;
 
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -43,6 +44,8 @@ public interface Config {
    */
   String[] configs();
 
-  String sample();
+  Optional<String> sample();
+
+  Optional<String> template();
 
 }

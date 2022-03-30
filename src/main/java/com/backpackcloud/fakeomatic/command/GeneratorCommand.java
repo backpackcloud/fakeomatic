@@ -52,7 +52,9 @@ public class GeneratorCommand implements Callable<Integer> {
   )
   String sample;
 
-  @CommandLine.Parameters
+  @CommandLine.Parameters(
+    arity = "0..1"
+  )
   String template;
 
   @Override
@@ -60,6 +62,7 @@ public class GeneratorCommand implements Callable<Integer> {
 
     setPropertyIfNotNull("generator.seed", seed);
     setPropertyIfNotNull("generator.sample", sample);
+    setPropertyIfNotNull("generator.template", template);
     if (config != null) {
       setPropertyIfNotNull("generator.config", String.join(",", config));
     }

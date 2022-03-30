@@ -24,9 +24,12 @@
 
 package com.backpackcloud.fakeomatic.process;
 
+import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
+import com.backpackcloud.fakeomatic.impl.FakerResolver;
 import com.backpackcloud.fakeomatic.spi.Config;
 import com.backpackcloud.fakeomatic.spi.FakeOMatic;
+import io.quarkus.qute.Engine;
 import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -44,9 +47,24 @@ public class Generator implements QuarkusApplication {
 
   @Override
   public int run(String... args) {
-    fakeOMatic.faker().sample(config.sample())
-      .map(Sample::get)
-      .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
+    Faker faker = fakeOMatic.faker();
+    if (config.sample().isPresent()) {
+      faker.sample(config.sample().get())
+        .map(Sample::get)
+        .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
+    } else if (config.template().isPresent()) {
+      String value = Engine.builder()
+        .addDefaults()
+        .addValueResolver(new FakerResolver())
+        .build()
+        .parse(config.template().get())
+        .data(faker)
+        .render();
+      System.out.println(value);
+    } else {
+      System.err.println("No sample or template given");
+      return 1;
+    }
     return 0;
   }
 

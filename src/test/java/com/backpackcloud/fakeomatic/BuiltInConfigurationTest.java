@@ -32,6 +32,7 @@ import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -56,8 +57,13 @@ public class BuiltInConfigurationTest {
       }
 
       @Override
-      public String sample() {
-        return "";
+      public Optional<String> sample() {
+        return Optional.empty();
+      }
+
+      @Override
+      public Optional<String> template() {
+        return Optional.empty();
       }
     };
     FakeOMaticProducer producer = new FakeOMaticProducer(config, Vertx.vertx(), Engine.builder().addDefaults().build());

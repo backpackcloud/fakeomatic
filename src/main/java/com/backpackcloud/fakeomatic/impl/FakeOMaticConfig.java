@@ -29,6 +29,7 @@ import com.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Optional;
 import java.util.Random;
 
 @ApplicationScoped
@@ -43,6 +44,9 @@ public class FakeOMaticConfig implements Config {
   @ConfigProperty(name = "generator.sample", defaultValue = "")
   String sample;
 
+  @ConfigProperty(name = "generator.template", defaultValue = "")
+  String template;
+
   @Override
   public Random random() {
     return random;
@@ -53,8 +57,13 @@ public class FakeOMaticConfig implements Config {
     return configs.split("[,]");
   }
 
-  public String sample() {
-    return sample;
+  public Optional<String> sample() {
+    return Optional.ofNullable(sample);
+  }
+
+  @Override
+  public Optional<String> template() {
+    return Optional.ofNullable(template);
   }
 
 }
