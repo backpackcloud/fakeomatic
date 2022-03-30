@@ -22,38 +22,6 @@
 # SOFTWARE.
 #
 
-endpoints:
-  default:
-    url:
-      env: ENDPOINT_URL
-      property: endpoint.url
-      value: http://localhost:36664/dump
-    payload:
-      content-type:
-        env: ENDPOINT_CONTENT_TYPE
-        property: endpoint.content_type
-        value: application/json
-      template:
-        env: ENDPOINT_TEMPLATE
-        property: endpoint.template
-        resource: /META-INF/resources/config/payload.json
-    method:
-      env: ENDPOINT_METHOD
-      property: endpoint.method
-      value: POST
-    concurrency:
-      env: ENDPOINT_CONCURRENCY
-      property: endpoint.concurrency
-      value: 10
-    buffer:
-      env: ENDPOINT_BUFFER
-      property: endpoint.buffer
-      value: 10
-    insecure:
-      env: ENDPOINT_INSECURE
-      property: endpoint.insecure
-      value: false
-
 placeholders:
   "#": digit
   "%": downcase_letter
@@ -109,7 +77,7 @@ samples:
         endpoint:
           url: https://corporatebs-generator.sameerkumar.website
     path: /phrase
-  commit_message:
+  whatthecommit:
     type: json
     source:
       sample:
