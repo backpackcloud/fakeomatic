@@ -36,7 +36,7 @@ public class GeneratorCommand implements Callable<Integer> {
 
   @CommandLine.Option(
     names = {"-f", "--config"},
-    description = "A configuration to apply (use fakeomatic to apply the built-in one)"
+    description = "A configuration to apply (use 'fakeomatic' to apply the built-in one)"
   )
   List<String> config;
 
@@ -50,19 +50,19 @@ public class GeneratorCommand implements Callable<Integer> {
     names = {"-t, --template"},
     description = "Sets the operation to be a template parse"
   )
-  boolean template;
+  String template;
 
   @CommandLine.Option(
     names = {"-e, --expression"},
     description = "Sets the operation to be an expression parse"
   )
-  boolean expression;
+  String expression;
 
   @CommandLine.Parameters(
-    arity = "1",
+    arity = "0..1",
     description = "The sample to generate"
   )
-  String sample;
+  String value;
 
   @Override
   public Integer call() {
@@ -72,10 +72,10 @@ public class GeneratorCommand implements Callable<Integer> {
       setPropertyIfNotNull("generator.config", String.join(",", config));
     }
 
-    String mode = template ? "template" : expression ? "expression" : "sample";
+    String mode = template != null ? "template" : expression != null ? "expression" : "sample";
 
     try {
-      Quarkus.run(Generator.class, mode, sample);
+      Quarkus.run(Generator.class, mode, value);
     } catch (Throwable e) {
       e.printStackTrace();
       return 1;

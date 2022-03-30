@@ -24,19 +24,16 @@
 
 package com.backpackcloud.fakeomatic.impl.producer;
 
+import com.backpackcloud.fakeomatic.Main;
 import com.backpackcloud.fakeomatic.core.impl.FakerBuilder;
 import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
-import com.backpackcloud.fakeomatic.impl.FakeOMaticImpl;
 import com.backpackcloud.fakeomatic.impl.sample.ApiSample;
 import com.backpackcloud.fakeomatic.impl.sample.TemplateSample;
 import com.backpackcloud.fakeomatic.spi.Config;
-import com.backpackcloud.fakeomatic.spi.Endpoint;
-import com.backpackcloud.fakeomatic.spi.FakeOMatic;
 import com.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
-import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -47,17 +44,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 @ApplicationScoped
 public class FakeOMaticProducer {
-
-  private static final Logger LOGGER = Logger.getLogger(FakeOMaticProducer.class);
 
   public static final String DEFAULT_CONFIG_LOCATION = "/META-INF/resources/config/fakeomatic.yaml";
 
@@ -77,7 +70,7 @@ public class FakeOMaticProducer {
 
   @Produces
   @Singleton
-  public FakeOMatic produce() {
+  public Faker produce() {
     FakerBuilder builder = new FakerBuilder(config.random());
     RootFaker rootFaker = new RootFaker();
     builder.inject(Vertx.class, this.vertx);
@@ -90,7 +83,6 @@ public class FakeOMaticProducer {
     Collections.reverse(configurations);
 
     Consumer<InputStream> loadFaker   = builder::loadFrom;
-    Map<String, Endpoint> endpointMap = new HashMap<>();
 
     Function<String, InputStream> convertToInputStream = config -> {
       try {
@@ -109,11 +101,11 @@ public class FakeOMaticProducer {
 
     Faker faker = builder.build();
     rootFaker.delegate = faker;
-    return new FakeOMaticImpl(endpointMap, faker);
+    return faker;
   }
 
   public static InputStream defaultConfig() {
-    return FakeOMaticImpl.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
+    return Main.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
   static class RootFaker implements Faker {

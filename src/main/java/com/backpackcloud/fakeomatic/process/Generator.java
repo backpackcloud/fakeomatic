@@ -28,7 +28,6 @@ import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
 import com.backpackcloud.fakeomatic.impl.FakerResolver;
 import com.backpackcloud.fakeomatic.spi.Config;
-import com.backpackcloud.fakeomatic.spi.FakeOMatic;
 import io.quarkus.qute.Engine;
 import io.quarkus.runtime.QuarkusApplication;
 
@@ -39,17 +38,14 @@ import java.nio.file.Path;
 @ApplicationScoped
 public class Generator implements QuarkusApplication {
 
-  private final Config config;
-  private final FakeOMatic fakeOMatic;
+  private final Faker faker;
 
-  public Generator(Config config, FakeOMatic fakeOMatic) {
-    this.config = config;
-    this.fakeOMatic = fakeOMatic;
+  public Generator(Faker faker) {
+    this.faker = faker;
   }
 
   @Override
   public int run(String... args) throws Exception {
-    Faker faker = fakeOMatic.faker();
     Mode mode = Mode.valueOf(args[0].toUpperCase());
     String value = args[1];
 
