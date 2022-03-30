@@ -50,7 +50,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @ApplicationScoped
-public class FakeOMaticProducer {
+public class FakerProducer {
 
   public static final String DEFAULT_CONFIG_LOCATION = "/META-INF/resources/config/fakeomatic.yaml";
 
@@ -62,7 +62,7 @@ public class FakeOMaticProducer {
 
   private final Engine templateEngine;
 
-  public FakeOMaticProducer(Config config, Vertx vertx, Engine templateEngine) {
+  public FakerProducer(Config config, Vertx vertx, Engine templateEngine) {
     this.config = config;
     this.vertx = vertx;
     this.templateEngine = templateEngine;
@@ -82,8 +82,6 @@ public class FakeOMaticProducer {
     List<String> configurations = new ArrayList<>(Arrays.asList(config.configs()));
     Collections.reverse(configurations);
 
-    Consumer<InputStream> loadFaker   = builder::loadFrom;
-
     Function<String, InputStream> convertToInputStream = config -> {
       try {
         if (DEFAULT_CONFIG.equals(config)) {
@@ -97,7 +95,7 @@ public class FakeOMaticProducer {
     };
     configurations.stream()
                   .map(convertToInputStream)
-                  .forEach(loadFaker);
+                  .forEach(builder::loadFrom);
 
     Faker faker = builder.build();
     rootFaker.delegate = faker;

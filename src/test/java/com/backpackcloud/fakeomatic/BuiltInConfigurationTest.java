@@ -26,7 +26,7 @@ package com.backpackcloud.fakeomatic;
 
 import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
-import com.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
+import com.backpackcloud.fakeomatic.impl.producer.FakerProducer;
 import com.backpackcloud.fakeomatic.spi.Config;
 import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
@@ -56,8 +56,8 @@ public class BuiltInConfigurationTest {
       }
 
     };
-    FakeOMaticProducer producer = new FakeOMaticProducer(config, Vertx.vertx(), Engine.builder().addDefaults().build());
-    faker = producer.produce().faker();
+    FakerProducer producer = new FakerProducer(config, Vertx.vertx(), Engine.builder().addDefaults().build());
+    faker = producer.produce();
   }
 
   @Test

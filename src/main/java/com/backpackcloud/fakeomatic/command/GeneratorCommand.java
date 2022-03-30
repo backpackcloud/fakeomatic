@@ -47,16 +47,16 @@ public class GeneratorCommand implements Callable<Integer> {
   String seed;
 
   @CommandLine.Option(
-    names = {"-t, --template"},
+    names = {"-t", "--template"},
     description = "Sets the operation to be a template parse"
   )
-  String template;
+  boolean template;
 
   @CommandLine.Option(
-    names = {"-e, --expression"},
+    names = {"-e", "--expression"},
     description = "Sets the operation to be an expression parse"
   )
-  String expression;
+  boolean expression;
 
   @CommandLine.Parameters(
     arity = "0..1",
@@ -72,7 +72,7 @@ public class GeneratorCommand implements Callable<Integer> {
       setPropertyIfNotNull("generator.config", String.join(",", config));
     }
 
-    String mode = template != null ? "template" : expression != null ? "expression" : "sample";
+    String mode = template ? "template" : expression ? "expression" : "sample";
 
     try {
       Quarkus.run(Generator.class, mode, value);

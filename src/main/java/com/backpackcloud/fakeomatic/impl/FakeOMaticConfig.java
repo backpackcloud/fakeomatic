@@ -24,7 +24,7 @@
 
 package com.backpackcloud.fakeomatic.impl;
 
-import com.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
+import com.backpackcloud.fakeomatic.impl.producer.FakerProducer;
 import com.backpackcloud.fakeomatic.spi.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -35,7 +35,7 @@ import java.util.Random;
 @ApplicationScoped
 public class FakeOMaticConfig implements Config {
 
-  @ConfigProperty(name = "generator.config", defaultValue = FakeOMaticProducer.DEFAULT_CONFIG)
+  @ConfigProperty(name = "generator.config", defaultValue = FakerProducer.DEFAULT_CONFIG)
   String configs;
 
   @ConfigProperty(name = "generator.seed", defaultValue = "")

@@ -88,8 +88,8 @@ samples:
   error_cause:
     type: list
     source:
-      resource: /META-INF/resources/config/causes.txt
+      resource: META-INF/resources/config/causes.txt
   table_flip:
     type: list
     source:
-      resource: /META-INF/resources/config/table_flips.txt
+      resource: META-INF/resources/config/table_flips.txt

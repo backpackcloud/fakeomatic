@@ -26,9 +26,11 @@ package com.backpackcloud.fakeomatic;
 
 import com.backpackcloud.fakeomatic.command.GeneratorCommand;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import picocli.CommandLine;
 
 @QuarkusMain(name = "fakeomatic")
+@RegisterForReflection
 public class Main {
 
   public static void main(String[] args) {
