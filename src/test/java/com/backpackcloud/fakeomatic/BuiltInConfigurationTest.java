@@ -24,15 +24,14 @@
 
 package com.backpackcloud.fakeomatic;
 
-import com.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
-import com.backpackcloud.fakeomatic.spi.Config;
 import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
+import com.backpackcloud.fakeomatic.impl.producer.FakeOMaticProducer;
+import com.backpackcloud.fakeomatic.spi.Config;
 import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -56,15 +55,6 @@ public class BuiltInConfigurationTest {
         return new String[]{"fakeomatic"};
       }
 
-      @Override
-      public Optional<String> sample() {
-        return Optional.empty();
-      }
-
-      @Override
-      public Optional<String> template() {
-        return Optional.empty();
-      }
     };
     FakeOMaticProducer producer = new FakeOMaticProducer(config, Vertx.vertx(), Engine.builder().addDefaults().build());
     faker = producer.produce().faker();

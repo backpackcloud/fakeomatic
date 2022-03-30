@@ -24,15 +24,14 @@
 
 package com.backpackcloud.fakeomatic.impl.producer;
 
-import com.backpackcloud.fakeomatic.impl.sample.ApiSample;
-import com.backpackcloud.fakeomatic.spi.Config;
-import com.backpackcloud.fakeomatic.spi.Endpoint;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.backpackcloud.fakeomatic.core.impl.FakerBuilder;
 import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
 import com.backpackcloud.fakeomatic.impl.FakeOMaticImpl;
+import com.backpackcloud.fakeomatic.impl.sample.ApiSample;
+import com.backpackcloud.fakeomatic.impl.sample.TemplateSample;
+import com.backpackcloud.fakeomatic.spi.Config;
+import com.backpackcloud.fakeomatic.spi.Endpoint;
 import com.backpackcloud.fakeomatic.spi.FakeOMatic;
 import com.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.qute.Engine;
@@ -42,10 +41,8 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +84,7 @@ public class FakeOMaticProducer {
     builder.inject(Engine.class, this.templateEngine);
     builder.inject(Faker.class, rootFaker);
     builder.register("api", ApiSample.class);
+    builder.register("template", TemplateSample.class);
 
     List<String> configurations = new ArrayList<>(Arrays.asList(config.configs()));
     Collections.reverse(configurations);

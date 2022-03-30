@@ -39,31 +39,16 @@ public class FakeOMaticConfig implements Config {
   String configs;
 
   @ConfigProperty(name = "generator.seed", defaultValue = "")
-  Random random;
-
-  @ConfigProperty(name = "generator.sample", defaultValue = "")
-  String sample;
-
-  @ConfigProperty(name = "generator.template", defaultValue = "")
-  String template;
+  Optional<Random> random;
 
   @Override
   public Random random() {
-    return random;
+    return random.orElseGet(Random::new);
   }
 
   @Override
   public String[] configs() {
     return configs.split("[,]");
-  }
-
-  public Optional<String> sample() {
-    return Optional.ofNullable(sample);
-  }
-
-  @Override
-  public Optional<String> template() {
-    return Optional.ofNullable(template);
   }
 
 }

@@ -24,7 +24,6 @@
 
 package com.backpackcloud.fakeomatic.spi;
 
-import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -43,9 +42,5 @@ public interface Config {
    * @return The endpoint that will receive the generated payloads.
    */
   String[] configs();
-
-  Optional<String> sample();
-
-  Optional<String> template();
 
 }

@@ -33,6 +33,8 @@ import io.quarkus.qute.Engine;
 import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @ApplicationScoped
 public class Generator implements QuarkusApplication {
@@ -46,26 +48,37 @@ public class Generator implements QuarkusApplication {
   }
 
   @Override
-  public int run(String... args) {
+  public int run(String... args) throws Exception {
     Faker faker = fakeOMatic.faker();
-    if (config.sample().isPresent()) {
-      faker.sample(config.sample().get())
-        .map(Sample::get)
-        .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-    } else if (config.template().isPresent()) {
-      String value = Engine.builder()
-        .addDefaults()
-        .addValueResolver(new FakerResolver())
-        .build()
-        .parse(config.template().get())
-        .data(faker)
-        .render();
-      System.out.println(value);
-    } else {
-      System.err.println("No sample or template given");
-      return 1;
+    Mode mode = Mode.valueOf(args[0].toUpperCase());
+    String value = args[1];
+
+    switch (mode) {
+      case SAMPLE:
+        faker.sample(value)
+          .map(Sample::get)
+          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
+        break;
+      case TEMPLATE:
+        String render = Engine.builder()
+          .addDefaults()
+          .addValueResolver(new FakerResolver())
+          .build()
+          .parse(Files.readString(Path.of(value)))
+          .data(faker)
+          .render();
+        System.out.println(render);
+        break;
+      case EXPRESSION:
+        System.out.println(faker.expression(value));
     }
     return 0;
+  }
+
+  public enum Mode {
+
+    SAMPLE, TEMPLATE, EXPRESSION
+
   }
 
 }

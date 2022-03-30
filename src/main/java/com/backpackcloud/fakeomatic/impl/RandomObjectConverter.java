@@ -32,7 +32,7 @@ public class RandomObjectConverter implements Converter<Random> {
 
   @Override
   public Random convert(String value) {
-    return value.isEmpty() ? new Random() : new Random(Long.parseLong(value));
+    return value.isEmpty() ? null : new Random(Long.parseLong(value));
   }
 
 }
