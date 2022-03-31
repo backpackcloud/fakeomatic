@@ -25,13 +25,9 @@
 package com.backpackcloud.fakeomatic.impl;
 
 import com.backpackcloud.fakeomatic.spi.Endpoint;
-import com.backpackcloud.fakeomatic.spi.EndpointResponse;
-import com.backpackcloud.fakeomatic.spi.Payload;
 import com.backpackcloud.zipper.Configuration;
 import com.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.smallrye.mutiny.Uni;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
@@ -45,34 +41,18 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 @RegisterForReflection
 public class VertxEndpoint implements Endpoint {
 
   private static final Logger LOGGER = Logger.getLogger(VertxEndpoint.class);
 
-  private final URL                 url;
+  private final URL url;
   private final HttpRequest<Buffer> request;
-  private final Payload             payload;
 
-  private final int concurrency;
-
-  private final Function<HttpRequest<Buffer>, Uni<HttpResponse<Buffer>>> requestFunction;
-
-  private final AtomicInteger inProgress = new AtomicInteger(0);
-
-  public VertxEndpoint(URL url, Payload payload, HttpRequest<Buffer> request, int concurrency) {
+  public VertxEndpoint(URL url, HttpRequest<Buffer> request) {
     this.url = url;
     this.request = request;
-    this.concurrency = concurrency;
-    this.payload = payload;
-    if (payload == null) {
-      this.requestFunction = HttpRequest::send;
-    } else {
-      this.requestFunction = httpRequest -> httpRequest.sendBuffer(Buffer.buffer(this.payload.content()));
-    }
   }
 
   @Override
@@ -81,52 +61,20 @@ public class VertxEndpoint implements Endpoint {
   }
 
   @Override
-  public void waitForOngoingCalls() {
-    int wait = 100;
-    while (inProgress.get() > 0) {
-      LOGGER.infof("Waiting for (%d) ongoing requests to finish...", inProgress.get());
-      try {
-        Thread.sleep(wait *= 1.5);
-      } catch (InterruptedException e) {
-        LOGGER.error(e);
-      }
-    }
-  }
-
-  @Override
-  public CompletionStage<EndpointResponse> call() {
-    int wait = 10;
-    while (inProgress.get() >= concurrency) {
-      try {
-        Thread.sleep(wait *= 1.2);
-      } catch (InterruptedException e) {
-        LOGGER.error(e);
-      }
-    }
-    inProgress.incrementAndGet();
+  public CompletionStage<String> call() {
     return CompletableFuture.supplyAsync(
-        () -> requestFunction.apply(this.request)
-                             .onItem()
-                             .transform(httpResponse -> {
-                               inProgress.decrementAndGet();
-                               return new Response(httpResponse);
-                             })
-                             .onFailure()
-                             .invoke(throwable -> {
-                               inProgress.decrementAndGet();
-                               LOGGER.error("Error while calling endpoint", throwable);
-                             })
-                             .await().atMost(Duration.ofSeconds(30))
+      () -> this.request.send()
+        .onItem()
+        .transform(HttpResponse::bodyAsString)
+        .onFailure()
+        .invoke(throwable -> LOGGER.error("Error while calling endpoint", throwable))
+        .await().atMost(Duration.ofSeconds(30))
     );
   }
 
   public static Endpoint create(Vertx vertx, Configuration location,
-                                Configuration method,
-                                Payload payload,
                                 Map<String, Configuration> endpointHeaders,
                                 Map<String, Configuration> params,
-                                Configuration concurrency,
-                                Configuration buffer,
                                 Configuration insecure) {
     try {
       String requestURI = location.get();
@@ -135,65 +83,23 @@ public class VertxEndpoint implements Endpoint {
           requestURI = requestURI.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue().get());
         }
       }
-      URL url         = new URL(requestURI);
-      int maxPoolSize = concurrency.orElse(10);
+      URL url = new URL(requestURI);
 
       WebClient client = WebClient.create(vertx, new WebClientOptions()
-          .setMaxPoolSize(maxPoolSize)
-          .setDefaultHost(url.getHost())
-          .setDefaultPort(url.getPort() == -1 ? url.getDefaultPort() : url.getPort())
-          .setSsl("https".equals(url.getProtocol()))
-          .setTrustAll(insecure.orElse(false))
+        .setDefaultHost(url.getHost())
+        .setDefaultPort(url.getPort() == -1 ? url.getDefaultPort() : url.getPort())
+        .setSsl("https".equals(url.getProtocol()))
+        .setTrustAll(insecure.orElse(false))
       );
-      HttpRequest<Buffer> request = client.request(
-          HttpMethod.valueOf(method.orElse(payload == null ? "GET" : "POST").toUpperCase()),
-          url.toString()
-      );
+      HttpRequest<Buffer> request = client.get(url.toString());
       if (endpointHeaders != null) {
         for (Map.Entry<String, Configuration> entry : endpointHeaders.entrySet()) {
           request.putHeader(entry.getKey(), entry.getValue().get());
         }
-        if (payload != null) {
-          request.putHeader("Content-Type", payload.contentType());
-        }
       }
-      return new VertxEndpoint(
-          url,
-          payload,
-          request,
-          maxPoolSize + buffer.orElse(10)
-      );
+      return new VertxEndpoint(url, request);
     } catch (Exception e) {
       throw new UnbelievableException(e);
-    }
-  }
-
-  static class Response implements EndpointResponse {
-
-    private final HttpResponse<Buffer> response;
-
-    Response(HttpResponse<Buffer> response) {
-      this.response = response;
-    }
-
-    @Override
-    public int statusCode() {
-      return response.statusCode();
-    }
-
-    @Override
-    public String statusMessage() {
-      return response.statusMessage();
-    }
-
-    @Override
-    public String body() {
-      return response.bodyAsString();
-    }
-
-    @Override
-    public String toString() {
-      return body();
     }
   }
 

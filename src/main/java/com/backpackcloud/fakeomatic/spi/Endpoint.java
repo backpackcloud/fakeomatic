@@ -41,22 +41,15 @@ public interface Endpoint {
 
   URL url();
 
-  CompletionStage<EndpointResponse> call();
-
-  void waitForOngoingCalls();
+  CompletionStage<String> call();
 
   @JsonCreator
   static Endpoint newInstance(@JacksonInject Vertx vertx,
                               @JsonProperty("url") Configuration location,
-                              @JsonProperty("payload") Payload payload,
-                              @JsonProperty("method") Configuration method,
                               @JsonProperty("headers") Map<String, Configuration> endpointHeaders,
                               @JsonProperty("params") Map<String, Configuration> params,
-                              @JsonProperty("concurrency") Configuration concurrency,
-                              @JsonProperty("buffer") Configuration buffer,
                               @JsonProperty("insecure") Configuration insecure) {
-    return VertxEndpoint.create(vertx, location, method, payload, endpointHeaders, params,
-        concurrency, buffer, insecure);
+    return VertxEndpoint.create(vertx, location, endpointHeaders, params, insecure);
   }
 
 }

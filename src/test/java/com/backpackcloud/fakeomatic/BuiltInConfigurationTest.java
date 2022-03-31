@@ -72,38 +72,6 @@ public class BuiltInConfigurationTest {
   }
 
   @Test
-  public void testChuckNorrisSample() {
-    String value = faker.some("chuck_norris");
-    assertNotNull(value);
-    assertFalse(value.isEmpty());
-    assertFalse(value.isBlank());
-  }
-
-  @Test
-  public void testTronaldDumpSample() {
-    String value = faker.some("tronald_dump");
-    assertNotNull(value);
-    assertFalse(value.isEmpty());
-    assertFalse(value.isBlank());
-  }
-
-  @Test
-  public void testBusinessBullshitSample() {
-    String value = faker.some("business_bullshit");
-    assertNotNull(value);
-    assertFalse(value.isEmpty());
-    assertFalse(value.isBlank());
-  }
-
-  @Test
-  public void testCommitMessageSample() {
-    String value = faker.some("whatthecommit");
-    assertNotNull(value);
-    assertFalse(value.isEmpty());
-    assertFalse(value.isBlank());
-  }
-
-  @Test
   public void testErrorCauseSample() {
     times(10000, faker.sample("error_cause").get(), value -> {
       assertNotNull(value);

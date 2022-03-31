@@ -46,7 +46,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @ApplicationScoped
@@ -94,8 +93,8 @@ public class FakerProducer {
       }
     };
     configurations.stream()
-                  .map(convertToInputStream)
-                  .forEach(builder::loadFrom);
+      .map(convertToInputStream)
+      .forEach(builder::loadFrom);
 
     Faker faker = builder.build();
     rootFaker.delegate = faker;
@@ -117,7 +116,11 @@ public class FakerProducer {
 
     @Override
     public Optional<Sample> sample(String sampleName) {
-      return Optional.ofNullable(() -> delegate.sample(sampleName).orElseThrow(UnbelievableException::new).get());
+      return Optional.ofNullable(() ->
+        delegate.sample(sampleName)
+          .orElseThrow(UnbelievableException::new)
+          .get()
+      );
     }
 
     @Override

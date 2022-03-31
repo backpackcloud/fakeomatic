@@ -25,7 +25,6 @@
 package com.backpackcloud.fakeomatic.impl.sample;
 
 import com.backpackcloud.fakeomatic.spi.Endpoint;
-import com.backpackcloud.fakeomatic.spi.EndpointResponse;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
@@ -44,7 +43,7 @@ import java.util.concurrent.ExecutionException;
  * @author Marcelo Guimarães
  */
 @RegisterForReflection
-public class ApiSample implements Sample<EndpointResponse> {
+public class ApiSample implements Sample<String> {
 
   private static final Logger LOGGER = Logger.getLogger(ApiSample.class);
 
@@ -56,7 +55,7 @@ public class ApiSample implements Sample<EndpointResponse> {
   }
 
   @Override
-  public EndpointResponse get() {
+  public String get() {
     try {
       return endpoint.call().toCompletableFuture().get();
     } catch (InterruptedException | ExecutionException e) {
