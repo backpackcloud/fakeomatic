@@ -73,7 +73,7 @@ public class BuiltInConfigurationTest {
 
   @Test
   public void testErrorCauseSample() {
-    times(10000, faker.sample("error_cause").get(), value -> {
+    times(10000, faker.sample("error-cause").get(), value -> {
       assertNotNull(value);
       assertFalse(value.toString().isEmpty());
       assertFalse(value.toString().isBlank());
@@ -82,7 +82,7 @@ public class BuiltInConfigurationTest {
 
   @Test
   public void testTableFlipSample() {
-    times(10000, faker.sample("table_flip").get(), value -> {
+    times(10000, faker.sample("table-flip").get(), value -> {
       assertNotNull(value);
       assertFalse(value.toString().isEmpty());
       assertFalse(value.toString().isBlank());

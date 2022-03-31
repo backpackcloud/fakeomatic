@@ -45,13 +45,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 @ApplicationScoped
 public class FakerProducer {
 
-  public static final String DEFAULT_CONFIG_LOCATION = "/META-INF/resources/config/fakeomatic.yaml";
+  public static final String DEFAULT_CONFIG_LOCATION = "/META-INF/resources/config/fakeomatic.yml";
 
   public static final String DEFAULT_CONFIG = "fakeomatic";
 
@@ -94,6 +95,7 @@ public class FakerProducer {
     };
     configurations.stream()
       .map(convertToInputStream)
+      .filter(Objects::nonNull)
       .forEach(builder::loadFrom);
 
     Faker faker = builder.build();

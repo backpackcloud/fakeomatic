@@ -7,11 +7,11 @@ map:
   file_value:
     file: LICENSE
   resource_value:
-    resource: /META-INF/resources/config/fakeomatic.yaml
+    resource: /META-INF/resources/config/fakeomatic.yml
 
   composition:
     env: FAKEOMATIC_TEST
     property: fakeomatic.test
     file: LICENSE
-    resource: /META-INF/resources/config/fakeomatic.yaml
+    resource: /META-INF/resources/config/fakeomatic.yml
     default: foo
