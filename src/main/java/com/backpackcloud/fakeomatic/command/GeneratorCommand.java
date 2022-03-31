@@ -24,6 +24,7 @@
 
 package com.backpackcloud.fakeomatic.command;
 
+import com.backpackcloud.fakeomatic.process.Api;
 import com.backpackcloud.fakeomatic.process.Generator;
 import io.quarkus.runtime.Quarkus;
 import picocli.CommandLine;
@@ -64,6 +65,24 @@ public class GeneratorCommand implements Callable<Integer> {
   )
   String value;
 
+  @CommandLine.Option(
+    names = {"-s", "--server"},
+    description = "Start the server instead of generating data"
+  )
+  boolean serverMode;
+
+  @CommandLine.Option(
+    names = {"-b", "--host"},
+    description = "Sets the host for the server"
+  )
+  String host;
+
+  @CommandLine.Option(
+    names = {"-p", "--port"},
+    description = "Sets the port for the server"
+  )
+  String port;
+
   @Override
   public Integer call() {
 
@@ -72,14 +91,35 @@ public class GeneratorCommand implements Callable<Integer> {
       setPropertyIfNotNull("generator.config", String.join(",", config));
     }
 
-    String mode = template ? "template" : expression ? "expression" : "sample";
+    if (serverMode) {
+      setPropertyIfNotNull("quarkus.http.host", host);
+      setPropertyIfNotNull("quarkus.http.port", port);
+      System.setProperty("quarkus.log.level", "INFO");
 
-    try {
-      Quarkus.run(Generator.class, mode, value);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      return 1;
+      try {
+        Quarkus.run(Api.class);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return 1;
+      }
+
+    } else {
+      String mode = template ? "template" : expression ? "expression" : "sample";
+
+      System.setProperty("quarkus.log.level", "ERROR");
+      System.setProperty("quarkus.log.console.enable", "true");
+      System.setProperty("quarkus.banner.enabled", "false");
+      System.setProperty("quarkus.console.disable-input", "true");
+      System.setProperty("quarkus.test.continuous-testing", "disabled");
+
+      try {
+        Quarkus.run(Generator.class, mode, value);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return 1;
+      }
     }
+
     return 0;
   }
 
