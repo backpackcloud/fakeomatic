@@ -28,7 +28,6 @@ import com.backpackcloud.fakeomatic.Main;
 import com.backpackcloud.fakeomatic.core.impl.FakerBuilder;
 import com.backpackcloud.fakeomatic.core.spi.Faker;
 import com.backpackcloud.fakeomatic.core.spi.Sample;
-import com.backpackcloud.fakeomatic.impl.sample.ApiSample;
 import com.backpackcloud.fakeomatic.spi.Config;
 import com.backpackcloud.zipper.UnbelievableException;
 import io.quarkus.qute.Engine;
@@ -75,7 +74,6 @@ public class FakerProducer {
     builder.inject(Vertx.class, this.vertx);
     builder.inject(Engine.class, this.templateEngine);
     builder.inject(Faker.class, rootFaker);
-    builder.register("api", ApiSample.class);
 
     List<String> configurations = new ArrayList<>(Arrays.asList(config.configs()));
     Collections.reverse(configurations);
