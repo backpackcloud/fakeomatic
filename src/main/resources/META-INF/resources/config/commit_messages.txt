@@ -1,4 +1,4 @@
-No bugs were harmed while {some('adverb')} coding this {some('adjective')} feature
-{some('whatthecommit')}
-{some('table-flip')}
-Issue #{expression('####')}: {some('business-bullshit')}
+No bugs were harmed while {{adverb}} coding this {{adjective}} feature
+{{whatthecommit}}
+{{table-flip}}
+Issue [[####]]: {{business-bullshit}}

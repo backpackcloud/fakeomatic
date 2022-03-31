@@ -1,6 +1,0 @@
-{
-  "id": "{some('uuid')}",
-  "cause": "{some('error_cause')}",
-  "message": "{some('whatthecommit')}",
-  "device": "{expression('%%-#####')}"
-}

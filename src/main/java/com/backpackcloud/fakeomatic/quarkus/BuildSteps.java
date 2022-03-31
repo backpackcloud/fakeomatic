@@ -48,6 +48,7 @@ public class BuildSteps {
     reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.SourceSample.class));
     reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.UuidSample.class));
     reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.WeightedSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.TemplateSample.class));
     reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.FakerImpl.class));
 
     reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.zipper.Configuration.class));
