@@ -26,7 +26,7 @@ package com.backpackcloud.fakeomatic.impl.producer;
 
 import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.fakeomatic.Main;
-import com.backpackcloud.fakeomatic.spi.Config;
+import com.backpackcloud.fakeomatic.Config;
 import com.backpackcloud.sampler.Sample;
 import com.backpackcloud.sampler.Sampler;
 import com.backpackcloud.sampler.impl.SamplerBuilder;

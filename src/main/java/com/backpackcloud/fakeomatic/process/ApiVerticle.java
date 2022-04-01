@@ -30,7 +30,7 @@ public class ApiVerticle extends AbstractVerticle {
   public void start(Promise<Void> startPromise) {
     Router router = Router.router(vertx);
 
-    router.route(HttpMethod.GET, "/fake/:sample").handler(routingContext -> {
+    router.route(HttpMethod.GET, "/sample/:sample").handler(routingContext -> {
       String sample = routingContext.request().getParam("sample");
 
       Optional<Object> data = sampler.sample(sample).map(Sample::get);
