@@ -24,49 +24,45 @@
 
 package com.backpackcloud.fakeomatic.process;
 
-import com.backpackcloud.fakeomatic.core.spi.Faker;
-import com.backpackcloud.fakeomatic.core.spi.Sample;
-import com.backpackcloud.fakeomatic.impl.FakerResolver;
-import com.backpackcloud.fakeomatic.spi.Config;
-import io.quarkus.qute.Engine;
+import com.backpackcloud.Configuration;
+import com.backpackcloud.sampler.Sample;
+import com.backpackcloud.sampler.Sampler;
+import com.backpackcloud.sampler.impl.sample.TemplateSample;
 import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @ApplicationScoped
 public class Generator implements QuarkusApplication {
 
-  private final Faker faker;
+  private final Sampler sampler;
 
-  public Generator(Faker faker) {
-    this.faker = faker;
+  public Generator(Sampler sampler) {
+    this.sampler = sampler;
   }
 
   @Override
-  public int run(String... args) throws Exception {
+  public int run(String... args) {
     Mode mode = Mode.valueOf(args[0].toUpperCase());
     String value = args[1];
 
     switch (mode) {
       case SAMPLE:
-        faker.sample(value)
+        sampler.sample(value)
           .map(Sample::get)
           .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
         break;
       case TEMPLATE:
-        String render = Engine.builder()
-          .addDefaults()
-          .addValueResolver(new FakerResolver())
-          .build()
-          .parse(value)
-          .data(faker)
-          .render();
-        System.out.println(render);
+        System.out.println(new TemplateSample(
+            () -> Sample.of(value),
+            Configuration.NOT_SUPPLIED,
+            Configuration.NOT_SUPPLIED,
+            sampler
+          ).get()
+        );
         break;
       case EXPRESSION:
-        System.out.println(faker.expression(value));
+        System.out.println(sampler.expression(value));
     }
     return 0;
   }

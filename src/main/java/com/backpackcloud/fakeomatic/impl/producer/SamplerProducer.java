@@ -24,12 +24,12 @@
 
 package com.backpackcloud.fakeomatic.impl.producer;
 
+import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.fakeomatic.Main;
-import com.backpackcloud.fakeomatic.core.impl.FakerBuilder;
-import com.backpackcloud.fakeomatic.core.spi.Faker;
-import com.backpackcloud.fakeomatic.core.spi.Sample;
 import com.backpackcloud.fakeomatic.spi.Config;
-import com.backpackcloud.zipper.UnbelievableException;
+import com.backpackcloud.sampler.Sample;
+import com.backpackcloud.sampler.Sampler;
+import com.backpackcloud.sampler.impl.SamplerBuilder;
 import io.quarkus.qute.Engine;
 import io.vertx.mutiny.core.Vertx;
 
@@ -48,7 +48,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @ApplicationScoped
-public class FakerProducer {
+public class SamplerProducer {
 
   public static final String DEFAULT_CONFIG_LOCATION = "/META-INF/resources/config/fakeomatic.yml";
 
@@ -60,7 +60,7 @@ public class FakerProducer {
 
   private final Engine templateEngine;
 
-  public FakerProducer(Config config, Vertx vertx, Engine templateEngine) {
+  public SamplerProducer(Config config, Vertx vertx, Engine templateEngine) {
     this.config = config;
     this.vertx = vertx;
     this.templateEngine = templateEngine;
@@ -68,12 +68,12 @@ public class FakerProducer {
 
   @Produces
   @Singleton
-  public Faker produce() {
-    FakerBuilder builder = new FakerBuilder(config.random());
-    RootFaker rootFaker = new RootFaker();
+  public Sampler produce() {
+    SamplerBuilder builder = new SamplerBuilder(config.random());
+    RootSampler rootSampler = new RootSampler();
     builder.inject(Vertx.class, this.vertx);
     builder.inject(Engine.class, this.templateEngine);
-    builder.inject(Faker.class, rootFaker);
+    builder.inject(Sampler.class, rootSampler);
 
     List<String> configurations = new ArrayList<>(Arrays.asList(config.configs()));
     Collections.reverse(configurations);
@@ -94,18 +94,18 @@ public class FakerProducer {
       .filter(Objects::nonNull)
       .forEach(builder::loadFrom);
 
-    Faker faker = builder.build();
-    rootFaker.delegate = faker;
-    return faker;
+    Sampler sampler = builder.build();
+    rootSampler.delegate = sampler;
+    return sampler;
   }
 
   public static InputStream defaultConfig() {
     return Main.class.getResourceAsStream(DEFAULT_CONFIG_LOCATION);
   }
 
-  static class RootFaker implements Faker {
+  static class RootSampler implements Sampler {
 
-    Faker delegate;
+    Sampler delegate;
 
     @Override
     public List<Sample> samples() {

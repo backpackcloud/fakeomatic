@@ -36,7 +36,7 @@
 
   <groupId>com.backpackcloud</groupId>
   <artifactId>fakeomatic</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${zipper.version}-SNAPSHOT</version>
 
   <description>
     Fake-O-Matic is a library for generating and ingesting fake data.
@@ -82,6 +82,8 @@
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
 
     <quarkus.package.type>native</quarkus.package.type>
+
+    <zipper.version>1.0.0-SNAPSHOT</zipper.version>
   </properties>
 
   <dependencyManagement>
@@ -99,8 +101,8 @@
   <dependencies>
     <dependency>
       <groupId>com.backpackcloud</groupId>
-      <artifactId>fakeomatic-core</artifactId>
-      <version>${project.version}</version>
+      <artifactId>zipper</artifactId>
+      <version>${zipper.version}</version>
     </dependency>
 
     <dependency>
