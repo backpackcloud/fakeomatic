@@ -33,26 +33,27 @@ public class BuildSteps {
 
   @BuildStep
   void registerClasses(BuildProducer<ReflectiveClassBuildItem> reflectionClasses) {
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.spi.Sample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.spi.Faker.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.spi.SampleConfiguration.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.Sample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.Sampler.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.SampleConfiguration.class));
 
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.CachedSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.CharSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.DateSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.ExpressionSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.JoiningSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.JsonValueSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.ListSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.RangeSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.SourceSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.UuidSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.WeightedSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.sample.TemplateSample.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.fakeomatic.core.impl.FakerImpl.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.CachedSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.CharSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.DateSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.ExpressionSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.JoiningSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.JsonValueSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.ListSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.RangeSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.SourceSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.UuidSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.WeightedSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.TemplateSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.sample.HttpSample.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.sampler.impl.SamplerImpl.class));
 
-    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.zipper.Configuration.class));
-    reflectionClasses.produce(new ReflectiveClassBuildItem(false, false, com.backpackcloud.zipper.impl.jackson.ConfigurationDeserializer.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(true, false, com.backpackcloud.Configuration.class));
+    reflectionClasses.produce(new ReflectiveClassBuildItem(false, false, com.backpackcloud.impl.jackson.ConfigurationDeserializer.class));
   }
 
 }
