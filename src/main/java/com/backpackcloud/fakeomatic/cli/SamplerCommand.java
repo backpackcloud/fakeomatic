@@ -56,8 +56,8 @@ public class SamplerCommand implements Command {
         .write(simpleResource.value(), "white")
     );
 
-    resource.labels().add(new Label("type", sample.type()));
-    resource.labels().add(new Label("sample", sampleName));
+    resource.labels().put(new Label("type", sample.type()));
+    resource.labels().put(new Label("sample", sampleName));
     resource.tags().put(new Tag("sample"));
 
     collection.add(resource);

@@ -54,7 +54,7 @@ public class ExpressionCommand implements Command {
         .write(simpleResource.value(), "white")
     );
 
-    resource.labels().add(new Label("expression", expression));
+    resource.labels().put(new Label("expression", expression));
     resource.tags().put(new Tag("expression"));
 
     collection.add(resource);
