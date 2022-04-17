@@ -26,10 +26,10 @@ package com.backpackcloud.fakeomatic.command;
 
 import com.backpackcloud.fakeomatic.process.Api;
 import com.backpackcloud.fakeomatic.process.Generator;
+import com.backpackcloud.fakeomatic.process.SamplerCLI;
 import io.quarkus.runtime.Quarkus;
 import picocli.CommandLine;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(mixinStandardHelpOptions = true)
@@ -37,9 +37,9 @@ public class GeneratorCommand implements Callable<Integer> {
 
   @CommandLine.Option(
     names = {"-f", "--config"},
-    description = "A configuration to apply (use 'fakeomatic' to apply the built-in one)"
+    description = "A configuration to use"
   )
-  List<String> config;
+  String config;
 
   @CommandLine.Option(
     names = {"-r", "--seed"},
@@ -67,9 +67,15 @@ public class GeneratorCommand implements Callable<Integer> {
 
   @CommandLine.Option(
     names = {"-s", "--server"},
-    description = "Start the server instead of generating data"
+    description = "Starts the server instead of generating data"
   )
   boolean serverMode;
+
+  @CommandLine.Option(
+    names = {"-i", "--cli"},
+    description = "Starts the command line interface"
+  )
+  boolean cli;
 
   @CommandLine.Option(
     names = {"-b", "--host"},
@@ -88,7 +94,7 @@ public class GeneratorCommand implements Callable<Integer> {
 
     setPropertyIfNotNull("generator.seed", seed);
     if (config != null) {
-      setPropertyIfNotNull("generator.config", String.join(",", config));
+      setPropertyIfNotNull("generator.config", config);
     }
 
     if (serverMode) {
@@ -103,6 +109,19 @@ public class GeneratorCommand implements Callable<Integer> {
         return 1;
       }
 
+    } else if (cli) {
+      System.setProperty("quarkus.log.level", "ERROR");
+      System.setProperty("quarkus.log.console.enable", "true");
+      System.setProperty("quarkus.banner.enabled", "false");
+      System.setProperty("quarkus.console.disable-input", "true");
+      System.setProperty("quarkus.test.continuous-testing", "disabled");
+
+      try {
+        Quarkus.run(SamplerCLI.class);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return 1;
+      }
     } else {
       String mode = template ? "template" : expression ? "expression" : "sample";
 

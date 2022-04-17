@@ -1,0 +1,76 @@
+package com.backpackcloud.fakeomatic.cli;
+
+import com.backpackcloud.Label;
+import com.backpackcloud.UnbelievableException;
+import com.backpackcloud.cli.Command;
+import com.backpackcloud.cli.CommandContext;
+import com.backpackcloud.cli.CommandInput;
+import com.backpackcloud.cli.CommandType;
+import com.backpackcloud.cli.ResourceCollection;
+import com.backpackcloud.cli.Writer;
+import com.backpackcloud.cli.commands.GeneralCommandType;
+import com.backpackcloud.cli.impl.SimpleResource;
+import com.backpackcloud.cli.ui.Suggestion;
+import com.backpackcloud.cli.ui.impl.PromptSuggestion;
+import com.backpackcloud.sampler.Sample;
+import com.backpackcloud.sampler.Sampler;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class SamplerCommand implements Command {
+
+  private final Sampler sampler;
+  private final ResourceCollection collection;
+
+  public SamplerCommand(Sampler sampler, ResourceCollection collection) {
+    this.sampler = sampler;
+    this.collection = collection;
+  }
+
+  @Override
+  public String name() {
+    return "sample";
+  }
+
+  @Override
+  public CommandType type() {
+    return GeneralCommandType.DATA;
+  }
+
+  @Override
+  public String description() {
+    return "Generates a sample data";
+  }
+
+  @Override
+  public void execute(CommandContext context) {
+    String sampleName = context.input().asString();
+    Sample sample = sampler.sample(sampleName)
+      .orElseThrow(UnbelievableException.because("Sample not found"));
+
+    SimpleResource resource = new SimpleResource(sample.get().toString(),
+      (simpleResource, writer) -> writer
+        .write(String.format("[%s] ", sampleName), "blue")
+        .write(simpleResource.value(), "white")
+    );
+
+    resource.labels().add(new Label("type", sample.type()));
+    resource.labels().add(new Label("sample", sampleName));
+
+    collection.add(resource);
+
+    Writer writer = context.writer();
+    resource.toDisplay(writer);
+    writer.newLine();
+  }
+
+  @Override
+  public List<Suggestion> suggest(CommandInput input) {
+    return sampler.samples().entrySet().stream()
+      .map(entry -> PromptSuggestion.suggest(entry.getKey())
+        .describedAs(entry.getValue().type()))
+      .collect(Collectors.toList());
+  }
+
+}
