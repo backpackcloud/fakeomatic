@@ -5,6 +5,7 @@ import com.backpackcloud.cli.Command;
 import com.backpackcloud.cli.Registry;
 import com.backpackcloud.cli.ResourceCollection;
 import com.backpackcloud.cli.impl.ResourceCLI;
+import com.backpackcloud.fakeomatic.cli.EvalTemplateCommand;
 import com.backpackcloud.fakeomatic.cli.ExpressionCommand;
 import com.backpackcloud.fakeomatic.cli.SamplerCommand;
 import com.backpackcloud.sampler.Sampler;
@@ -30,6 +31,7 @@ public class SamplerCLI implements QuarkusApplication {
 
     commands.add(new SamplerCommand(sampler, resources));
     commands.add(new ExpressionCommand(sampler, resources));
+    commands.add(new EvalTemplateCommand(sampler, resources));
 
     CLI cli = new ResourceCLI(registry);
     cli.start();

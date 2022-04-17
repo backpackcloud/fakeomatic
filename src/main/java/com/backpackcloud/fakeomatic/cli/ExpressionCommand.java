@@ -1,6 +1,7 @@
 package com.backpackcloud.fakeomatic.cli;
 
 import com.backpackcloud.Label;
+import com.backpackcloud.Tag;
 import com.backpackcloud.cli.Command;
 import com.backpackcloud.cli.CommandContext;
 import com.backpackcloud.cli.CommandInput;
@@ -54,6 +55,7 @@ public class ExpressionCommand implements Command {
     );
 
     resource.labels().add(new Label("expression", expression));
+    resource.tags().put(new Tag("expression"));
 
     collection.add(resource);
 

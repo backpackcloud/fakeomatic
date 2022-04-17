@@ -1,6 +1,7 @@
 package com.backpackcloud.fakeomatic.cli;
 
 import com.backpackcloud.Label;
+import com.backpackcloud.Tag;
 import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.cli.Command;
 import com.backpackcloud.cli.CommandContext;
@@ -57,6 +58,7 @@ public class SamplerCommand implements Command {
 
     resource.labels().add(new Label("type", sample.type()));
     resource.labels().add(new Label("sample", sampleName));
+    resource.tags().put(new Tag("sample"));
 
     collection.add(resource);
 
