@@ -28,7 +28,9 @@ public class SamplerCLI implements QuarkusApplication {
         SamplerCommand.class,
         ExpressionCommand.class,
         EvalTemplateCommand.class))
+
       .build();
+
     cli.start();
 
     return 0;
