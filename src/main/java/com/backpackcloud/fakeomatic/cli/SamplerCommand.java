@@ -15,10 +15,13 @@ import com.backpackcloud.cli.ui.Suggestion;
 import com.backpackcloud.cli.ui.impl.PromptSuggestion;
 import com.backpackcloud.sampler.Sample;
 import com.backpackcloud.sampler.Sampler;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RegisterForReflection
 public class SamplerCommand implements Command {
 
   private final Sampler sampler;
@@ -69,6 +72,9 @@ public class SamplerCommand implements Command {
 
   @Override
   public List<Suggestion> suggest(CommandInput input) {
+    if (input.asList().size() > 1) {
+      return Collections.emptyList();
+    }
     return sampler.samples().entrySet().stream()
       .map(entry -> PromptSuggestion.suggest(entry.getKey())
         .describedAs(entry.getValue().type()))

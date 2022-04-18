@@ -13,11 +13,13 @@ import com.backpackcloud.cli.impl.SimpleResource;
 import com.backpackcloud.cli.ui.Suggestion;
 import com.backpackcloud.cli.ui.impl.PromptSuggestion;
 import com.backpackcloud.sampler.Sampler;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RegisterForReflection
 public class ExpressionCommand implements Command {
 
   private final Sampler sampler;

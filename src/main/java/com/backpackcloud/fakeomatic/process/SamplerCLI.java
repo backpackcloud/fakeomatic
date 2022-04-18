@@ -1,10 +1,6 @@
 package com.backpackcloud.fakeomatic.process;
 
 import com.backpackcloud.cli.CLI;
-import com.backpackcloud.cli.Command;
-import com.backpackcloud.cli.Registry;
-import com.backpackcloud.cli.ResourceCollection;
-import com.backpackcloud.cli.impl.ResourceCLI;
 import com.backpackcloud.fakeomatic.cli.EvalTemplateCommand;
 import com.backpackcloud.fakeomatic.cli.ExpressionCommand;
 import com.backpackcloud.fakeomatic.cli.SamplerCommand;
@@ -12,7 +8,7 @@ import com.backpackcloud.sampler.Sampler;
 import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.Collection;
+import java.util.Arrays;
 
 @ApplicationScoped
 public class SamplerCLI implements QuarkusApplication {
@@ -25,15 +21,14 @@ public class SamplerCLI implements QuarkusApplication {
 
   @Override
   public int run(String... args) {
-    Registry registry = Registry.defaults();
-    Collection<Command> commands = registry.commands();
-    ResourceCollection resources = registry.resources();
+    CLI cli = CLI.complete()
+      .addDependency(Sampler.class, sampler)
 
-    commands.add(new SamplerCommand(sampler, resources));
-    commands.add(new ExpressionCommand(sampler, resources));
-    commands.add(new EvalTemplateCommand(sampler, resources));
-
-    CLI cli = new ResourceCLI(registry);
+      .addCommands(Arrays.asList(
+        SamplerCommand.class,
+        ExpressionCommand.class,
+        EvalTemplateCommand.class))
+      .build();
     cli.start();
 
     return 0;
