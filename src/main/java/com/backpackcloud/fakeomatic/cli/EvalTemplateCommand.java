@@ -44,10 +44,7 @@ public class EvalTemplateCommand implements Command {
     String template = context.input().asString();
     String value = interpolator.apply(template);
 
-    SimpleResource resource = new SimpleResource(value,
-      (simpleResource, writer) -> writer
-        .write(simpleResource.value(), "white")
-    );
+    SimpleResource resource = new SimpleResource(value);
 
     resource.tags().put(new Tag("template"));
 

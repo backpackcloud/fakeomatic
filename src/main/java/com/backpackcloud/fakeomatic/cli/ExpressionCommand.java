@@ -50,11 +50,7 @@ public class ExpressionCommand implements Command {
     String expression = context.input().asString();
     String value = sampler.expression(expression);
 
-    SimpleResource resource = new SimpleResource(value,
-      (simpleResource, writer) -> writer
-        .write(String.format("[%s] ", expression), "blue")
-        .write(simpleResource.value(), "white")
-    );
+    SimpleResource resource = new SimpleResource(value);
 
     resource.labels().put(new Label("expression", expression));
     resource.tags().put(new Tag("expression"));

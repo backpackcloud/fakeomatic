@@ -1,7 +1,6 @@
 package com.backpackcloud.fakeomatic.process;
 
 import com.backpackcloud.cli.CLI;
-import com.backpackcloud.cli.Main;
 import com.backpackcloud.fakeomatic.cli.EvalTemplateCommand;
 import com.backpackcloud.fakeomatic.cli.ExpressionCommand;
 import com.backpackcloud.fakeomatic.cli.SamplerCommand;
@@ -10,7 +9,6 @@ import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.Arrays;
-import java.util.TreeSet;
 
 @ApplicationScoped
 public class SamplerCLI implements QuarkusApplication {
@@ -24,7 +22,9 @@ public class SamplerCLI implements QuarkusApplication {
   @Override
   public int run(String... args) {
     CLI cli = CLI.complete()
-      .addDependency(Sampler.class, sampler)
+      .configureFactory(factory -> factory.context()
+        .whenType(Sampler.class)
+        .use(sampler))
 
       .addCommands(Arrays.asList(
         SamplerCommand.class,
@@ -33,13 +33,7 @@ public class SamplerCLI implements QuarkusApplication {
 
       .build();
 
-    //cli.start();
-
-    CLI.complete()
-      .resourceCollection(new TreeSet<>())
-      .addCommand(Main.PushCommand.class)
-      .build()
-      .start();
+    cli.start();
 
     return 0;
   }

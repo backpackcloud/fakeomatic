@@ -53,11 +53,7 @@ public class SamplerCommand implements Command {
     Sample sample = sampler.sample(sampleName)
       .orElseThrow(UnbelievableException.because("Sample not found"));
 
-    SimpleResource resource = new SimpleResource(sample.get().toString(),
-      (simpleResource, writer) -> writer
-        .write(String.format("[%s] ", sampleName), "blue")
-        .write(simpleResource.value(), "white")
-    );
+    SimpleResource resource = new SimpleResource(sample.get().toString());
 
     resource.labels().put(new Label("type", sample.type()));
     resource.labels().put(new Label("sample", sampleName));
