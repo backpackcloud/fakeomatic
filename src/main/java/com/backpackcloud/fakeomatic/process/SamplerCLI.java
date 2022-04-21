@@ -8,7 +8,6 @@ import com.backpackcloud.sampler.Sampler;
 import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.Arrays;
 
 @ApplicationScoped
 public class SamplerCLI implements QuarkusApplication {
@@ -26,10 +25,9 @@ public class SamplerCLI implements QuarkusApplication {
         .whenType(Sampler.class)
         .use(sampler))
 
-      .addCommands(Arrays.asList(
-        SamplerCommand.class,
-        ExpressionCommand.class,
-        EvalTemplateCommand.class))
+      .addCommand(SamplerCommand.class)
+      .addCommand(ExpressionCommand.class)
+      .addCommand(EvalTemplateCommand.class)
 
       .build();
 
