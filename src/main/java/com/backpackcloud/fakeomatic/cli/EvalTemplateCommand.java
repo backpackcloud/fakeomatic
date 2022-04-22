@@ -9,11 +9,11 @@ import com.backpackcloud.cli.Writer;
 import com.backpackcloud.cli.commands.GeneralCommandType;
 import com.backpackcloud.cli.impl.SimpleResource;
 import com.backpackcloud.sampler.Sampler;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import javax.enterprise.context.ApplicationScoped;
 import java.util.function.Function;
 
-@RegisterForReflection
+@ApplicationScoped
 public class EvalTemplateCommand implements Command {
 
   private final Function<String, String> interpolator;
