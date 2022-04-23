@@ -1,0 +1,13 @@
+samples:
+  address_expression:
+    type: list
+    values:
+      - "Some Street ##"
+      - "Another Street ###"
+      - "Galaxy ###"
+  address:
+    type: expression
+    sample: address_expression
+  credit_card:
+    type: expression
+    expression: "################"

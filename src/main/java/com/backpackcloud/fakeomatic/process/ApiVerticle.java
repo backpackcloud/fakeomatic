@@ -1,7 +1,7 @@
 package com.backpackcloud.fakeomatic.process;
 
-import com.backpackcloud.sampler.Sample;
-import com.backpackcloud.sampler.Sampler;
+import com.backpackcloud.fakeomatic.sampler.Sample;
+import com.backpackcloud.fakeomatic.sampler.Sampler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpMethod;

@@ -22,47 +22,31 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.impl.sample;
 
+import com.backpackcloud.fakeomatic.impl.BaseTest;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import org.junit.jupiter.api.Test;
 
-import javax.enterprise.context.ApplicationScoped;
+public class ExpressionSampleTest extends BaseTest {
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
-
-  private final Sampler sampler;
-
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
+  @Test
+  public void testSampleExpression() {
+    Sampler sampler = createSampler("expressions.yaml");
+    Sample<String> sample = sampler.<String>sample("address").get();
+    times(100000, sample, address -> {
+      address.matches("^(Some Street|Another Street|Galaxy) (\\d{2,3})$");
+    });
   }
 
-  @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
-    }
-    return 0;
-  }
-
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Test
+  public void testStringExpression() {
+    Sampler sampler = createSampler("expressions.yaml");
+    Sample<String> sample = sampler.<String>sample("credit_card").get();
+    times(100000, sample, address -> {
+      address.matches("^\\d{16}$");
+    });
   }
 
 }

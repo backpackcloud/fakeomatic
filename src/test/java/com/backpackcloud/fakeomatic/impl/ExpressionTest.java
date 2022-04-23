@@ -22,47 +22,19 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.impl;
 
-import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import org.junit.jupiter.api.Test;
 
-import javax.enterprise.context.ApplicationScoped;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+public class ExpressionTest extends BaseTest {
 
-  private final Sampler sampler;
-
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
-  }
-
-  @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
-    }
-    return 0;
-  }
-
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Test
+  public void testExpression() {
+    Sampler sampler = createSampler("expressions.yaml");
+    assertEquals("000aaa", sampler.expression("###%%%"));
   }
 
 }

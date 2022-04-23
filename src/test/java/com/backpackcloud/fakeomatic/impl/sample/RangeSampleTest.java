@@ -22,47 +22,56 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.impl.sample;
 
+import com.backpackcloud.fakeomatic.impl.BaseTest;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import com.backpackcloud.fakeomatic.sampler.impl.sample.RangeSample;
+import org.junit.jupiter.api.Test;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-  private final Sampler sampler;
+public class RangeSampleTest extends BaseTest {
 
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
+  Sampler sampler = createSampler("ranges.yaml");
+
+  @Test
+  public void testParse() {
+    Map<String, Sample> samples = sampler.samples();
+    assertEquals(2, samples.size());
   }
 
-  @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
-    }
-    return 0;
+  @Test
+  public void test1() {
+    testSample("test1", -100, 100);
   }
 
-  public enum Mode {
+  @Test
+  public void test2() {
+    testSample("test2", 20, 40);
+  }
 
-    SAMPLE, TEMPLATE, EXPRESSION
+  private void testSample(String sampleName, int min, int max) {
+    Sample sample = sampler.sample(sampleName).get();
+    RangeSample rangeSample = (RangeSample) sample;
+    Set<Integer> generated = new HashSet<>();
 
+    assertEquals(min, rangeSample.min());
+    assertEquals(max, rangeSample.max());
+
+    times(100000, rangeSample, i -> {
+      generated.add(i);
+      assertTrue(i >= min);
+      assertTrue(i <= max);
+    });
+
+    assertEquals(max - min + 1, generated.size());
   }
 
 }

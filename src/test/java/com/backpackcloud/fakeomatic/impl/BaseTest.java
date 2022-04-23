@@ -22,47 +22,34 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.impl;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import com.backpackcloud.impl.configuration.ResourceConfiguration;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.Random;
+import java.util.function.Consumer;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+public abstract class BaseTest {
 
-  private final Sampler sampler;
-
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
-  }
-
-  @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
+  protected void times(int times, Consumer<Integer> consumer) {
+    for (int i = 1; i <= times; i++) {
+      consumer.accept(i);
     }
-    return 0;
   }
 
-  public enum Mode {
+  protected void times(int times, Runnable runnable) {
+    times(times, integer -> runnable.run());
+  }
 
-    SAMPLE, TEMPLATE, EXPRESSION
+  protected <E> void times(int times, Sample<E> sample, Consumer<E> consumer) {
+    times(times, () -> consumer.accept(sample.get()));
+  }
 
+  protected Sampler createSampler(String name) {
+    String path = getClass().getPackageName().replaceAll("\\.", "/");
+    return Sampler.loadFrom(new ResourceConfiguration(path + "/" + name), new Random());
   }
 
 }

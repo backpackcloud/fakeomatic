@@ -22,47 +22,30 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.sampler;
 
-import com.backpackcloud.fakeomatic.sampler.Sample;
-import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import com.backpackcloud.UnbelievableException;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+@RegisterForReflection
+public interface SampleConfiguration {
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+  Sample<?> sample();
 
-  private final Sampler sampler;
-
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
-  }
-
-  @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
+  @JsonCreator
+  static SampleConfiguration create(@JacksonInject Sampler sampler,
+                                    @JsonProperty("ref") String sampleName,
+                                    @JsonProperty("sample") Sample sample) {
+    if (sampleName != null) {
+      return () -> sampler.sample(sampleName)
+        .orElseThrow(UndefinedSampleException.of(sampleName));
+    } else if (sample != null) {
+      return () -> sample;
     }
-    return 0;
-  }
-
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+    throw new UnbelievableException("Sample not given");
   }
 
 }

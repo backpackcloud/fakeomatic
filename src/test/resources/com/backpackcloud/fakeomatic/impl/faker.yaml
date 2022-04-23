@@ -1,0 +1,4 @@
+samples:
+  letter:
+    type: chars
+    value: abcdefghijklmnopqrstuvwxyz

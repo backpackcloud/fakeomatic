@@ -22,47 +22,39 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
-import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.Random;
+import java.util.UUID;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+/**
+ * A sample that generates UUIDs.
+ *
+ * @author Marcelo Guimarães
+ */
+@RegisterForReflection
+public class UuidSample implements Sample<UUID> {
 
-  private final Sampler sampler;
+  public static final String TYPE = "uuid";
 
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
+  private final Random random;
+
+  public UuidSample(@JacksonInject Random random) {
+    this.random = random;
   }
 
   @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
-    }
-    return 0;
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Override
+  public UUID get() {
+    return new UUID(random.nextLong(), random.nextLong());
   }
 
 }

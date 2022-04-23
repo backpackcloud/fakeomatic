@@ -8,7 +8,7 @@ import com.backpackcloud.cli.ResourceCollection;
 import com.backpackcloud.cli.Writer;
 import com.backpackcloud.cli.commands.GeneralCommandType;
 import com.backpackcloud.cli.impl.SimpleResource;
-import com.backpackcloud.sampler.Sampler;
+import com.backpackcloud.fakeomatic.sampler.Sampler;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.function.Function;

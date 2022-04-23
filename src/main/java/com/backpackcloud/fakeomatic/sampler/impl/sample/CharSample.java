@@ -22,47 +22,46 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
-import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.Random;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+/**
+ * This sample can pick any character from a given string. Useful for defining a
+ * set of characters that can be used to produce IDs or any other information
+ * that is not meant to be read.
+ *
+ * @author Marcelo Guimarães
+ */
+@RegisterForReflection
+public class CharSample implements Sample<String> {
 
-  private final Sampler sampler;
+  public static final String TYPE = "chars";
 
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
+  private final Random random;
+  private final String value;
+
+  @JsonCreator
+  public CharSample(@JacksonInject Random random,
+                    @JsonProperty("value") String value) {
+    this.random = random;
+    this.value = value;
   }
 
   @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
-    }
-    return 0;
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Override
+  public String get() {
+    return String.valueOf(value.charAt(random.nextInt(value.length())));
   }
 
 }

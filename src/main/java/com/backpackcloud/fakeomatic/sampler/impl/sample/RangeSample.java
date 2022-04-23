@@ -22,47 +22,50 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
-import com.backpackcloud.fakeomatic.sampler.Sampler;
-import io.quarkus.runtime.QuarkusApplication;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.Random;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+@RegisterForReflection
+public class RangeSample implements Sample<Integer> {
 
-  private final Sampler sampler;
+  public static final String TYPE = "range";
 
-  public Generator(Sampler sampler) {
-    this.sampler = sampler;
+  private final Random random;
+  private final int min;
+  private final int max;
+
+  @JsonCreator
+  public RangeSample(@JacksonInject Random random,
+                     @JsonProperty("min") int min,
+                     @JsonProperty("max") int max) {
+    this.random = random;
+    this.min = min;
+    this.max = max;
   }
 
   @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    switch (mode) {
-      case SAMPLE:
-        sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
-        break;
-      case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
-        break;
-      case EXPRESSION:
-        System.out.println(sampler.expression(value));
-    }
-    return 0;
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
+  public int min() {
+    return min;
+  }
 
-    SAMPLE, TEMPLATE, EXPRESSION
+  public int max() {
+    return max;
+  }
 
+  @Override
+  public Integer get() {
+    return min + random.nextInt((max + 1) - min);
   }
 
 }

@@ -13,8 +13,8 @@ import com.backpackcloud.cli.commands.GeneralCommandType;
 import com.backpackcloud.cli.impl.SimpleResource;
 import com.backpackcloud.cli.ui.Suggestion;
 import com.backpackcloud.cli.ui.impl.PromptSuggestion;
-import com.backpackcloud.sampler.Sample;
-import com.backpackcloud.sampler.Sampler;
+import com.backpackcloud.fakeomatic.sampler.Sample;
+import com.backpackcloud.fakeomatic.sampler.Sampler;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.Collections;
