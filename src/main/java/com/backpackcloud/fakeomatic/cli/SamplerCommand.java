@@ -6,7 +6,6 @@ import com.backpackcloud.cli.CommandContext;
 import com.backpackcloud.cli.CommandInput;
 import com.backpackcloud.cli.CommandType;
 import com.backpackcloud.cli.Writer;
-import com.backpackcloud.cli.commands.GeneralCommandType;
 import com.backpackcloud.cli.ui.Suggestion;
 import com.backpackcloud.cli.ui.impl.PromptSuggestion;
 import com.backpackcloud.fakeomatic.sampler.Sample;
@@ -33,7 +32,7 @@ public class SamplerCommand implements Command {
 
   @Override
   public CommandType type() {
-    return GeneralCommandType.DATA;
+    return FakeomaticCommandType.SAMPLE;
   }
 
   @Override

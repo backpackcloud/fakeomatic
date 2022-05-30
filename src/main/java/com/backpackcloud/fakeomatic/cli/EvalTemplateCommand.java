@@ -25,7 +25,7 @@ public class EvalTemplateCommand implements Command {
 
   @Override
   public CommandType type() {
-    return GeneralCommandType.DATA;
+    return FakeomaticCommandType.SAMPLE;
   }
 
   @Override
