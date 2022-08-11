@@ -3,19 +3,18 @@ package com.backpackcloud.fakeomatic.cli;
 import com.backpackcloud.cli.Command;
 import com.backpackcloud.cli.CommandContext;
 import com.backpackcloud.cli.CommandType;
-import com.backpackcloud.cli.commands.GeneralCommandType;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
+import com.backpackcloud.fakeomatic.sampler.TemplateEval;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.function.Function;
 
 @ApplicationScoped
 public class EvalTemplateCommand implements Command {
 
-  private final Function<String, String> interpolator;
+  private final TemplateEval templateEval;
 
   public EvalTemplateCommand(Sampler sampler) {
-    this.interpolator = sampler.interpolator();
+    this.templateEval = new TemplateEval(sampler);
   }
 
   @Override
@@ -36,7 +35,8 @@ public class EvalTemplateCommand implements Command {
   @Override
   public void execute(CommandContext context) {
     String template = context.input().asString();
-    context.writer().write(interpolator.apply(template)).newLine();
+
+    context.writer().write(templateEval.eval(template)).newLine();
   }
 
 }

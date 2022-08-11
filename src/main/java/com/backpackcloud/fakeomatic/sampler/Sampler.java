@@ -25,7 +25,6 @@
 package com.backpackcloud.fakeomatic.sampler;
 
 import com.backpackcloud.Configuration;
-import com.backpackcloud.Interpolator;
 import com.backpackcloud.Serializer;
 import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.fakeomatic.sampler.impl.SamplerImpl;
@@ -35,8 +34,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Function;
-import java.util.regex.Pattern;
 
 /**
  * Defines a component that can produce fake data.
@@ -102,16 +99,6 @@ public interface Sampler {
     }
 
     return builder.toString();
-  }
-
-  default Function<String, String> interpolator() {
-    return new Interpolator(
-      Pattern.compile("\\{\\{(?<token>[^}]+)\\}\\}"),
-      this::some
-    ).andThen(new Interpolator(
-      Pattern.compile("\\[\\[(?<token>[^}]+)\\]\\]"),
-      this::expression
-    ));
   }
 
   static Sampler defaultSampler() {

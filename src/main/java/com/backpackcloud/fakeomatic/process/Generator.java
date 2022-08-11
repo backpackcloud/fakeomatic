@@ -26,6 +26,7 @@ package com.backpackcloud.fakeomatic.process;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
+import com.backpackcloud.fakeomatic.sampler.TemplateEval;
 import io.quarkus.runtime.QuarkusApplication;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -51,7 +52,7 @@ public class Generator implements QuarkusApplication {
           .ifPresentOrElse(System.out::println, () -> System.err.println("No sample found"));
         break;
       case TEMPLATE:
-        System.out.println(sampler.interpolator().apply(value));
+        System.out.println(new TemplateEval(sampler).eval(value));
         break;
       case EXPRESSION:
         System.out.println(sampler.expression(value));
