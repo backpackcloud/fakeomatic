@@ -183,3 +183,33 @@ samples:
   whatthecommit:
     type: http
     url: http://whatthecommit.com/index.txt
+
+  now:
+    type: now
+
+  log-category:
+    type: list
+    values:
+      - com.backpackcloud.pocket
+      - com.backpackcloud.zipper
+      - com.backpackcloud.strap
+      - com.backpackcloud.holder
+      - com.backpackcloud.tag
+
+  exception:
+    type: list
+    values:
+      - java.lang.IllegalArgumentException
+      - java.lang.NullPointerException
+      - java.lang.Exception
+      - java.lang.RutimeException
+      - com.backpackcloud.OutOfManaException
+      - com.backpackcloud.UnbelievableException
+
+  log-message:
+    type: template
+    source:
+      sample:
+        type: list
+        source:
+          resource: META-INF/fakeomatic/samples/log_messages.txt

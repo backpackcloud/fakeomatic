@@ -51,6 +51,7 @@ import java.util.function.Supplier;
   @JsonSubTypes.Type(name = WeightedSample.TYPE, value = WeightedSample.class),
   @JsonSubTypes.Type(name = TemplateSample.TYPE, value = TemplateSample.class),
   @JsonSubTypes.Type(name = HttpSample.TYPE, value = HttpSample.class),
+  @JsonSubTypes.Type(name = NowSample.TYPE, value = NowSample.class),
 })
 @RegisterForReflection
 @FunctionalInterface

@@ -1,0 +1,8 @@
+{{now}} TRACE [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{now}} DEBUG [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{now}} INFO [{{log-category}}] (thread-[[##]]) {{uuid}}
+{{now}} INFO [{{log-category}}] (thread-[[##]]) Logged in: {{full-name}}
+{{now}} WARN [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{now}} ERROR [{{log-category}}] (thread-[[##]]) {{exception}} {{error-cause}}
+{{now}} ERROR [{{log-category}}] (thread-[[##]]) {{exception}} {{table-flip}}
+{{now}} FATAL [{{log-category}}] (thread-[[##]]) {{exception}} {{error-cause}}

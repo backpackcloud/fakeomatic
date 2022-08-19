@@ -22,51 +22,45 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
-import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.fakeomatic.sampler.Sample;
-import com.backpackcloud.fakeomatic.sampler.Sampler;
-import com.backpackcloud.fakeomatic.sampler.TemplateEval;
-import io.quarkus.runtime.QuarkusApplication;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
-@ApplicationScoped
-public class Generator implements QuarkusApplication {
+@RegisterForReflection
+public class NowSample implements Sample<String> {
 
-  private final Sampler sampler;
-  private final int count;
+  public static final String TYPE = "now";
 
-  public Generator(Sampler sampler, @ConfigProperty(name = "generator.count") int count) {
-    this.sampler = sampler;
-    this.count = count;
+  private final DateTimeFormatter formatter;
+
+  public NowSample(DateTimeFormatter formatter) {
+    this.formatter = formatter;
   }
 
   @Override
-  public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
-
-    for (int i = 0; i < count; i++) {
-      switch (mode) {
-        case SAMPLE -> sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> {
-            throw new UnbelievableException("No sample found");
-          });
-        case TEMPLATE -> System.out.println(new TemplateEval(sampler).eval(value));
-        case EXPRESSION -> System.out.println(sampler.expression(value));
-      }
-    }
-    return 0;
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
+  @Override
+  public String get() {
+    return formatter.format(LocalDateTime.now());
+  }
 
-    SAMPLE, TEMPLATE, EXPRESSION
+  @JsonCreator
+  public static NowSample create(@JsonProperty("format") String formatString) {
+    DateTimeFormatter formatter = DateTimeFormatter
+      .ofPattern(Optional.ofNullable(formatString)
+        .orElse("yyyy-MM-dd HH:mm:ss,SSS"));
 
+    return new NowSample(formatter);
   }
 
 }

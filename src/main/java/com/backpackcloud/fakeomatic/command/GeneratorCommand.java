@@ -48,6 +48,13 @@ public class GeneratorCommand implements Callable<Integer> {
   String seed;
 
   @CommandLine.Option(
+    names = {"-c", "--repeat"},
+    description = "How many times should the sample be generated",
+    defaultValue = "1"
+  )
+  int count;
+
+  @CommandLine.Option(
     names = {"-t", "--template"},
     description = "Sets the operation to be a template parse"
   )
@@ -130,6 +137,7 @@ public class GeneratorCommand implements Callable<Integer> {
       System.setProperty("quarkus.banner.enabled", "false");
       System.setProperty("quarkus.console.disable-input", "true");
       System.setProperty("quarkus.test.continuous-testing", "disabled");
+      System.setProperty("generator.count", String.valueOf(count));
 
       try {
         Quarkus.run(Generator.class, mode, value);

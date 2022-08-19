@@ -89,16 +89,12 @@ public class DateSample implements Sample<LocalDate> {
   }
 
   private static LocalDate parseDate(String date, DateTimeFormatter format) {
-    switch (date) {
-      case "today":
-        return LocalDate.now();
-      case "tomorrow":
-        return LocalDate.now().plusDays(1);
-      case "yesterday":
-        return LocalDate.now().minusDays(1);
-      default:
-        return LocalDate.parse(date, format);
-    }
+    return switch (date) {
+      case "today" -> LocalDate.now();
+      case "tomorrow" -> LocalDate.now().plusDays(1);
+      case "yesterday" -> LocalDate.now().minusDays(1);
+      default -> LocalDate.parse(date, format);
+    };
   }
 
 }
