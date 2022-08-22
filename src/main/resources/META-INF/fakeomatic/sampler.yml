@@ -186,18 +186,18 @@ samples:
 
   timestamp:
     type: formatter
-    format: '%tY-%tm-%td %tH:%tM:%tS,%tL'
-    sample:
-      type: timestamp
-      from:
-        sample:
-          type: now
-      accumulator:
-        sample:
-          type: range
-          min: 0
-          max: 60000
-      unit: millis
+    source:
+      sample:
+        type: timestamp
+        from:
+          sample:
+            type: now
+        accumulator:
+          sample:
+            type: range
+            min: 0
+            max: 1000
+        unit: millis
 
   log-category:
     type: list
@@ -218,27 +218,27 @@ samples:
       - com.backpackcloud.OutOfManaException
       - com.backpackcloud.UnbelievableException
 
-  log-message:
+  log:
     type: weight
     values:
       - weight: 80
         source:
-          ref: trace
+          ref: log-trace
       - weight: 40
         source:
-          ref: debug
+          ref: log-debug
       - weight: 20
         source:
-          ref: info
+          ref: log-info
       - weight: 8
         source:
-          ref: warn
+          ref: log-warn
       - weight: 4
         source:
-          ref: error
+          ref: log-error
       - weight: 1
         source:
-          ref: fatal
+          ref: log-fatal
 
   log-trace:
     type: template

@@ -6,22 +6,26 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 @RegisterForReflection
 public class FormatterSample implements Sample<String> {
 
   public static final String TYPE = "formatter";
 
-  private final Sample<?> sample;
-  private final String format;
+  private final Sample<LocalDateTime> sample;
+  private final DateTimeFormatter formatter;
 
-  public FormatterSample(Sample<?> sample, String format) {
+  public FormatterSample(Sample<LocalDateTime> sample, DateTimeFormatter formatter) {
     this.sample = sample;
-    this.format = format;
+    this.formatter = formatter;
   }
 
   @Override
   public String get() {
-    return String.format(format, sample.get());
+    return formatter.format(sample.get());
   }
 
   @Override
@@ -30,9 +34,12 @@ public class FormatterSample implements Sample<String> {
   }
 
   @JsonCreator
-  public static FormatterSample create(@JsonProperty("sample") SampleConfiguration reference,
+  public static FormatterSample create(@JsonProperty("source") SampleConfiguration reference,
                                        @JsonProperty("format") String format) {
-    return new FormatterSample(reference.sample(), format);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Optional.ofNullable(format)
+      .orElse("yyyy-MM-dd HH:mm:ss,SSS"));
+
+    return new FormatterSample((Sample<LocalDateTime>) reference.sample(), formatter);
   }
 
 }
