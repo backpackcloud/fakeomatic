@@ -1,1 +1,1 @@
-{{now}} TRACE [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{timestamp}} TRACE [zoo] (thread-[[##]]) tracing one {{adjective}} {{animal}}

@@ -25,24 +25,14 @@
 package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 @RegisterForReflection
-public class NowSample implements Sample<String> {
+public class NowSample implements Sample<LocalDateTime> {
 
   public static final String TYPE = "now";
-
-  private final DateTimeFormatter formatter;
-
-  public NowSample(DateTimeFormatter formatter) {
-    this.formatter = formatter;
-  }
 
   @Override
   public String type() {
@@ -50,17 +40,8 @@ public class NowSample implements Sample<String> {
   }
 
   @Override
-  public String get() {
-    return formatter.format(LocalDateTime.now());
-  }
-
-  @JsonCreator
-  public static NowSample create(@JsonProperty("format") String formatString) {
-    DateTimeFormatter formatter = DateTimeFormatter
-      .ofPattern(Optional.ofNullable(formatString)
-        .orElse("yyyy-MM-dd HH:mm:ss,SSS"));
-
-    return new NowSample(formatter);
+  public LocalDateTime get() {
+    return LocalDateTime.now();
   }
 
 }

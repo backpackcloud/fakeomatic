@@ -1,1 +1,1 @@
-{{now}} WARN [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{timestamp}} WARN [zoo] (thread-[[##]]) can't track {{animal}}

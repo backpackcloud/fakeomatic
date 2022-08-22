@@ -184,8 +184,20 @@ samples:
     type: http
     url: http://whatthecommit.com/index.txt
 
-  now:
-    type: now
+  timestamp:
+    type: formatter
+    format: '%tY-%tm-%td %tH:%tM:%tS,%tL'
+    sample:
+      type: timestamp
+      from:
+        sample:
+          type: now
+      accumulator:
+        sample:
+          type: range
+          min: 0
+          max: 60000
+      unit: millis
 
   log-category:
     type: list

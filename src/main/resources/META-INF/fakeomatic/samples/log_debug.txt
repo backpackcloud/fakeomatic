@@ -1,2 +1,3 @@
-{{now}} DEBUG [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
-{{now}} DEBUG [{{log-category}}] (thread-[[##]]) Passing here
+{{timestamp}} DEBUG [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{timestamp}} DEBUG [{{log-category}}] (thread-[[##]]) Passing here
+{{timestamp}} DEBUG [uuid-generator] (thread-[[##]]) {{uuid}}

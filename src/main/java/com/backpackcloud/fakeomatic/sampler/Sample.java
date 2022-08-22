@@ -41,7 +41,7 @@ import java.util.function.Supplier;
   @JsonSubTypes.Type(name = CachedSample.TYPE, value = CachedSample.class),
   @JsonSubTypes.Type(name = CharSample.TYPE, value = CharSample.class),
   @JsonSubTypes.Type(name = JoiningSample.TYPE, value = JoiningSample.class),
-  @JsonSubTypes.Type(name = DateSample.TYPE, value = DateSample.class),
+  @JsonSubTypes.Type(name = TimestampSample.TYPE, value = TimestampSample.class),
   @JsonSubTypes.Type(name = ExpressionSample.TYPE, value = ExpressionSample.class),
   @JsonSubTypes.Type(name = JsonValueSample.TYPE, value = JsonValueSample.class),
   @JsonSubTypes.Type(name = ListSample.TYPE, value = ListSample.class),
@@ -52,6 +52,7 @@ import java.util.function.Supplier;
   @JsonSubTypes.Type(name = TemplateSample.TYPE, value = TemplateSample.class),
   @JsonSubTypes.Type(name = HttpSample.TYPE, value = HttpSample.class),
   @JsonSubTypes.Type(name = NowSample.TYPE, value = NowSample.class),
+  @JsonSubTypes.Type(name = FormatterSample.TYPE, value = FormatterSample.class),
 })
 @RegisterForReflection
 @FunctionalInterface
