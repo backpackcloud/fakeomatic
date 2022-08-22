@@ -1,0 +1,1 @@
+{{now}} WARN [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}

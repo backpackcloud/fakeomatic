@@ -1,0 +1,1 @@
+{{now}} FATAL [{{log-category}}] (thread-[[##]]) {{exception}} {{error-cause}}

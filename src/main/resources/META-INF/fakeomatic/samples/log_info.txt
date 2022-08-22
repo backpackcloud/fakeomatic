@@ -1,0 +1,3 @@
+{{now}} INFO [{{log-category}}] (thread-[[##]]) {{uuid}}
+{{now}} INFO [{{log-category}}] (thread-[[##]]) Logged in: {{full-name}}
+{{now}} INFO [{{log-category}}] (thread-[[##]]) Logged out: {{full-name}}

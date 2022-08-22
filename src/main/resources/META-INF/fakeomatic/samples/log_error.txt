@@ -1,0 +1,4 @@
+{{now}} ERROR [{{log-category}}] (thread-[[##]]) {{exception}} {{error-cause}}
+{{now}} ERROR [{{log-category}}] (thread-[[##]]) {{table-flip}}
+{{now}} ERROR [{{log-category}}] (thread-[[##]]) {{error-cause}}
+{{now}} ERROR [norris.chuck] (thread-[[##]]) {{chuck-norris}}

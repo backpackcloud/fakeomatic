@@ -1,0 +1,2 @@
+{{now}} DEBUG [{{log-category}}] (thread-[[##]]) {{adjective}} {{animal}}
+{{now}} DEBUG [{{log-category}}] (thread-[[##]]) Passing here

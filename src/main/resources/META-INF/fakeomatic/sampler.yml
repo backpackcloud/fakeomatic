@@ -207,9 +207,71 @@ samples:
       - com.backpackcloud.UnbelievableException
 
   log-message:
+    type: weight
+    values:
+      - weight: 80
+        source:
+          ref: trace
+      - weight: 40
+        source:
+          ref: debug
+      - weight: 20
+        source:
+          ref: info
+      - weight: 8
+        source:
+          ref: warn
+      - weight: 4
+        source:
+          ref: error
+      - weight: 1
+        source:
+          ref: fatal
+
+  log-trace:
     type: template
     source:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_messages.txt
+          resource: META-INF/fakeomatic/samples/log_trace.txt
+
+  log-debug:
+    type: template
+    source:
+      sample:
+        type: list
+        source:
+          resource: META-INF/fakeomatic/samples/log_debug.txt
+
+  log-info:
+    type: template
+    source:
+      sample:
+        type: list
+        source:
+          resource: META-INF/fakeomatic/samples/log_info.txt
+
+  log-warn:
+    type: template
+    source:
+      sample:
+        type: list
+        source:
+          resource: META-INF/fakeomatic/samples/log_warn.txt
+
+  log-error:
+    type: template
+    source:
+      sample:
+        type: list
+        source:
+          resource: META-INF/fakeomatic/samples/log_error.txt
+
+  log-fatal:
+    type: template
+    source:
+      sample:
+        type: list
+        source:
+          resource: META-INF/fakeomatic/samples/log_fatal.txt
