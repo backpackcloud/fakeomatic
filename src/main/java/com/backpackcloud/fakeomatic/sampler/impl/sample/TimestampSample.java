@@ -7,12 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @RegisterForReflection
-public class TimestampSample implements Sample<String> {
+public class TimestampSample implements Sample<LocalDateTime> {
 
   public static final String TYPE = "timestamp";
 
@@ -21,16 +19,12 @@ public class TimestampSample implements Sample<String> {
 
   private final ChronoUnit unit;
 
-  private final DateTimeFormatter formatter;
-
   public TimestampSample(LocalDateTime start,
                          Sample<Integer> accumulator,
-                         ChronoUnit unit,
-                         DateTimeFormatter formatter) {
+                         ChronoUnit unit) {
     this.reference = start;
     this.accumulator = accumulator;
     this.unit = unit;
-    this.formatter = formatter;
   }
 
   @Override
@@ -39,22 +33,17 @@ public class TimestampSample implements Sample<String> {
   }
 
   @Override
-  public String get() {
-    reference = reference.plus(accumulator.get(), unit);
-    return formatter.format(reference);
+  public LocalDateTime get() {
+    return reference = reference.plus(accumulator.get(), unit);
   }
 
   @JsonCreator
   public static TimestampSample create(@JsonProperty("from") SampleConfiguration from,
                                        @JsonProperty("accumulator") SampleConfiguration accumulator,
-                                       @JsonProperty("unit") String unit,
-                                       @JsonProperty("format") String formatString) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Optional.ofNullable(formatString)
-      .orElse("yyyy-MM-dd HH:mm:ss,SSS"));
-
+                                       @JsonProperty("unit") String unit) {
     LocalDateTime start = (LocalDateTime) from.sample().get();
 
-    return new TimestampSample(start, (Sample<Integer>) accumulator.sample(), ChronoUnit.valueOf(unit.toUpperCase()), formatter);
+    return new TimestampSample(start, (Sample<Integer>) accumulator.sample(), ChronoUnit.valueOf(unit.toUpperCase()));
   }
 
 }

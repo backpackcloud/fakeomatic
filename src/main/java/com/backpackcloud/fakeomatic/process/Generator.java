@@ -39,7 +39,8 @@ public class Generator implements QuarkusApplication {
   private final Sampler sampler;
   private final int count;
 
-  public Generator(Sampler sampler, @ConfigProperty(name = "generator.count") int count) {
+  public Generator(Sampler sampler,
+                   @ConfigProperty(name = "generator.count", defaultValue = "1") int count) {
     this.sampler = sampler;
     this.count = count;
   }
