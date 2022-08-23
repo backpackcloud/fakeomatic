@@ -65,6 +65,15 @@ samples:
       - uppercase-letter
       - digit
 
+  byte-unit:
+    type: list
+    values:
+      - B
+      - KB
+      - MB
+      - GB
+      - PB
+
   male-name:
     type: list
     source:
@@ -198,15 +207,6 @@ samples:
             min: 0
             max: 1000
         unit: millis
-
-  log-category:
-    type: list
-    values:
-      - com.backpackcloud.pocket
-      - com.backpackcloud.zipper
-      - com.backpackcloud.strap
-      - com.backpackcloud.holder
-      - com.backpackcloud.tag
 
   exception:
     type: list
