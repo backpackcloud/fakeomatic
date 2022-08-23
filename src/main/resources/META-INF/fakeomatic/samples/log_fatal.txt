@@ -1,1 +1,1 @@
-{{timestamp}} FATAL [general] (thread-[[##]]) {{exception}} {{error-cause}}
+{{timestamp}} FATAL [io] (thread-[[###]]) {{exception}}: {{error-cause}}

@@ -1,3 +1,5 @@
-{{timestamp}} DEBUG [forest] (thread-[[###]])
-{{timestamp}} DEBUG [io] (thread-[[###]])
-{{timestamp}} DEBUG [transaction] (thread-[[###]])
+{{timestamp}} DEBUG [io] (channel-[[$$$$]]) started listening on port [[#####]] for [[##]]s
+{{timestamp}} DEBUG [transaction] (thread-[[###]]) issuing a new {{adjective}} token for {{uuid}}
+{{timestamp}} DEBUG [io] (channel-[[$$$$]]) received [[##]]{{byte-unit}} from channel-[[$$$$]], will probably discard, as they are {{negative-adjective}}
+{{timestamp}} DEBUG [chat] (room-[[####]]) chat bot is {{adjective}}, replying to {{full-name}} with an ASCII image of a {{animal}}
+{{timestamp}} DEBUG [chat] (room-[[####]]) {{full-name}} sent a {{adjective}} message to {{full-name}}

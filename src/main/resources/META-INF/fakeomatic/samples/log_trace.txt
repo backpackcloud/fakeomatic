@@ -1,5 +1,2 @@
-{{timestamp}} TRACE [forest] (thread-[[###]]) tracing one {{adjective}} {{animal}}
-{{timestamp}} TRACE [forest] (thread-[[###]]) following traces of {{adjective}} animals
 {{timestamp}} TRACE [io] (thread-[[###]]) dumping [[###]]{{byte-unit}} on disk as a manual to solve a hanoi tower
 {{timestamp}} TRACE [io] (thread-[[###]]) connection seems {{negative-adjective}} but will connect either way
-{{timestamp}} TRACE [io] (channel-[[$$$$]]) received [[##]]{{byte-unit}} from channel-[[$$$$]], will probably discard, as they are {{negative-adjective}}

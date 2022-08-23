@@ -1,1 +1,4 @@
-{{timestamp}} WARN [zoo] (thread-[[##]]) can't track {{animal}}
+{{timestamp}} WARN [io] (thread-[[###]]) no more room for {{adjective}} communications, cleaning up
+{{timestamp}} WARN [io] (channel-[[$$$$]]) email not responding, sending through pigeon post
+{{timestamp}} WARN [chat] (room-[[####]]) {{full-name}} banned for posting "{{tronald-dump}}"
+{{timestamp}} WARN [chat] (room-[[####]]) possible junk message: {{business-bullshit}}

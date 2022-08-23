@@ -1,5 +1,4 @@
-{{timestamp}} INFO [session] (thread-[[##]]) Logged in: {{full-name}}
-{{timestamp}} INFO [session] (thread-[[##]]) Logged out: {{full-name}}
-{{timestamp}} INFO [chat] (thread-[[##]]) {{full-name}} sent a message to {{full-name}}
-{{timestamp}} INFO [zoo] (thread-[[##]]) found one {{animal}}, naming it {{first-name}}
-{{timestamp}} INFO [transaction] (thread-[[##]]) {{full-name}} transferred [[###.##]] to {{full-name}}
+{{timestamp}} INFO [session] (thread-[[###]]) Logged in: {{full-name}}
+{{timestamp}} INFO [session] (thread-[[###]]) Logged out: {{full-name}}
+{{timestamp}} INFO [chat] (thread-[[###]]) {{full-name}} sent a message to {{full-name}}
+{{timestamp}} INFO [transaction] (channel-[[$$$$]]) {{full-name}} transferred $[[###.##]] to {{full-name}}

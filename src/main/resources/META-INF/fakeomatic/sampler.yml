@@ -217,6 +217,14 @@ samples:
       - java.lang.RutimeException
       - com.backpackcloud.OutOfManaException
       - com.backpackcloud.UnbelievableException
+      - com.backpackcloud.UniverseOutOfBoundsException
+      - com.backpackcloud.SuccessfulFailureException
+      - com.backpackcloud.GorgeousMistakeException
+      - com.backpackcloud.CrankedMjolnirException
+      - com.backpackcloud.BatteriesNotIncludedException
+      - com.backpackcloud.VeggieBaconException
+      - com.backpackcloud.OutOfJavascriptFrameworksException
+      - com.backpackcloud.NoExceptionThrownException
 
   log:
     type: weight
