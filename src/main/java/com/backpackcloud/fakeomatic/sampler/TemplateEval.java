@@ -17,7 +17,7 @@ public class TemplateEval {
       sampler::some
     );
     this.expressionsInterpolator = new Interpolator(
-      Pattern.compile("\\[\\[(?<token>[^}]+)\\]\\]"),
+      Pattern.compile("\\[\\[(?<token>[^]]+)\\]\\]"),
       sampler::expression
     );
   }
