@@ -1,7 +1,7 @@
 package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
-import com.backpackcloud.Configuration;
 import com.backpackcloud.UnbelievableException;
+import com.backpackcloud.configuration.Configuration;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;

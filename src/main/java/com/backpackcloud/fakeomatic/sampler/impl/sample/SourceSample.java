@@ -24,7 +24,7 @@
 
 package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
-import com.backpackcloud.Configuration;
+import com.backpackcloud.configuration.Configuration;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

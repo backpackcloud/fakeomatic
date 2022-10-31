@@ -24,10 +24,10 @@
 
 package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
-import com.backpackcloud.Serializer;
 import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.SampleConfiguration;
+import com.backpackcloud.serializer.Serializer;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

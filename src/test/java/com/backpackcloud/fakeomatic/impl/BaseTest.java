@@ -24,9 +24,9 @@
 
 package com.backpackcloud.fakeomatic.impl;
 
+import com.backpackcloud.configuration.ResourceConfiguration;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
-import com.backpackcloud.impl.configuration.ResourceConfiguration;
 
 import java.util.Random;
 import java.util.function.Consumer;

@@ -24,11 +24,11 @@
 
 package com.backpackcloud.fakeomatic.sampler;
 
-import com.backpackcloud.Configuration;
-import com.backpackcloud.Serializer;
 import com.backpackcloud.UnbelievableException;
+import com.backpackcloud.configuration.Configuration;
+import com.backpackcloud.configuration.ResourceConfiguration;
 import com.backpackcloud.fakeomatic.sampler.impl.SamplerImpl;
-import com.backpackcloud.impl.configuration.ResourceConfiguration;
+import com.backpackcloud.serializer.Serializer;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Map;

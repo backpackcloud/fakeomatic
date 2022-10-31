@@ -1,15 +1,22 @@
 package com.backpackcloud.fakeomatic.cli;
 
-import com.backpackcloud.cli.Command;
-import com.backpackcloud.cli.CommandContext;
-import com.backpackcloud.cli.CommandType;
+import com.backpackcloud.cli.Action;
+import com.backpackcloud.cli.AnnotatedCommand;
+import com.backpackcloud.cli.CommandDefinition;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import com.backpackcloud.fakeomatic.sampler.TemplateEval;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import javax.enterprise.context.ApplicationScoped;
 
+@CommandDefinition(
+  name = "eval",
+  description = "Evaluates the given template",
+  type = "Sample Generation"
+)
+@RegisterForReflection
 @ApplicationScoped
-public class EvalTemplateCommand implements Command {
+public class EvalTemplateCommand implements AnnotatedCommand {
 
   private final TemplateEval templateEval;
 
@@ -17,26 +24,9 @@ public class EvalTemplateCommand implements Command {
     this.templateEval = new TemplateEval(sampler);
   }
 
-  @Override
-  public String name() {
-    return "eval";
-  }
-
-  @Override
-  public CommandType type() {
-    return FakeomaticCommandType.SAMPLE;
-  }
-
-  @Override
-  public String description() {
-    return "Evaluates the given template";
-  }
-
-  @Override
-  public void execute(CommandContext context) {
-    String template = context.input().asString();
-
-    context.writer().write(templateEval.eval(template)).newLine();
+  @Action
+  public String execute(String template) {
+    return templateEval.eval(template);
   }
 
 }
