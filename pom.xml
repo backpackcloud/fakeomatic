@@ -67,12 +67,9 @@
   </scm>
 
   <properties>
-    <quarkus.version>2.13.2.Final</quarkus.version>
-
+    <quarkus.version>3.2.3.Final</quarkus.version>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
-
     <quarkus.package.type>native</quarkus.package.type>
-
     <zipper.version>1.0.0-SNAPSHOT</zipper.version>
   </properties>
 
@@ -98,11 +95,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-core-deployment</artifactId>
     </dependency>
 
     <dependency>

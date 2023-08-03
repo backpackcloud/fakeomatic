@@ -7,7 +7,7 @@ import com.backpackcloud.fakeomatic.sampler.Sampler;
 import com.backpackcloud.fakeomatic.sampler.TemplateEval;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @CommandDefinition(
   name = "eval",

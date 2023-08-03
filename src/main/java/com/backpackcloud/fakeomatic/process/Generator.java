@@ -31,7 +31,7 @@ import com.backpackcloud.fakeomatic.sampler.TemplateEval;
 import io.quarkus.runtime.QuarkusApplication;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class Generator implements QuarkusApplication {

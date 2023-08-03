@@ -71,6 +71,8 @@ public interface Sampler {
    */
   String some(char placeholder);
 
+  Sampler merge(Sampler sampler);
+
   /**
    * Returns a random data from the Sample associated with the given name.
    *
@@ -134,6 +136,11 @@ public interface Sampler {
 
     public Optional<Sample> sample(String sampleName) {
       return Optional.ofNullable(() -> this.delegate.sample(sampleName).orElseThrow(UnbelievableException::new).get());
+    }
+
+    @Override
+    public Sampler merge(Sampler sampler) {
+      return delegate.merge(sampler);
     }
 
     public String some(char placeholder) {

@@ -28,9 +28,9 @@ import com.backpackcloud.configuration.FileConfiguration;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
 import java.util.Optional;
 import java.util.Random;
 
@@ -47,9 +47,12 @@ public class SamplerProducer {
   @Singleton
   public Sampler produce() {
     Random random = this.random.orElse(new Random());
+    Sampler defaultSampler = Sampler.defaultSampler(random);
+
     return config.map(FileConfiguration::new)
       .map(file -> Sampler.loadFrom(file, random))
-      .orElseGet(() -> Sampler.defaultSampler(random));
+      .map(sampler -> sampler.merge(defaultSampler))
+      .orElse(defaultSampler);
   }
 
 }

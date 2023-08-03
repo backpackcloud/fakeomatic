@@ -10,7 +10,7 @@ import com.backpackcloud.cli.ui.impl.PromptSuggestion;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

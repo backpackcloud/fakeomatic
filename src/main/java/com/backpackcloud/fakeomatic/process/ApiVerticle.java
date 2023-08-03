@@ -8,7 +8,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Router;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Optional;
 
 @ApplicationScoped

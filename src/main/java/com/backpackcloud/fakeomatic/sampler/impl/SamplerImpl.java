@@ -36,6 +36,17 @@ public class SamplerImpl implements Sampler {
   }
 
   @Override
+  public Sampler merge(Sampler sampler) {
+    Map<String, Sample> samples = new HashMap<>(sampler.samples());
+    Map<Character, String> placeholders = new HashMap<>(sampler.placeholders());
+
+    samples.putAll(this.samples);
+    placeholders.putAll(this.placeholders);
+
+    return new SamplerImpl(samples, placeholders);
+  }
+
+  @Override
   public <E> Optional<Sample<E>> sample(String sampleName) {
     if (samples.containsKey(sampleName)) {
       return Optional.of(samples.get(sampleName));

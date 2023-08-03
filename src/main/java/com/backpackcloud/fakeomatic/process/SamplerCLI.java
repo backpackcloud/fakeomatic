@@ -3,7 +3,7 @@ package com.backpackcloud.fakeomatic.process;
 import com.backpackcloud.cli.CLI;
 import io.quarkus.runtime.QuarkusApplication;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class SamplerCLI implements QuarkusApplication {
