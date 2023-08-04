@@ -9,7 +9,6 @@
           <option name="environmentProperties">
             <map>
               <entry key="GRAALVM_HOME" value="/home/ataxexe/graalvm" />
-              <entry key="JAVA_HOME" value="/home/ataxexe/graalvm" />
             </map>
           </option>
           <option name="jreName" value="#USE_PROJECT_JDK" />
