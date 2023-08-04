@@ -24,13 +24,13 @@
 
 package com.backpackcloud.fakeomatic.impl.producer;
 
-import com.backpackcloud.configuration.FileConfiguration;
+import com.backpackcloud.configuration.UserConfigurationLoader;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import java.util.Optional;
 import java.util.Random;
 
@@ -40,16 +40,14 @@ public class SamplerProducer {
   @ConfigProperty(name = "generator.seed")
   Optional<Random> random;
 
-  @ConfigProperty(name = "generator.config")
-  Optional<String> config;
-
   @Produces
   @Singleton
   public Sampler produce() {
     Random random = this.random.orElse(new Random());
     Sampler defaultSampler = Sampler.defaultSampler(random);
+    UserConfigurationLoader loader = new UserConfigurationLoader("fakeomatic");
 
-    return config.map(FileConfiguration::new)
+    return loader.resolve()
       .map(file -> Sampler.loadFrom(file, random))
       .map(sampler -> sampler.merge(defaultSampler))
       .orElse(defaultSampler);

@@ -98,11 +98,8 @@ public class GeneratorCommand implements Callable<Integer> {
 
   @Override
   public Integer call() {
-
     setPropertyIfNotNull("generator.seed", seed);
-    if (config != null) {
-      setPropertyIfNotNull("generator.config", config);
-    }
+    setPropertyIfNotNull("fakeomatic.config.file", config);
 
     if (serverMode) {
       setPropertyIfNotNull("quarkus.http.host", host);
