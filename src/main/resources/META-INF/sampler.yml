@@ -105,11 +105,7 @@ samples:
 
   full-name:
     type: template
-    source:
-      sample:
-        type: list
-        values:
-          - "{{first-name}} {{surname}}"
+    value: "{{first-name}} {{surname}}"
 
   error-cause:
     type: list

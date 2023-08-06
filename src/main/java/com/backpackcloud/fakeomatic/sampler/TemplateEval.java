@@ -12,11 +12,11 @@ public class TemplateEval {
   public TemplateEval(Sampler sampler) {
     this.samplesInterpolator = new Interpolator(
       Pattern.compile("\\{\\{(?<token>[^}]+)\\}\\}"),
-      sampler::some
+      s -> sampler.some(s.trim())
     );
     this.expressionsInterpolator = new Interpolator(
       Pattern.compile("\\[\\[(?<token>[^]]+)\\]\\]"),
-      sampler::expression
+      s -> sampler.expression(s.trim())
     );
   }
 

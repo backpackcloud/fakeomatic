@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,8 +20,8 @@ public class SamplerImpl implements Sampler {
   @JsonCreator
   public SamplerImpl(@JsonProperty("samples") Map<String, Sample> samples,
                      @JsonProperty("placeholders") Map<Character, String> placeholders) {
-    this.samples = Optional.ofNullable(samples).orElseGet(Collections::emptyMap);
-    this.placeholders = Optional.ofNullable(placeholders).orElseGet(Collections::emptyMap);
+    this.samples = Optional.ofNullable(samples).orElseGet(HashMap::new);
+    this.placeholders = Optional.ofNullable(placeholders).orElseGet(HashMap::new);
   }
 
   @Override
@@ -36,14 +35,9 @@ public class SamplerImpl implements Sampler {
   }
 
   @Override
-  public Sampler merge(Sampler sampler) {
-    Map<String, Sample> samples = new HashMap<>(sampler.samples());
-    Map<Character, String> placeholders = new HashMap<>(sampler.placeholders());
-
-    samples.putAll(this.samples);
-    placeholders.putAll(this.placeholders);
-
-    return new SamplerImpl(samples, placeholders);
+  public void merge(Sampler sampler) {
+    sampler.samples().forEach(this.samples::putIfAbsent);
+    sampler.placeholders().forEach(this.placeholders::putIfAbsent);
   }
 
   @Override

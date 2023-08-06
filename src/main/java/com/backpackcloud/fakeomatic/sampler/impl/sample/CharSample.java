@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 /**
  * This sample can pick any character from a given string. Useful for defining a
@@ -44,11 +44,11 @@ public class CharSample implements Sample<String> {
 
   public static final String TYPE = "chars";
 
-  private final Random random;
+  private final RandomGenerator random;
   private final String value;
 
   @JsonCreator
-  public CharSample(@JacksonInject Random random,
+  public CharSample(@JacksonInject RandomGenerator random,
                     @JsonProperty("value") String value) {
     this.random = random;
     this.value = value;

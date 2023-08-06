@@ -17,8 +17,9 @@ public class TemplateSample implements Sample<String> {
   private final TemplateEval templateEval;
 
   public TemplateSample(@JsonProperty("source") SampleConfiguration source,
+                        @JsonProperty("value") String value,
                         @JacksonInject Sampler sampler) {
-    this.sample = source.sample();
+    this.sample = source != null ? source.sample() : Sample.of(value);
     this.templateEval = new TemplateEval(sampler);
   }
 

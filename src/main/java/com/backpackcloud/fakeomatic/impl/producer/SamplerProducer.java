@@ -25,6 +25,7 @@
 package com.backpackcloud.fakeomatic.impl.producer;
 
 import com.backpackcloud.configuration.UserConfigurationLoader;
+import com.backpackcloud.fakeomatic.sampler.RNG;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -42,15 +43,26 @@ public class SamplerProducer {
 
   @Produces
   @Singleton
-  public Sampler produce() {
-    Random random = this.random.orElse(new Random());
+  public RNG produceRng() {
+    return new RNG(this.random.orElse(new Random()));
+  }
+
+  @Produces
+  @Singleton
+  public Sampler produce(RNG random) {
     Sampler defaultSampler = Sampler.defaultSampler(random);
     UserConfigurationLoader loader = new UserConfigurationLoader("fakeomatic");
 
-    return loader.resolve()
-      .map(config -> Sampler.loadFrom(config, random))
-      .map(sampler -> sampler.merge(defaultSampler))
-      .orElse(defaultSampler);
+    Optional<Sampler> loadedSampler = loader.resolve()
+      .map(config -> Sampler.loadFrom(config, random));
+
+    if (loadedSampler.isPresent()) {
+      Sampler sampler = loadedSampler.get();
+      sampler.merge(defaultSampler);
+      return sampler;
+    }
+
+    return defaultSampler;
   }
 
 }

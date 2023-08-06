@@ -30,19 +30,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 @RegisterForReflection
 public class RangeSample implements Sample<Integer> {
 
   public static final String TYPE = "range";
 
-  private final Random random;
+  private final RandomGenerator random;
   private final int min;
   private final int max;
 
   @JsonCreator
-  public RangeSample(@JacksonInject Random random,
+  public RangeSample(@JacksonInject RandomGenerator random,
                      @JsonProperty("min") int min,
                      @JsonProperty("max") int max) {
     this.random = random;

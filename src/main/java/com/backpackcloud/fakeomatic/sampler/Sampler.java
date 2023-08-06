@@ -33,7 +33,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 /**
  * Defines a component that can produce fake data.
@@ -71,7 +71,7 @@ public interface Sampler {
    */
   String some(char placeholder);
 
-  Sampler merge(Sampler sampler);
+  void merge(Sampler sampler);
 
   /**
    * Returns a random data from the Sample associated with the given name.
@@ -83,7 +83,7 @@ public interface Sampler {
     Optional<Sample<Object>> sample = sample(sampleName);
     return (E) sample.map(Sample::get)
       .orElseThrow(UnbelievableException
-        .because("Sample '" + sampleName + "' wasn't defined."));
+        .because("Sample '" + sampleName + "' isn't defined."));
   }
 
   /**
@@ -103,20 +103,16 @@ public interface Sampler {
     return builder.toString();
   }
 
-  static Sampler defaultSampler() {
-    return defaultSampler(new Random());
-  }
-
-  static Sampler defaultSampler(Random random) {
+  static Sampler defaultSampler(RandomGenerator random) {
     return loadFrom(new ResourceConfiguration("META-INF/sampler.yml"), random);
   }
 
-  static Sampler loadFrom(Configuration configuration, Random random) {
+  static Sampler loadFrom(Configuration configuration, RandomGenerator random) {
     Serializer serializer = Serializer.yaml();
     RootSampler rootSampler = new RootSampler();
 
     serializer.addDependency(Sampler.class, rootSampler);
-    serializer.addDependency(Random.class, random);
+    serializer.addDependency(RandomGenerator.class, random);
 
     Sampler sampler = serializer.deserialize(
       configuration.read(),
@@ -139,8 +135,8 @@ public interface Sampler {
     }
 
     @Override
-    public Sampler merge(Sampler sampler) {
-      return delegate.merge(sampler);
+    public void merge(Sampler sampler) {
+      this.delegate.merge(sampler);
     }
 
     public String some(char placeholder) {

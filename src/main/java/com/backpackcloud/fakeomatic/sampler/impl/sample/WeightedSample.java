@@ -33,7 +33,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 @RegisterForReflection
 public class WeightedSample<E> implements Sample<E> {
@@ -43,12 +43,12 @@ public class WeightedSample<E> implements Sample<E> {
   private final List<WeightedValue> values;
   private final List<WeightedValueDefinition<E>> definitions;
 
-  private final Random random;
+  private final RandomGenerator random;
 
   private final int totalWeight;
 
   @JsonCreator
-  public WeightedSample(@JacksonInject Random random,
+  public WeightedSample(@JacksonInject RandomGenerator random,
                         @JsonProperty("values") List<WeightedValueDefinition<E>> definitions) {
     this.values = new ArrayList<>(definitions.size());
     this.definitions = definitions;

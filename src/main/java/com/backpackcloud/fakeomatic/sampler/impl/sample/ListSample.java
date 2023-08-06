@@ -35,7 +35,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
 
 /**
@@ -49,10 +49,10 @@ public class ListSample<E> implements Sample<E> {
 
   public static final String TYPE = "list";
 
-  private final Random random;
+  private final RandomGenerator random;
   private final List<Sample<E>> samples;
 
-  public ListSample(Random random, List<Sample<E>> samples) {
+  public ListSample(RandomGenerator random, List<Sample<E>> samples) {
     this.random = random;
     this.samples = samples;
   }
@@ -74,7 +74,7 @@ public class ListSample<E> implements Sample<E> {
   }
 
   @JsonCreator
-  public static ListSample<?> create(@JacksonInject Random random,
+  public static ListSample<?> create(@JacksonInject RandomGenerator random,
                                      @JacksonInject Sampler sampler,
                                      @JsonProperty("values") List<Object> values,
                                      @JsonProperty("samples") List<String> samplesNames,

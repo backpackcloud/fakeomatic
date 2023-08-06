@@ -28,8 +28,8 @@ import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Random;
 import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 /**
  * A sample that generates UUIDs.
@@ -41,9 +41,9 @@ public class UuidSample implements Sample<UUID> {
 
   public static final String TYPE = "uuid";
 
-  private final Random random;
+  private final RandomGenerator random;
 
-  public UuidSample(@JacksonInject Random random) {
+  public UuidSample(@JacksonInject RandomGenerator random) {
     this.random = random;
   }
 
