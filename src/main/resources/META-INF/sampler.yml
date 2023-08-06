@@ -34,6 +34,9 @@ samples:
   uuid:
     type: uuid
 
+  seq:
+    type: sequence
+
   downcase-letter:
     type: chars
     value: "abcdefghijklmnopqrstuvwxyz"
