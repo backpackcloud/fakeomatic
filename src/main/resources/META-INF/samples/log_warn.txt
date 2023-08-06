@@ -1,3 +1,0 @@
-{{timestamp}} WARN [io] (thread-[[###]]) no more room for {{adjective}} communications, cleaning up
-{{timestamp}} WARN [io] (channel-[[$$$$]]) email not responding, sending through pigeon post
-{{timestamp}} WARN [chat] (room-[[####]]) {{full-name}} banned for posting a {{negative-adjective}} message

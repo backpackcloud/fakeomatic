@@ -29,6 +29,7 @@ import com.backpackcloud.configuration.Configuration;
 import com.backpackcloud.configuration.ResourceConfiguration;
 import com.backpackcloud.fakeomatic.sampler.impl.SamplerImpl;
 import com.backpackcloud.serializer.Serializer;
+import com.backpackcloud.trugger.util.ElementResolver;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.Map;
@@ -80,8 +81,17 @@ public interface Sampler {
    * @return a random data.
    */
   default <E> E some(String sampleName) {
-    Optional<Sample<Object>> sample = sample(sampleName);
+    String[] path = sampleName.split("\\.", 2);
+    if (path.length == 1) {
+      Optional<Sample<Object>> sample = sample(path[0]);
+      return (E) sample.map(Sample::get)
+        .orElseThrow(UnbelievableException
+          .because("Sample '" + sampleName + "' isn't defined."));
+    }
+    Optional<Sample<Object>> sample = sample(path[0]);
     return (E) sample.map(Sample::get)
+      .map(ElementResolver::of)
+      .map(resolver -> resolver.resolve(path[1]))
       .orElseThrow(UnbelievableException
         .because("Sample '" + sampleName + "' isn't defined."));
   }

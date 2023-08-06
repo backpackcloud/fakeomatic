@@ -1,6 +1,5 @@
 package com.backpackcloud.fakeomatic.cli;
 
-import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.cli.Action;
 import com.backpackcloud.cli.AnnotatedCommand;
 import com.backpackcloud.cli.CommandDefinition;
@@ -8,11 +7,10 @@ import com.backpackcloud.cli.CommandInput;
 import com.backpackcloud.cli.Suggestions;
 import com.backpackcloud.cli.ui.Suggestion;
 import com.backpackcloud.cli.ui.impl.PromptSuggestion;
-import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-
 import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,10 +32,7 @@ public class SamplerCommand implements AnnotatedCommand {
 
   @Action
   public String execute(String sampleName) {
-    Sample sample = sampler.sample(sampleName)
-      .orElseThrow(UnbelievableException.because("Sample not found"));
-
-    return sample.get().toString();
+    return sampler.some(sampleName);
   }
 
   @Suggestions

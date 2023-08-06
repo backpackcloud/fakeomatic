@@ -25,7 +25,7 @@ public class HttpSample implements Sample<String> {
   public HttpSample(@JsonProperty("url") Configuration location,
                     @JsonProperty("timeout") int timeout,
                     @JsonProperty("headers") Map<String, Configuration> headers) {
-    client = HttpClient.newBuilder()
+    this.client = HttpClient.newBuilder()
       .version(HttpClient.Version.HTTP_2)
       .connectTimeout(Duration.of(timeout > 0 ? timeout : 15, ChronoUnit.SECONDS))
       .followRedirects(HttpClient.Redirect.ALWAYS)
@@ -38,8 +38,7 @@ public class HttpSample implements Sample<String> {
       headers.forEach((name, value) -> requestBuilder.header(name, value.get()));
     }
 
-    request = requestBuilder
-      .build();
+    this.request = requestBuilder.build();
   }
 
   @Override

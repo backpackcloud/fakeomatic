@@ -60,9 +60,13 @@ public class JsonValueSample implements Sample<String> {
   @Override
   public String get() {
     try {
-      String content = sample.get().toString();
-      JsonNode jsonNode = serializer.mapper().readTree(content);
-      return jsonNode.at(jsonPointer).asText();
+      Object data = sample.get();
+      if (data instanceof JsonNode json) {
+        return json.at(jsonPointer).asText();
+      }
+      String content = data.toString();
+      JsonNode json = serializer.mapper().readTree(content);
+      return json.at(jsonPointer).asText();
     } catch (JsonProcessingException e) {
       throw new UnbelievableException(e);
     }

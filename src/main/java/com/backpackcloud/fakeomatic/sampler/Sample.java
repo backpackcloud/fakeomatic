@@ -54,7 +54,8 @@ import java.util.function.Supplier;
   @JsonSubTypes.Type(name = NowSample.TYPE, value = NowSample.class),
   @JsonSubTypes.Type(name = FormatterSample.TYPE, value = FormatterSample.class),
   @JsonSubTypes.Type(name = SequenceSample.TYPE, value = SequenceSample.class),
-  @JsonSubTypes.Type(name = StorageSample.TYPE, value = StorageSample.class)
+  @JsonSubTypes.Type(name = StorageSample.TYPE, value = StorageSample.class),
+  @JsonSubTypes.Type(name = JsonSample.TYPE, value = JsonSample.class)
 })
 @RegisterForReflection
 @FunctionalInterface

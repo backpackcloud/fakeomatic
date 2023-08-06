@@ -1,2 +1,0 @@
-{{timestamp}} TRACE [io] (thread-[[###]]) dumping [[###]]{{byte-unit}} on disk as a manual to solve a hanoi tower
-{{timestamp}} TRACE [io] (thread-[[###]]) connection seems {{negative-adjective}} but will connect either way

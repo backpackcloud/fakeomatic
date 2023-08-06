@@ -24,14 +24,11 @@
 
 package com.backpackcloud.fakeomatic.process;
 
-import com.backpackcloud.UnbelievableException;
-import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import com.backpackcloud.fakeomatic.sampler.TemplateEval;
 import io.quarkus.runtime.QuarkusApplication;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class Generator implements QuarkusApplication {
@@ -52,11 +49,7 @@ public class Generator implements QuarkusApplication {
 
     for (int i = 0; i < count; i++) {
       switch (mode) {
-        case SAMPLE -> sampler.sample(value)
-          .map(Sample::get)
-          .ifPresentOrElse(System.out::println, () -> {
-            throw new UnbelievableException("No sample found");
-          });
+        case SAMPLE -> System.out.println(sampler.some(value).toString());
         case TEMPLATE -> System.out.println(new TemplateEval(sampler).eval(value));
         case EXPRESSION -> System.out.println(sampler.expression(value));
       }

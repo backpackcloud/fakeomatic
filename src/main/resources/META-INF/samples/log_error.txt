@@ -1,8 +1,0 @@
-{{timestamp}} ERROR [transaction] (channel-[[$$$$]]) {{exception}}: {{error-cause}}
-{{timestamp}} ERROR [transaction] (thread-[[###]]) {{table-flip}}
-{{timestamp}} ERROR [io] (channel-[[$$$$]]) {{exception}}: {{error-cause}}
-{{timestamp}} ERROR [io] (channel-[[$$$$]]) {{table-flip}}
-{{timestamp}} ERROR [io] (channel-[[$$$$]]) {{chuck-norris}}
-{{timestamp}} ERROR [chat] (room-[[####]]) {{table-flip}}
-{{timestamp}} ERROR [chat] (room-[[####]]) {{exception}}: {{error-cause}}
-{{timestamp}} ERROR [chat] (room-[[####]]) {{chuck-norris}}
