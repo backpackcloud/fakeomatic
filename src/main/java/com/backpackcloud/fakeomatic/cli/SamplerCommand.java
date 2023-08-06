@@ -32,7 +32,7 @@ public class SamplerCommand implements AnnotatedCommand {
 
   @Action
   public String execute(String sampleName) {
-    return sampler.some(sampleName);
+    return sampler.some(sampleName).toString();
   }
 
   @Suggestions
