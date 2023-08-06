@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="build" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="build [native]" type="MavenRunConfiguration" factoryName="Maven">
     <target name="WSL" />
     <MavenSettings>
       <option name="myGeneralSettings" />
@@ -34,7 +34,9 @@
           </option>
           <option name="pomFileName" />
           <option name="profilesMap">
-            <map />
+            <map>
+              <entry key="native" value="true" />
+            </map>
           </option>
           <option name="resolveToWorkspace" value="false" />
           <option name="workingDirPath" value="$PROJECT_DIR$" />

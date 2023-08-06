@@ -77,17 +77,17 @@ samples:
   male-name:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/male_names.txt
+      resource: META-INF/samples/male_names.txt
 
   female-name:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/female_names.txt
+      resource: META-INF/samples/female_names.txt
 
   neutral-name:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/neutral_names.txt
+      resource: META-INF/samples/neutral_names.txt
 
   first-name:
     type: list
@@ -98,7 +98,7 @@ samples:
   surname:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/surnames.txt
+      resource: META-INF/samples/surnames.txt
 
   full-name:
     type: template
@@ -111,22 +111,22 @@ samples:
   error-cause:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/causes.txt
+      resource: META-INF/samples/causes.txt
 
   table-flip:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/table_flips.txt
+      resource: META-INF/samples/table_flips.txt
 
   negative-adjective:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/negative_adjectives.txt
+      resource: META-INF/samples/negative_adjectives.txt
 
   positive-adjective:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/positive_adjectives.txt
+      resource: META-INF/samples/positive_adjectives.txt
 
   adjective:
     type: list
@@ -159,17 +159,17 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/commit_messages.txt
+          resource: META-INF/samples/commit_messages.txt
 
   chuck-norris:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/chuck_norris.txt
+      resource: META-INF/samples/chuck_norris.txt
 
   animal:
     type: list
     source:
-      resource: META-INF/fakeomatic/samples/animals.txt
+      resource: META-INF/samples/animals.txt
 
   tronald-dump:
     type: json
@@ -254,7 +254,7 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_trace.txt
+          resource: META-INF/samples/log_trace.txt
 
   log-debug:
     type: template
@@ -262,7 +262,7 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_debug.txt
+          resource: META-INF/samples/log_debug.txt
 
   log-info:
     type: template
@@ -270,7 +270,7 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_info.txt
+          resource: META-INF/samples/log_info.txt
 
   log-warn:
     type: template
@@ -278,7 +278,7 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_warn.txt
+          resource: META-INF/samples/log_warn.txt
 
   log-error:
     type: template
@@ -286,7 +286,7 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_error.txt
+          resource: META-INF/samples/log_error.txt
 
   log-fatal:
     type: template
@@ -294,4 +294,4 @@ samples:
       sample:
         type: list
         source:
-          resource: META-INF/fakeomatic/samples/log_fatal.txt
+          resource: META-INF/samples/log_fatal.txt

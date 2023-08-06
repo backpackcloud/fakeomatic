@@ -69,7 +69,6 @@
   <properties>
     <quarkus.version>3.2.3.Final</quarkus.version>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
-    <quarkus.package.type>native</quarkus.package.type>
     <zipper.version>1.0.0-SNAPSHOT</zipper.version>
   </properties>
 
@@ -150,6 +149,15 @@
     </dependency>
 
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>native</id>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <finalName>fakeomatic</finalName>

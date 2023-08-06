@@ -48,7 +48,7 @@ public class SamplerProducer {
     UserConfigurationLoader loader = new UserConfigurationLoader("fakeomatic");
 
     return loader.resolve()
-      .map(file -> Sampler.loadFrom(file, random))
+      .map(config -> Sampler.loadFrom(config, random))
       .map(sampler -> sampler.merge(defaultSampler))
       .orElse(defaultSampler);
   }

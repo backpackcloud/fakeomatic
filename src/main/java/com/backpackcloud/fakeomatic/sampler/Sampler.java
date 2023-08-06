@@ -108,7 +108,7 @@ public interface Sampler {
   }
 
   static Sampler defaultSampler(Random random) {
-    return loadFrom(new ResourceConfiguration("META-INF/fakeomatic/sampler.yml"), random);
+    return loadFrom(new ResourceConfiguration("META-INF/sampler.yml"), random);
   }
 
   static Sampler loadFrom(Configuration configuration, Random random) {
