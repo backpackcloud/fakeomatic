@@ -1,6 +1,7 @@
 package com.backpackcloud.fakeomatic.sampler.impl.sample;
 
 import com.backpackcloud.fakeomatic.sampler.Sample;
+import com.backpackcloud.fakeomatic.sampler.SampleConfiguration;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,10 +19,10 @@ public class StorageSample implements Sample {
   private final Object[] storage;
 
   @JsonCreator
-  public StorageSample(@JacksonInject Sample sample,
+  public StorageSample(@JsonProperty("source") SampleConfiguration source,
                        @JsonProperty("size") int size,
                        @JacksonInject RandomGenerator random) {
-    this.sample = sample;
+    this.sample = source.sample();
     this.storage = new Object[size];
     this.random = random;
   }
