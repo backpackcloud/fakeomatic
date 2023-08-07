@@ -77,6 +77,11 @@ samples:
       - GB
       - PB
 
+  country:
+    type: list
+    source:
+      resource: META-INF/samples/countries.txt
+
   male-name:
     type: list
     source:
@@ -190,7 +195,7 @@ samples:
 
   whatthecommit:
     type: http
-    url: http://whatthecommit.com/index.txt
+    url: https://whatthecommit.com/index.txt
 
   timestamp:
     type: formatter
