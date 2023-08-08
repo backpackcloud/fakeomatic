@@ -82,27 +82,10 @@ samples:
     source:
       resource: META-INF/samples/countries.txt
 
-  male-name:
+  name:
     type: list
     source:
-      resource: META-INF/samples/male_names.txt
-
-  female-name:
-    type: list
-    source:
-      resource: META-INF/samples/female_names.txt
-
-  neutral-name:
-    type: list
-    source:
-      resource: META-INF/samples/neutral_names.txt
-
-  first-name:
-    type: list
-    samples:
-      - male-name
-      - female-name
-      - neutral-name
+      resource: META-INF/samples/names.txt
 
   surname:
     type: list
@@ -111,7 +94,7 @@ samples:
 
   full-name:
     type:  template
-    value: "{{first-name}} {{surname}}"
+    value: "{{name}} {{surname}}"
 
   error-cause:
     type: list
