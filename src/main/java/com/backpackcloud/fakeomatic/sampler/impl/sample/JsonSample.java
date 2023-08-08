@@ -7,11 +7,12 @@ import com.backpackcloud.serializer.Serializer;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.Map;
+
 @RegisterForReflection
-public class JsonSample implements Sample<JsonNode> {
+public class JsonSample implements Sample<Map> {
 
   public static final String TYPE = "json";
 
@@ -25,9 +26,9 @@ public class JsonSample implements Sample<JsonNode> {
   }
 
   @Override
-  public JsonNode get() {
+  public Map get() {
     try {
-      return serializer.mapper().readTree(sample.get().toString());
+      return serializer.mapper().readValue(sample.get().toString(), Map.class);
     } catch (JsonProcessingException e) {
       throw new UnbelievableException(e);
     }

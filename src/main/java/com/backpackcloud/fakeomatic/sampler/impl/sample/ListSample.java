@@ -28,6 +28,7 @@ import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.configuration.Configuration;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
+import com.backpackcloud.serializer.Serializer;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,6 +54,9 @@ public class ListSample<E> implements Sample<E> {
   private final List<Sample<E>> samples;
 
   public ListSample(RandomGenerator random, List<Sample<E>> samples) {
+    if (samples.isEmpty()) {
+      throw new UnbelievableException("Empty sample list");
+    }
     this.random = random;
     this.samples = samples;
   }
@@ -76,9 +80,12 @@ public class ListSample<E> implements Sample<E> {
   @JsonCreator
   public static ListSample<?> create(@JacksonInject RandomGenerator random,
                                      @JacksonInject Sampler sampler,
+                                     @JacksonInject Serializer serializer,
                                      @JsonProperty("values") List<Object> values,
                                      @JsonProperty("samples") List<String> samplesNames,
-                                     @JsonProperty("source") Configuration source) {
+                                     @JsonProperty("source") Configuration source,
+                                     @JsonProperty("json") Configuration jsonSource,
+                                     @JsonProperty("yaml") Configuration yamlSource) {
     List<Sample> samples;
     if (values != null) {
       samples = values.stream()
@@ -90,10 +97,18 @@ public class ListSample<E> implements Sample<E> {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .collect(Collectors.toList());
-    } else if (source != null) {
+    } else if (source.isSet()) {
       samples = source.readLines().stream()
         .map(Sample::of)
         .collect(Collectors.toList());
+    } else if (jsonSource.isSet()) {
+      samples = serializer.deserialize(jsonSource.read(), List.class).stream()
+        .map(Sample::of)
+        .toList();
+    } else if (yamlSource.isSet()) {
+      samples = serializer.deserialize(yamlSource.read(), List.class).stream()
+        .map(Sample::of)
+        .toList();
     } else {
       throw new UnbelievableException("No valid configuration supplied");
     }

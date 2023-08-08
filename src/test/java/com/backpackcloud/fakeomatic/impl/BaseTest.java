@@ -30,6 +30,7 @@ import com.backpackcloud.fakeomatic.sampler.Sampler;
 
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.random.RandomGenerator;
 
 public abstract class BaseTest {
 
@@ -48,8 +49,12 @@ public abstract class BaseTest {
   }
 
   protected Sampler createSampler(String name) {
+    return createSampler(name, new Random());
+  }
+
+  protected Sampler createSampler(String name, RandomGenerator random) {
     String path = getClass().getPackageName().replaceAll("\\.", "/");
-    return Sampler.loadFrom(new ResourceConfiguration(path + "/" + name), new Random());
+    return Sampler.loadFrom(new ResourceConfiguration(path + "/" + name), random);
   }
 
 }

@@ -32,6 +32,7 @@ import com.backpackcloud.serializer.Serializer;
 import com.backpackcloud.trugger.util.ElementResolver;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.random.RandomGenerator;
@@ -73,6 +74,10 @@ public interface Sampler {
   String some(char placeholder);
 
   void merge(Sampler sampler);
+
+  <E> E oneOf(List<? extends E> list);
+
+  <E> E oneOf(E... args);
 
   /**
    * Returns a random data from the Sample associated with the given name.
@@ -140,6 +145,7 @@ public interface Sampler {
     private RootSampler() {
     }
 
+    @Override
     public Optional<Sample> sample(String sampleName) {
       return Optional.ofNullable(() -> this.delegate.sample(sampleName).orElseThrow(UnbelievableException::new).get());
     }
@@ -149,16 +155,29 @@ public interface Sampler {
       this.delegate.merge(sampler);
     }
 
+    @Override
     public String some(char placeholder) {
       return this.delegate.some(placeholder);
     }
 
+    @Override
     public Object some(String sampleName) {
       return this.delegate.some(sampleName);
     }
 
+    @Override
     public String expression(String expression) {
       return this.delegate.expression(expression);
+    }
+
+    @Override
+    public <E> E oneOf(List<? extends E> list) {
+      return delegate.oneOf(list);
+    }
+
+    @Override
+    public <E> E oneOf(E... args) {
+      return delegate.oneOf(args);
     }
 
     @Override
@@ -166,9 +185,11 @@ public interface Sampler {
       return this.delegate.placeholders();
     }
 
+    @Override
     public Map<String, Sample> samples() {
       return this.delegate.samples();
     }
+
   }
 
 }

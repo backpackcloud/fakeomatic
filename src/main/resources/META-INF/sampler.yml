@@ -38,15 +38,15 @@ samples:
     type: sequence
 
   downcase-letter:
-    type: chars
+    type:  chars
     value: "abcdefghijklmnopqrstuvwxyz"
 
   uppercase-letter:
-    type: chars
+    type:  chars
     value: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
   digit:
-    type: chars
+    type:  chars
     value: "0123456789"
 
   lowercase-char:
@@ -110,7 +110,7 @@ samples:
       resource: META-INF/samples/surnames.txt
 
   full-name:
-    type: template
+    type:  template
     value: "{{first-name}} {{surname}}"
 
   error-cause:
@@ -181,7 +181,7 @@ samples:
     source:
       sample:
         type: http
-        url: https://api.tronalddump.io/random/quote
+        url:  https://api.tronalddump.io/random/quote
         headers:
           Accept: application/json
     path: /value
@@ -191,12 +191,12 @@ samples:
     source:
       sample:
         type: http
-        url: https://corporatebs-generator.sameerkumar.website
+        url:  https://corporatebs-generator.sameerkumar.website
     path: /phrase
 
   whatthecommit:
     type: http
-    url: https://whatthecommit.com/index.txt
+    url:  https://whatthecommit.com/index.txt
 
   timestamp:
     type: formatter
@@ -209,14 +209,11 @@ samples:
         accumulator:
           sample:
             type: range
-            min: 0
-            max: 1000
+            min:  0
+            max:  1000
         unit: millis
 
   xgh:
-    type: json
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/xgh.txt
+    type: list
+    json:
+      resource: META-INF/samples/xgh.json

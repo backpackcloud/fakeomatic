@@ -2,3 +2,8 @@ samples:
   letter:
     type: chars
     value: abcdefghijklmnopqrstuvwxyz
+
+  xgh:
+    type: list
+    json:
+      resource: META-INF/samples/xgh.json
