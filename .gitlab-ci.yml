@@ -10,7 +10,7 @@ mvn:package:
     paths:
       - target/fakeomatic-runner
   script:
-    - build
+    - build native
 
 release:downstream:
   stage: release
