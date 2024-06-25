@@ -169,14 +169,6 @@ samples:
           Accept: application/json
     path: /value
 
-  business-bullshit:
-    type: json
-    source:
-      sample:
-        type: http
-        url: https://corporatebs-generator.sameerkumar.website
-    path: /phrase
-
   whatthecommit:
     type: http
     url: https://whatthecommit.com/index.txt
@@ -195,91 +187,3 @@ samples:
             min: 0
             max: 1000
         unit: millis
-
-  exception:
-    type: list
-    values:
-      - java.lang.IllegalArgumentException
-      - java.lang.NullPointerException
-      - java.lang.Exception
-      - java.lang.RutimeException
-      - com.backpackcloud.OutOfManaException
-      - com.backpackcloud.UnbelievableException
-      - com.backpackcloud.UniverseOutOfBoundsException
-      - com.backpackcloud.SuccessfulFailureException
-      - com.backpackcloud.GorgeousMistakeException
-      - com.backpackcloud.CrankedMjolnirException
-      - com.backpackcloud.BatteriesNotIncludedException
-      - com.backpackcloud.VeggieBaconException
-      - com.backpackcloud.OutOfJavascriptFrameworksException
-      - com.backpackcloud.NoExceptionThrownException
-
-  log:
-    type: weight
-    values:
-      - weight: 80
-        source:
-          ref: log-trace
-      - weight: 40
-        source:
-          ref: log-debug
-      - weight: 20
-        source:
-          ref: log-info
-      - weight: 8
-        source:
-          ref: log-warn
-      - weight: 4
-        source:
-          ref: log-error
-      - weight: 1
-        source:
-          ref: log-fatal
-
-  log-trace:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/log_trace.txt
-
-  log-debug:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/log_debug.txt
-
-  log-info:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/log_info.txt
-
-  log-warn:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/log_warn.txt
-
-  log-error:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/log_error.txt
-
-  log-fatal:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/log_fatal.txt
