@@ -4,44 +4,6 @@ Fake-O-Matic is a utility tool for creating and sending fake payloads to endpoin
 On each iteration, Fake-O-Matic will generate a payload based on a provided template and a set of rules for generating
 fake data.
 
-Fake-O-Matic is published in https://quay.io/backpackcloud/fakeomatic[Quay.io], and the library is published in
-https://repo1.maven.org/maven2/io/backpackcloud/fakeomatic/[Central Maven Repo] under the following properties:
-
-groupId::
-io.backpackcloud
-artifactId::
-fakeomatic
-
-== Quick Example
-
-Navigate to https://requestbin.com/ and create a request bin (uncheck the private option and choose the old bin). Copy
-the Endpoint url.
-
-Now build a JVM version of Fake-O-Matic with `mvn package` and run it (yeah, I know... downloading the internet is not
-quick):
-
-[source,bash]
-----
-$ java -jar target/fakeomatic-$VERSION-runner.jar \
-      --endpoint-url https://YOUR_REQUEST_BIN_ID.x.pipedream.net/ \
-      --template examples/example1.json
-----
-
-NOTE: You may also download the binaries from the releases page.
-
-== How to Build
-
-Fake-O-Matic is build with https://quarkus.io[Quarkus] and supports native compilation. THe build is a good and old
-`mvn package` command. If you wish to build a native binary, just activate the `native` profile
-(`mvn -P native package`).
-
-It's also possible to build Fake-O-Matic using https://github.com/openshift/source-to-image[source-to-image]:
-
-[source,shell script]
-----
-s2i build . quay.io/quarkus/ubi-quarkus-native-s2i:19.3.2-java11 backpackcloud/fakeomatic
-----
-
 == How to Configure
 
 Fake-O-Matic is configured through a set of `yaml` files that forms a hierarchy. If some configuration is not found on
@@ -117,7 +79,7 @@ Reads the value from the given URL by using GET `url`.
 [source,yaml]
 ----
 param:
-  url: http://something.example.com/some-param
+  url: https://something.example.com/some-param
 ----
 
 value::

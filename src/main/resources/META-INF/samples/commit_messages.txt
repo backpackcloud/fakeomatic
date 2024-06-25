@@ -1,4 +1,3 @@
 No bugs were harmed while {{adverb}} coding this {{adjective}} feature
 {{whatthecommit}}
 {{table-flip}}
-Issue [[####]]: {{business-bullshit}}
