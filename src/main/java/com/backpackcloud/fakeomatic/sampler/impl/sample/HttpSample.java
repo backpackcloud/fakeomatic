@@ -49,7 +49,9 @@ public class HttpSample implements Sample<String> {
   @Override
   public String get() {
     try {
-      return client.send(request, HttpResponse.BodyHandlers.ofString()).body().strip();
+      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      String body = response.body();
+      return body.strip();
     } catch (Exception e) {
       throw new UnbelievableException(e);
     }

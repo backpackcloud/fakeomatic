@@ -67,7 +67,7 @@ public class JsonValueSample implements Sample<String> {
       String content = data.toString();
       JsonNode json = serializer.mapper().readTree(content);
       return json.at(jsonPointer).asText();
-    } catch (JsonProcessingException e) {
+    } catch (Exception e) {
       throw new UnbelievableException(e);
     }
   }
