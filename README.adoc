@@ -1,8 +1,6 @@
 = Fake-O-Matic
 
-Fake-O-Matic is a utility tool for creating and sending fake payloads to endpoints in order to test throughput.
-On each iteration, Fake-O-Matic will generate a payload based on a provided template and a set of rules for generating
-fake data.
+Fake-O-Matic is a utility tool for creating fake data.
 
 == How to Configure
 
@@ -14,20 +12,15 @@ A Fake-O-Matic configuration has:
 
 [source,yaml]
 ----
-endpoints: # <1>
-  endpoint_name:
-    # configuration ...
-
-samples: # <2>
+samples: # <1>
   sample_name:
     # configuration
 
-placeholders: # <3>
+placeholders: # <2>
   "PLACEHOLDER_CHARACTER": sample_name
 ----
-<1> At least one <<endpoint,endpoint>>
-<2> Ideally as many <<samples,samples>> as needed
-<3> Optional <<placeholders,placeholders>> for creating expressions
+<1> Ideally as many <<samples,samples>> as needed
+<2> Optional <<placeholders,placeholders>> for creating expressions
 
 The configuration for each part is covered through this document.
 
@@ -127,90 +120,6 @@ configuration:
 . Referring through a `ref` property.
 . Directly through a `sample` property.
 
-=== Endpoint Connections
-
-An endpoint is primarily used to send generated payloads but can also be used as a source of data for the samples.
-
-[#endpoint]
-==== Configuration
-
-url::
-A <<configuration,configuration>> value defining the API endpoint.
-
-method::
-Which HTTP method to use (defaults to `GET`).
-
-payload::
-An optional payload object to use for calling the API. Useful for `POST` requests.
-
-template:::
-A <<configuration,configuration>> defining which template to use
-
-content-type:::
-The content type of the template (defaults to `application/json`).
-
-insecure::
-Defines if the certificates should be trusted without checking (defaults to `false`).
-
-concurrency::
-A <<configuration,configuration>> `int` value that defines the max ongoing connections to this endpoint.
-(Defaults to `10`.)
-
-buffer::
-A <<configuration,configuration>> `int` value that defines how many requests can be enqueued when the max ongoing
-requests number is reached. (Defaults to `10`.)
-
-This is useful in cases where generating the payloads can take more time than it takes to send them (like depending on
-several external APIs).
-
-headers::
-A `string,<<configuration,configuration>>` map containing the headers to use.
-
-params::
-A `string,<<configuration,configuration>>` map containing all the values that forms the url (example: `/api/{uuid}` will
-be replaced by the value from the path_var `uuid`).
-
-==== Built In
-
-Fake-O-Matic defines a `default` endpoint which can be customized via <<configuration,configuration>> values:
-
-[source,yaml]
-----
-endpoints:
-  default:
-    url:
-      env: ENDPOINT_URL
-      property: endpoint.url
-      value: http://localhost:8080
-    payload:
-      content-type:
-        env: ENDPOINT_CONTENT_TYPE
-        property: endpoint.content_type
-        value: application/json
-      template:
-        env: ENDPOINT_TEMPLATE
-        property: endpoint.template
-        resource: /META-INF/resources/config/payload.json
-    method:
-      env: ENDPOINT_METHOD
-      property: endpoint.method
-      value: POST
-    concurrency:
-      env: ENDPOINT_CONCURRENCY
-      property: endpoint.concurrency
-      value: 10
-    buffer:
-      env: ENDPOINT_BUFFER
-      property: endpoint.buffer
-      value: 10
-    insecure:
-      env: ENDPOINT_INSECURE
-      property: endpoint.insecure
-      value: false
-----
-
-Please see <<configuration_properties>> for more information.
-
 === Data Generation
 
 The rules for generating data can contain `sample` and `placeholders`. Samples are a set of data that Fake-O-Matic can
@@ -305,39 +214,6 @@ dependent API.
 
 ====== Configuration
 
-type::
-`api`
-
-endpoint::
-An <<endpoint,endpoint>> configuration for the api to use.
-
-NOTE: Although this sample uses an `Endpoint` object, which supports concurrency and buffers, the sample is synchronous
-      so configuring those values will not have any effect on this sample.
-
-====== Example
-
-[source,yaml]
-----
-samples:
-  chuck_norris:
-    type: api
-    endpoint:
-      url: https://api.chucknorris.io/jokes/random
-  example:
-    type: api
-    endpoint:
-      url: https://api.example.com/{version}/some/path
-      headers:
-        token:
-          env: EXAMPLE_API_TOKEN
-          property: example.api.token
-      params:
-        version:
-          env: EXAMPLE_API_VERSION
-          property: example.api.version
-          value: v1
-----
-
 ===== JSON Pointer
 
 This sample extracts a value from a JSON object. Useful when used in combination with the API Sample.
@@ -358,14 +234,9 @@ Which <<sample_as_configuration,sample>> sample should be used to obtain the JSO
 [source,yaml]
 ----
 samples:
-  chuck_norris:
-    type: json
-    source:
-      sample:
-        type: api
-        endpoint:
-          url: https://api.chucknorris.io/jokes/random
-    path: /value
+  whatthecommit:
+    type: http
+    url: https://whatthecommit.com/index.txt
 ----
 
 ===== Universally Unique Identifier
@@ -645,30 +516,6 @@ Gets a random data produced by replacing each placeholder by a random sample ass
 The following properties can be configured as a JVM argument (prefix `-D`), environment variable (with upper cases
 and underscores), or a command line parameter:
 
-endpoint.name|ENDPOINT_NAME|--endpoint-name::
-Which endpoint in the configuration to use. Defaults to `default`.
-
-endpoint.url|ENDPOINT_URL|--endpoint-url::
-The endpoint url to use for the default endpoint. Defaults to `http://localhost:8080`.
-
-endpoint.method|ENDPOINT_METHOD|--method::
-Which HTTP method to use for calling the endpoint. Defaults to `POST`.
-
-endpoint.concurrency|ENDPOINT_CONCURRENCY|--concurrency::
-The maximum number of concurrent requests to the endpoint. Defaults to `10`.
-
-endpoint.buffer|ENDPOINT_BUFFER|--buffer::
-How many payloads should be buffered while we have ongoing requests. Defaults to `10`.
-
-endpoint.insecure|ENDPOINT_INSECURE|--insecure::
-Marks the endpoint as insecure or not. An insecure endpoint will not have its certificate check. Defaults to `false`.
-
-endpoint.template|ENDPOINT_TEMPLATE|--template::
-Where to locate the template for generating the payloads. Defaults to `./payload.json`.
-
-endpoint.content_type|ENDPOINT_CONTENT_TYPE|--content-type::
-Which `Content-Type` to pass to the endpoint. Defaults to `application/json`.
-
 generator.total|GENERATOR_TOTAL|--total::
 The number of generated payloads. Defaults to `10`.
 
@@ -686,9 +533,6 @@ The seed to use for the random functions. Fake-O-Matic will generate one if empt
 
 fakeomatic.events.log.level|FAKEOMATIC_EVENTS_LOG_LEVEL|--events-log-level::
 Sets the log level for the events. To see all the payloads and responses, set the log level to DEBUG.
-
-NOTE: You can still make use of the endpoint properties if you use the same approach as the built-in one for defining
-      an endpoint.
 
 == Example
 
