@@ -122,56 +122,16 @@ samples:
       - negative-adjective
       - positive-adjective
 
-  negative-adverb:
-    type: list
-    values:
-      - stupidly
-      - crazily
-
-  positive-adverb:
-    type: list
-    values:
-      - intelligently
-      - incredibly
-      - smartly
-
   adverb:
     type: list
     samples:
       - negative-adverb
       - positive-adverb
 
-  commit-message:
-    type: template
-    source:
-      sample:
-        type: list
-        source:
-          resource: META-INF/samples/commit_messages.txt
-
-  chuck-norris:
-    type: list
-    source:
-      resource: META-INF/samples/chuck_norris.txt
-
   animal:
     type: list
     source:
       resource: META-INF/samples/animals.txt
-
-  tronald-dump:
-    type: json
-    source:
-      sample:
-        type: http
-        url: https://api.tronalddump.io/random/quote
-        headers:
-          Accept: application/json
-    path: /value
-
-  whatthecommit:
-    type: http
-    url: https://whatthecommit.com/index.txt
 
   timestamp:
     type: formatter
