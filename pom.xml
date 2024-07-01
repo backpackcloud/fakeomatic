@@ -70,6 +70,7 @@
     <quarkus.version>3.8.1</quarkus.version>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
     <zipper.version>1.0.0-SNAPSHOT</zipper.version>
+    <opencsv.version>5.9</opencsv.version>
   </properties>
 
   <dependencyManagement>
@@ -127,13 +128,14 @@
     </dependency>
 
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-picocli</artifactId>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>${opencsv.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-picocli</artifactId>
     </dependency>
 
     <dependency>

@@ -29,11 +29,14 @@ import com.backpackcloud.configuration.Configuration;
 import com.backpackcloud.fakeomatic.sampler.Sample;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import com.backpackcloud.serializer.Serializer;
+import com.backpackcloud.text.InputValue;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.opencsv.CSVReader;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 import java.util.random.RandomGenerator;
@@ -85,7 +88,10 @@ public class ListSample<E> implements Sample<E> {
                                      @JsonProperty("samples") List<String> samplesNames,
                                      @JsonProperty("source") Configuration source,
                                      @JsonProperty("json") Configuration jsonSource,
-                                     @JsonProperty("yaml") Configuration yamlSource) {
+                                     @JsonProperty("yaml") Configuration yamlSource,
+                                     @JsonProperty("column") InputValue columnInput,
+                                     @JsonProperty("offset") InputValue offsetInput,
+                                     @JsonProperty("csv") Configuration csv) {
     List<Sample> samples;
     if (values != null) {
       samples = values.stream()
@@ -109,6 +115,37 @@ public class ListSample<E> implements Sample<E> {
       samples = serializer.deserialize(yamlSource.read(), List.class).stream()
         .map(Sample::of)
         .toList();
+    } else if (csv.isSet()) {
+      CSVReader csvReader = new CSVReader(new StringReader(csv.read()));
+
+      try {
+        List<String[]> all = csvReader.readAll();
+
+        int column;
+        int offset;
+
+        if (columnInput.integer().isEmpty() && columnInput.text().isPresent()) {
+          String columnName = columnInput.text().get();
+          List<String> firstRow = List.of(all.getFirst());
+
+          column = firstRow.indexOf(columnName);
+          offset = offsetInput.integer().orElse(1);
+
+          if (column == -1) {
+            throw new UnbelievableException("Can't find column " + columnName + " in CSV Header: " + firstRow);
+          }
+        } else {
+          column = columnInput.integer().orElse(0);
+          offset = offsetInput.integer().orElse(0);
+        }
+
+        samples = all.subList(0, offset).stream()
+          .map(row -> row[column])
+          .map(Sample::of)
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        throw new UnbelievableException(e);
+      }
     } else {
       throw new UnbelievableException("No valid configuration supplied");
     }
