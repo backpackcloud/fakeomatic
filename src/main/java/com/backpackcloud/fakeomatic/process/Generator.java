@@ -24,8 +24,10 @@
 
 package com.backpackcloud.fakeomatic.process;
 
+import com.backpackcloud.UnbelievableException;
 import com.backpackcloud.fakeomatic.sampler.Sampler;
 import com.backpackcloud.fakeomatic.sampler.TemplateEval;
+import com.backpackcloud.text.InputValue;
 import io.quarkus.runtime.QuarkusApplication;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -44,8 +46,14 @@ public class Generator implements QuarkusApplication {
 
   @Override
   public int run(String... args) {
-    Mode mode = Mode.valueOf(args[0].toUpperCase());
-    String value = args[1];
+    Mode mode = InputValue.of(args[0])
+      .identify(Mode.class)
+      .orElseThrow(UnbelievableException
+        .because("Invalid mode!"));
+    String value = InputValue.of(args[1])
+      .text()
+      .orElseThrow(UnbelievableException
+        .because("Please supply a sample"));
 
     for (int i = 0; i < count; i++) {
       switch (mode) {
