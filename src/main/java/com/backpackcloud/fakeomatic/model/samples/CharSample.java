@@ -22,48 +22,44 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.model.samples;
 
-import com.backpackcloud.UnbelievableException;
-import com.backpackcloud.fakeomatic.model.Sampler;
-import com.backpackcloud.fakeomatic.model.TemplateEvaluator;
-import com.backpackcloud.text.InputValue;
+import com.backpackcloud.fakeomatic.model.Sample;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Generator {
+import java.util.random.RandomGenerator;
 
-  private final Sampler sampler;
-  private final int count;
+/**
+ * This sample can pick any character from a given string. Useful for defining a
+ * set of characters that can be used to produce IDs or any other information
+ * that is not meant to be read.
+ *
+ * @author Marcelo Guimarães
+ */
+public class CharSample implements Sample<String> {
 
-  public Generator(Sampler sampler, int count) {
-    this.sampler = sampler;
-    this.count = count;
+  public static final String TYPE = "chars";
+
+  private final RandomGenerator random;
+  private final String value;
+
+  @JsonCreator
+  public CharSample(@JacksonInject RandomGenerator random,
+                    @JsonProperty("value") String value) {
+    this.random = random;
+    this.value = value;
   }
 
-  public int run(String inputMode, String inputArg) {
-    Mode mode = InputValue.of(inputMode)
-      .asEnum(Mode.class)
-      .orElseThrow(UnbelievableException
-        .because("Invalid mode!"));
-
-    String value = InputValue.of(inputArg)
-      .asText()
-      .orElseThrow(UnbelievableException
-        .because("Please supply a sample"));
-
-    for (int i = 0; i < count; i++) {
-      switch (mode) {
-        case SAMPLE -> System.out.println(sampler.some(value).toString());
-        case TEMPLATE -> System.out.println(new TemplateEvaluator(sampler).eval(value));
-        case EXPRESSION -> System.out.println(sampler.expression(value));
-      }
-    }
-    return 0;
+  @Override
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Override
+  public String get() {
+    return String.valueOf(value.charAt(random.nextInt(value.length())));
   }
 
 }

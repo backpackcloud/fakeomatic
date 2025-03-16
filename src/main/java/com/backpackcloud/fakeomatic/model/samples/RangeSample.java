@@ -22,48 +22,48 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.model.samples;
 
-import com.backpackcloud.UnbelievableException;
-import com.backpackcloud.fakeomatic.model.Sampler;
-import com.backpackcloud.fakeomatic.model.TemplateEvaluator;
-import com.backpackcloud.text.InputValue;
+import com.backpackcloud.fakeomatic.model.Sample;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Generator {
+import java.util.random.RandomGenerator;
 
-  private final Sampler sampler;
-  private final int count;
+public class RangeSample implements Sample<Integer> {
 
-  public Generator(Sampler sampler, int count) {
-    this.sampler = sampler;
-    this.count = count;
+  public static final String TYPE = "range";
+
+  private final RandomGenerator random;
+  private final int min;
+  private final int max;
+
+  @JsonCreator
+  public RangeSample(@JacksonInject RandomGenerator random,
+                     @JsonProperty("min") int min,
+                     @JsonProperty("max") int max) {
+    this.random = random;
+    this.min = min;
+    this.max = max;
   }
 
-  public int run(String inputMode, String inputArg) {
-    Mode mode = InputValue.of(inputMode)
-      .asEnum(Mode.class)
-      .orElseThrow(UnbelievableException
-        .because("Invalid mode!"));
-
-    String value = InputValue.of(inputArg)
-      .asText()
-      .orElseThrow(UnbelievableException
-        .because("Please supply a sample"));
-
-    for (int i = 0; i < count; i++) {
-      switch (mode) {
-        case SAMPLE -> System.out.println(sampler.some(value).toString());
-        case TEMPLATE -> System.out.println(new TemplateEvaluator(sampler).eval(value));
-        case EXPRESSION -> System.out.println(sampler.expression(value));
-      }
-    }
-    return 0;
+  @Override
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
+  public int min() {
+    return min;
+  }
 
-    SAMPLE, TEMPLATE, EXPRESSION
+  public int max() {
+    return max;
+  }
 
+  @Override
+  public Integer get() {
+    return min + random.nextInt((max + 1) - min);
   }
 
 }

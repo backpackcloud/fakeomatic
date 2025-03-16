@@ -24,13 +24,16 @@
 
 package com.backpackcloud.fakeomatic.command;
 
-import com.backpackcloud.fakeomatic.process.Api;
+import com.backpackcloud.configuration.ConfigurationSupplier;
+import com.backpackcloud.configuration.RawValueConfiguration;
 import com.backpackcloud.fakeomatic.process.Generator;
-import com.backpackcloud.fakeomatic.process.SamplerCLI;
-import io.quarkus.runtime.Quarkus;
+import com.backpackcloud.fakeomatic.model.Sampler;
 import picocli.CommandLine;
 
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.random.RandomGenerator;
 
 @CommandLine.Command(mixinStandardHelpOptions = true)
 public class GeneratorCommand implements Callable<Integer> {
@@ -72,76 +75,21 @@ public class GeneratorCommand implements Callable<Integer> {
   )
   String value;
 
-  @CommandLine.Option(
-    names = {"-s", "--server"},
-    description = "Starts the server instead of generating data"
-  )
-  boolean serverMode;
-
-  @CommandLine.Option(
-    names = {"-i", "--cli"},
-    description = "Starts the command line interface"
-  )
-  boolean cli;
-
-  @CommandLine.Option(
-    names = {"-b", "--host"},
-    description = "Sets the host for the server"
-  )
-  String host;
-
-  @CommandLine.Option(
-    names = {"-p", "--port"},
-    description = "Sets the port for the server"
-  )
-  String port;
-
   @Override
   public Integer call() {
-    setPropertyIfNotNull("generator.seed", seed);
     setPropertyIfNotNull("fakeomatic.config.file", config);
 
-    if (serverMode) {
-      setPropertyIfNotNull("quarkus.http.host", host);
-      setPropertyIfNotNull("quarkus.http.port", port);
-      System.setProperty("quarkus.log.level", "INFO");
+    Random random = seed != null ? new Random(Long.parseLong(seed)) : new Random();
+    Sampler sampler = createSampler(random);
 
-      try {
-        Quarkus.run(Api.class);
-      } catch (Exception e) {
-        e.printStackTrace();
-        return 1;
-      }
+    String mode = template ? "template" : expression ? "expression" : "sample";
 
-    } else if (cli) {
-      System.setProperty("quarkus.log.level", "ERROR");
-      System.setProperty("quarkus.log.console.enable", "true");
-      System.setProperty("quarkus.banner.enabled", "false");
-      System.setProperty("quarkus.console.disable-input", "true");
-      System.setProperty("quarkus.test.continuous-testing", "disabled");
-
-      try {
-        Quarkus.run(SamplerCLI.class);
-      } catch (Exception e) {
-        e.printStackTrace();
-        return 1;
-      }
-    } else {
-      String mode = template ? "template" : expression ? "expression" : "sample";
-
-      System.setProperty("quarkus.log.level", "ERROR");
-      System.setProperty("quarkus.log.console.enable", "true");
-      System.setProperty("quarkus.banner.enabled", "false");
-      System.setProperty("quarkus.console.disable-input", "true");
-      System.setProperty("quarkus.test.continuous-testing", "disabled");
-      System.setProperty("generator.count", String.valueOf(count));
-
-      try {
-        Quarkus.run(Generator.class, mode, value);
-      } catch (Exception e) {
-        e.printStackTrace();
-        return 1;
-      }
+    try {
+      Generator generator = new Generator(sampler, count);
+      generator.run(mode, value);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return 1;
     }
 
     return 0;
@@ -151,6 +99,23 @@ public class GeneratorCommand implements Callable<Integer> {
     if (value != null) {
       System.setProperty(key, value);
     }
+  }
+
+  private Sampler createSampler(RandomGenerator random) {
+    Sampler baseSampler = Sampler.defaultSampler(random);
+    ConfigurationSupplier supplier = new ConfigurationSupplier("fakeomatic");
+
+    Optional<Sampler> loadedSampler = supplier.get()
+      .map(RawValueConfiguration::new)
+      .map(config -> Sampler.load(config, random));
+
+    if (loadedSampler.isPresent()) {
+      Sampler sampler = loadedSampler.get();
+      sampler.merge(baseSampler);
+      return sampler;
+    }
+
+    return baseSampler;
   }
 
 }

@@ -22,48 +22,37 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.model.samples;
 
-import com.backpackcloud.UnbelievableException;
-import com.backpackcloud.fakeomatic.model.Sampler;
-import com.backpackcloud.fakeomatic.model.TemplateEvaluator;
-import com.backpackcloud.text.InputValue;
+import com.backpackcloud.fakeomatic.model.Sample;
+import com.fasterxml.jackson.annotation.JacksonInject;
 
-public class Generator {
+import java.util.UUID;
+import java.util.random.RandomGenerator;
 
-  private final Sampler sampler;
-  private final int count;
+/**
+ * A sample that generates UUIDs.
+ *
+ * @author Marcelo Guimarães
+ */
+public class UuidSample implements Sample<UUID> {
 
-  public Generator(Sampler sampler, int count) {
-    this.sampler = sampler;
-    this.count = count;
+  public static final String TYPE = "uuid";
+
+  private final RandomGenerator random;
+
+  public UuidSample(@JacksonInject RandomGenerator random) {
+    this.random = random;
   }
 
-  public int run(String inputMode, String inputArg) {
-    Mode mode = InputValue.of(inputMode)
-      .asEnum(Mode.class)
-      .orElseThrow(UnbelievableException
-        .because("Invalid mode!"));
-
-    String value = InputValue.of(inputArg)
-      .asText()
-      .orElseThrow(UnbelievableException
-        .because("Please supply a sample"));
-
-    for (int i = 0; i < count; i++) {
-      switch (mode) {
-        case SAMPLE -> System.out.println(sampler.some(value).toString());
-        case TEMPLATE -> System.out.println(new TemplateEvaluator(sampler).eval(value));
-        case EXPRESSION -> System.out.println(sampler.expression(value));
-      }
-    }
-    return 0;
+  @Override
+  public String type() {
+    return TYPE;
   }
 
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Override
+  public UUID get() {
+    return new UUID(random.nextLong(), random.nextLong());
   }
 
 }

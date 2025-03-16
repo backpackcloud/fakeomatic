@@ -24,11 +24,9 @@
 
 placeholders:
   "#": digit
-  "%": downcase-letter
-  "@": lowercase-char
-  "^": uppercase-letter
+  "%": downcase-char
   "$": uppercase-char
-  "*": character
+  "@": char
 
 samples:
   uuid:
@@ -37,11 +35,11 @@ samples:
   seq:
     type: sequence
 
-  downcase-letter:
+  downcase-char:
     type: chars
     value: "abcdefghijklmnopqrstuvwxyz"
 
-  uppercase-letter:
+  uppercase-char:
     type: chars
     value: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -49,23 +47,11 @@ samples:
     type: chars
     value: "0123456789"
 
-  lowercase-char:
+  char:
     type: list
     samples:
-      - downcase-letter
-      - digit
-
-  uppercase-char:
-    type: list
-    samples:
-      - uppercase-letter
-      - digit
-
-  character:
-    type: list
-    samples:
-      - lowercase-letter
-      - uppercase-letter
+      - downcase-char
+      - uppercase-char
       - digit
 
   byte-unit:
@@ -75,6 +61,7 @@ samples:
       - KB
       - MB
       - GB
+      - TB
       - PB
 
   country:
@@ -121,12 +108,6 @@ samples:
     samples:
       - negative-adjective
       - positive-adjective
-
-  adverb:
-    type: list
-    samples:
-      - negative-adverb
-      - positive-adverb
 
   animal:
     type: list

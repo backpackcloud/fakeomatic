@@ -22,48 +22,24 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.model.samples;
 
-import com.backpackcloud.UnbelievableException;
-import com.backpackcloud.fakeomatic.model.Sampler;
-import com.backpackcloud.fakeomatic.model.TemplateEvaluator;
-import com.backpackcloud.text.InputValue;
+import com.backpackcloud.fakeomatic.model.Sample;
 
-public class Generator {
+import java.time.LocalDateTime;
 
-  private final Sampler sampler;
-  private final int count;
+public class NowSample implements Sample<LocalDateTime> {
 
-  public Generator(Sampler sampler, int count) {
-    this.sampler = sampler;
-    this.count = count;
+  public static final String TYPE = "now";
+
+  @Override
+  public String type() {
+    return TYPE;
   }
 
-  public int run(String inputMode, String inputArg) {
-    Mode mode = InputValue.of(inputMode)
-      .asEnum(Mode.class)
-      .orElseThrow(UnbelievableException
-        .because("Invalid mode!"));
-
-    String value = InputValue.of(inputArg)
-      .asText()
-      .orElseThrow(UnbelievableException
-        .because("Please supply a sample"));
-
-    for (int i = 0; i < count; i++) {
-      switch (mode) {
-        case SAMPLE -> System.out.println(sampler.some(value).toString());
-        case TEMPLATE -> System.out.println(new TemplateEvaluator(sampler).eval(value));
-        case EXPRESSION -> System.out.println(sampler.expression(value));
-      }
-    }
-    return 0;
-  }
-
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+  @Override
+  public LocalDateTime get() {
+    return LocalDateTime.now();
   }
 
 }

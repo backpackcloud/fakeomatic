@@ -22,48 +22,27 @@
  * SOFTWARE.
  */
 
-package com.backpackcloud.fakeomatic.process;
+package com.backpackcloud.fakeomatic.model;
 
 import com.backpackcloud.UnbelievableException;
-import com.backpackcloud.fakeomatic.model.Sampler;
-import com.backpackcloud.fakeomatic.model.TemplateEvaluator;
-import com.backpackcloud.text.InputValue;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Generator {
+public interface SampleConfiguration {
 
-  private final Sampler sampler;
-  private final int count;
+  Sample<?> sample();
 
-  public Generator(Sampler sampler, int count) {
-    this.sampler = sampler;
-    this.count = count;
-  }
-
-  public int run(String inputMode, String inputArg) {
-    Mode mode = InputValue.of(inputMode)
-      .asEnum(Mode.class)
-      .orElseThrow(UnbelievableException
-        .because("Invalid mode!"));
-
-    String value = InputValue.of(inputArg)
-      .asText()
-      .orElseThrow(UnbelievableException
-        .because("Please supply a sample"));
-
-    for (int i = 0; i < count; i++) {
-      switch (mode) {
-        case SAMPLE -> System.out.println(sampler.some(value).toString());
-        case TEMPLATE -> System.out.println(new TemplateEvaluator(sampler).eval(value));
-        case EXPRESSION -> System.out.println(sampler.expression(value));
-      }
+  @JsonCreator
+  static SampleConfiguration create(@JacksonInject Sampler sampler,
+                                    @JsonProperty("ref") String sampleName,
+                                    @JsonProperty("sample") Sample sample) {
+    if (sampleName != null) {
+      return () -> sampler.sample(sampleName);
+    } else if (sample != null) {
+      return () -> sample;
     }
-    return 0;
-  }
-
-  public enum Mode {
-
-    SAMPLE, TEMPLATE, EXPRESSION
-
+    throw new UnbelievableException("Sample not given");
   }
 
 }

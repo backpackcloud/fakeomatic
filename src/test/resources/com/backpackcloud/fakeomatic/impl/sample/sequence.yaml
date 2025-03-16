@@ -1,8 +1,0 @@
-samples:
-  test1:
-    type: sequence
-
-  test2:
-    type: sequence
-    start: 5
-    step: 5
