@@ -29,18 +29,21 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface SampleConfiguration {
+public interface SampleConfiguration<T> {
 
-  Sample<?> sample();
+  Sample<T> sample();
 
   @JsonCreator
   static SampleConfiguration create(@JacksonInject Sampler sampler,
                                     @JsonProperty("ref") String sampleName,
-                                    @JsonProperty("sample") Sample sample) {
+                                    @JsonProperty("sample") Sample sample,
+                                    @JsonProperty("value") Object value) {
     if (sampleName != null) {
       return () -> sampler.sample(sampleName);
     } else if (sample != null) {
       return () -> sample;
+    } else if (value != null) {
+      return () -> Sample.of(value);
     }
     throw new UnbelievableException("Sample not given");
   }

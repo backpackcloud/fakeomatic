@@ -26,8 +26,8 @@ package com.backpackcloud.fakeomatic.command;
 
 import com.backpackcloud.configuration.ConfigurationSupplier;
 import com.backpackcloud.configuration.RawValueConfiguration;
-import com.backpackcloud.fakeomatic.process.Generator;
 import com.backpackcloud.fakeomatic.model.Sampler;
+import com.backpackcloud.fakeomatic.process.Generator;
 import picocli.CommandLine;
 
 import java.util.Optional;
@@ -39,19 +39,19 @@ import java.util.random.RandomGenerator;
 public class GeneratorCommand implements Callable<Integer> {
 
   @CommandLine.Option(
-    names = {"-f", "--config"},
+    names = {"-c", "--config"},
     description = "A configuration to use"
   )
   String config;
 
   @CommandLine.Option(
-    names = {"-r", "--seed"},
+    names = {"-s", "--seed"},
     description = "The seed to use for randomness"
   )
   String seed;
 
   @CommandLine.Option(
-    names = {"-c", "--repeat"},
+    names = {"-n", "--repeat"},
     description = "How many times should the sample be generated",
     defaultValue = "1"
   )
@@ -69,6 +69,12 @@ public class GeneratorCommand implements Callable<Integer> {
   )
   boolean expression;
 
+  @CommandLine.Option(
+    names = {"-l", "--list"},
+    description = "Lists the available samples"
+  )
+  boolean list;
+
   @CommandLine.Parameters(
     arity = "0..1",
     description = "The sample to generate"
@@ -82,14 +88,20 @@ public class GeneratorCommand implements Callable<Integer> {
     Random random = seed != null ? new Random(Long.parseLong(seed)) : new Random();
     Sampler sampler = createSampler(random);
 
-    String mode = template ? "template" : expression ? "expression" : "sample";
+    if (list) {
+      sampler.samples()
+        .forEach((name, sample) -> System.out.println(name));
 
-    try {
-      Generator generator = new Generator(sampler, count);
-      generator.run(mode, value);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return 1;
+    } else {
+      String mode = template ? "template" : expression ? "expression" : "sample";
+
+      try {
+        Generator generator = new Generator(sampler, count);
+        generator.run(mode, value);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return 1;
+      }
     }
 
     return 0;

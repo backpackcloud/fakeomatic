@@ -67,13 +67,14 @@
   </scm>
 
   <properties>
-    <surefire-plugin.version>2.22.1</surefire-plugin.version>
     <fabric.version>1.0.0-SNAPSHOT</fabric.version>
+    <version-tm.version>1.1.0</version-tm.version>
     <opencsv.version>5.9</opencsv.version>
-    <maven-assembly-plugin.version>3.7.0</maven-assembly-plugin.version>
     <picocli.version>4.7.6</picocli.version>
     <junit.version>5.10.5</junit.version>
     <mockito.version>4.8.0</mockito.version>
+    <surefire-plugin.version>2.22.1</surefire-plugin.version>
+    <maven-assembly-plugin.version>3.7.0</maven-assembly-plugin.version>
   </properties>
 
   <dependencies>
@@ -81,6 +82,12 @@
       <groupId>com.backpackcloud</groupId>
       <artifactId>fabric</artifactId>
       <version>${fabric.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.backpackcloud</groupId>
+      <artifactId>version-tm</artifactId>
+      <version>${version-tm.version}</version>
     </dependency>
 
     <dependency>

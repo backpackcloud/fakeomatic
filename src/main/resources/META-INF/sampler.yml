@@ -36,15 +36,15 @@ samples:
     type: sequence
 
   downcase-char:
-    type: chars
+    type:  chars
     value: "abcdefghijklmnopqrstuvwxyz"
 
   uppercase-char:
-    type: chars
+    type:  chars
     value: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
   digit:
-    type: chars
+    type:  chars
     value: "0123456789"
 
   char:
@@ -53,16 +53,6 @@ samples:
       - downcase-char
       - uppercase-char
       - digit
-
-  byte-unit:
-    type: list
-    values:
-      - B
-      - KB
-      - MB
-      - GB
-      - TB
-      - PB
 
   country:
     type: list
@@ -80,7 +70,7 @@ samples:
       resource: META-INF/samples/surnames.txt
 
   full-name:
-    type: template
+    type:  template
     value: "{{name}} {{surname}}"
 
   error-cause:
@@ -125,6 +115,40 @@ samples:
         accumulator:
           sample:
             type: range
-            min: 0
-            max: 1000
+            min:  0
+            max:  1000
         unit: millis
+
+  version:
+    type: list
+    samples:
+      - major-version
+      - minor-version
+      - micro-version
+
+  major-version:
+    type:      version
+    precision: major
+    major:
+      min: 1
+      max: 30
+
+  minor-version:
+    type:      version
+    precision: minor
+    major:
+      min: 1
+      max: 30
+    minor:
+      max: 20
+
+  micro-version:
+    type:      version
+    precision: micro
+    major:
+      min: 1
+      max: 30
+    minor:
+      max: 20
+    micro:
+      max: 50

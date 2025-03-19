@@ -54,6 +54,7 @@ import java.util.function.Supplier;
   @JsonSubTypes.Type(name = FormatterSample.TYPE, value = FormatterSample.class),
   @JsonSubTypes.Type(name = SequenceSample.TYPE, value = SequenceSample.class),
   @JsonSubTypes.Type(name = StorageSample.TYPE, value = StorageSample.class),
+  @JsonSubTypes.Type(name = VersionSample.TYPE, value = VersionSample.class),
 })
 @FunctionalInterface
 public interface Sample<E> extends Supplier<E> {
